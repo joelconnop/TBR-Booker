@@ -1,0 +1,10 @@
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.exe.config
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.exe
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.pdb
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.csprojResolveAssemblyReference.cache
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.DayPanel.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.MainFrm.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.Properties.Resources.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.csproj.GenerateResource.Cache
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.exe
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.pdb
