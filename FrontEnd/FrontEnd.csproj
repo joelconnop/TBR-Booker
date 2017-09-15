@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{92F7A38E-3A51-4FB3-95FC-D77A5DF43DA9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>FrontEnd</RootNamespace>
+    <RootNamespace>TBRBooker.FrontEnd</RootNamespace>
     <AssemblyName>FrontEnd</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -45,11 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlExtensions.cs" />
     <Compile Include="DayPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DayPanel.Designer.cs">
       <DependentUpon>DayPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BookingSlotPnl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BookingSlotPnl.Designer.cs">
+      <DependentUpon>BookingSlotPnl.cs</DependentUpon>
     </Compile>
     <Compile Include="MainFrm.cs">
       <SubType>Form</SubType>
@@ -61,6 +68,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DayPanel.resx">
       <DependentUpon>DayPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BookingSlotPnl.resx">
+      <DependentUpon>BookingSlotPnl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainFrm.resx">
       <DependentUpon>MainFrm.cs</DependentUpon>
@@ -96,6 +106,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\next.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Business\Business.csproj">
+      <Project>{bd185e34-a29b-4db1-852b-c1c92d99eb7c}</Project>
+      <Name>Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Model.csproj">
+      <Project>{2547a68b-84fa-4dd7-9172-10898d993223}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

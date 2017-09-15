@@ -10,16 +10,3 @@ FrontEnd/obj/Debug/
 *.exe
 *.pdb
 *.dll
-FrontEnd/bin/Debug/FrontEnd.exe
-FrontEnd/bin/Debug/FrontEnd.pdb
-FrontEnd/obj/Debug/CoreCompileInputs.cache
-FrontEnd/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
-FrontEnd/obj/Debug/FrontEnd.csproj.FileListAbsolute.txt
-FrontEnd/obj/Debug/FrontEnd.csproj.GenerateResource.Cache
-FrontEnd/obj/Debug/FrontEnd.csprojResolveAssemblyReference.cache
-FrontEnd/obj/Debug/FrontEnd.DayPanel.resources
-FrontEnd/obj/Debug/FrontEnd.exe
-FrontEnd/obj/Debug/FrontEnd.MainFrm.resources
-FrontEnd/obj/Debug/FrontEnd.pdb
-FrontEnd/obj/Debug/FrontEnd.Properties.Resources.resources
-FrontEnd/obj/Debug/TempPE/Properties.Resources.Designer.cs.dll

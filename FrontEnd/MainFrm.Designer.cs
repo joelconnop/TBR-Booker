@@ -1,4 +1,4 @@
-﻿namespace FrontEnd
+﻿namespace TBRBooker.FrontEnd
 {
     partial class MainFrm
     {
@@ -31,11 +31,13 @@
             this.mainMnu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.datePicker = new System.Windows.Forms.DateTimePicker();
+            this.nextBtn = new System.Windows.Forms.Button();
             this.prevBtn = new System.Windows.Forms.Button();
             this.monthsLbl = new System.Windows.Forms.Label();
-            this.nextBtn = new System.Windows.Forms.Button();
-            this.datePicker = new System.Windows.Forms.DateTimePicker();
             this.daysPanel = new System.Windows.Forms.Panel();
+            this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -43,7 +45,8 @@
             // mainMnu
             // 
             this.mainMnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.testingToolStripMenuItem});
             this.mainMnu.Location = new System.Drawing.Point(0, 0);
             this.mainMnu.Name = "mainMnu";
             this.mainMnu.Size = new System.Drawing.Size(1904, 24);
@@ -68,9 +71,27 @@
             this.panel1.Size = new System.Drawing.Size(1904, 100);
             this.panel1.TabIndex = 1;
             // 
+            // datePicker
+            // 
+            this.datePicker.Location = new System.Drawing.Point(864, 9);
+            this.datePicker.Name = "datePicker";
+            this.datePicker.Size = new System.Drawing.Size(200, 20);
+            this.datePicker.TabIndex = 3;
+            // 
+            // nextBtn
+            // 
+            this.nextBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
+            this.nextBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.nextBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.nextBtn.Location = new System.Drawing.Point(1260, 27);
+            this.nextBtn.Name = "nextBtn";
+            this.nextBtn.Size = new System.Drawing.Size(60, 60);
+            this.nextBtn.TabIndex = 2;
+            this.nextBtn.UseVisualStyleBackColor = true;
+            // 
             // prevBtn
             // 
-            this.prevBtn.BackgroundImage = global::FrontEnd.Properties.Resources.back;
+            this.prevBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
             this.prevBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.prevBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.prevBtn.Location = new System.Drawing.Point(615, 27);
@@ -90,31 +111,28 @@
             this.monthsLbl.Text = "July 17- August 17";
             this.monthsLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // nextBtn
-            // 
-            this.nextBtn.BackgroundImage = global::FrontEnd.Properties.Resources.next;
-            this.nextBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.nextBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.nextBtn.Location = new System.Drawing.Point(1260, 27);
-            this.nextBtn.Name = "nextBtn";
-            this.nextBtn.Size = new System.Drawing.Size(60, 60);
-            this.nextBtn.TabIndex = 2;
-            this.nextBtn.UseVisualStyleBackColor = true;
-            // 
-            // datePicker
-            // 
-            this.datePicker.Location = new System.Drawing.Point(864, 9);
-            this.datePicker.Name = "datePicker";
-            this.datePicker.Size = new System.Drawing.Size(200, 20);
-            this.datePicker.TabIndex = 3;
-            // 
             // daysPanel
             // 
-            this.daysPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.daysPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
             this.daysPanel.Location = new System.Drawing.Point(0, 134);
             this.daysPanel.Name = "daysPanel";
             this.daysPanel.Size = new System.Drawing.Size(1904, 866);
             this.daysPanel.TabIndex = 2;
+            // 
+            // testingToolStripMenuItem
+            // 
+            this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.databaseToolStripMenuItem});
+            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.testingToolStripMenuItem.Text = "Testing";
+            // 
+            // databaseToolStripMenuItem
+            // 
+            this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.databaseToolStripMenuItem.Text = "Database";
+            this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -148,6 +166,8 @@
         private System.Windows.Forms.DateTimePicker datePicker;
         private System.Windows.Forms.Button nextBtn;
         private System.Windows.Forms.Panel daysPanel;
+        private System.Windows.Forms.ToolStripMenuItem testingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem databaseToolStripMenuItem;
     }
 }
 
