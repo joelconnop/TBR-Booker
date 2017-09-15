@@ -14,13 +14,13 @@ namespace TBRBooker.Model.Entities
     {
         public CorporateAccount(string tableName) : base("corporate_account")
         {
-            Branches = new List<string>();
+          //  Branches = new List<string>();
         }
 
         /// <summary>
         /// Typically only one branch, for example Browns Brisbane and Browns Gold Coast are probably separate accounts with different billing details
         /// </summary>
-        public List<(string BranchName, string BookingNickname)> Branches { get; set; }
+       // public List<(string BranchName, string BookingNickname)> Branches { get; set; }
 
         public string CompanyName { get; set; }
         public string Abn { get; set; }

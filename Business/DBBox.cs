@@ -36,10 +36,5 @@ namespace TBRBooker.Business
             );
         }
 
-        public static void SaveBookingEtc(Booking booking)
-        {
-            if (booking.Customer == null)
-        }
-
     }
 }

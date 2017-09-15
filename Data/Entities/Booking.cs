@@ -60,13 +60,23 @@ namespace TBRBooker.Model.Entities
         private string ChooseNameForBooking()
         {
             if (!string.IsNullOrEmpty(BookingNickame))
+            {
                 return BookingNickame;
+            }
             else if (Account != null)
+            {
                 return Account.CompanyName;
-            else if (!string.IsNullOrEmpty(LastName))
-                return LastName;
-            else
-                return FirstName;
+            }
+            else if (Customer != null)
+            {
+                if (!string.IsNullOrEmpty(Customer.LastName))
+                    return Customer.LastName;
+                else if (!string.IsNullOrEmpty(Customer.FirstName))
+                    return Customer.FirstName;
+            }
+
+                return string.Empty;
+
         }
 
         public Booking(string tableName) : base("booking")
@@ -77,12 +87,12 @@ namespace TBRBooker.Model.Entities
         {
             var atts = new Dictionary<string, AttributeValue>();
             SetIdIfNeeded();
-            AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
-            AddAttribute(atts, "CustomerId", new AttributeValue { S = FirstName }, FirstName);
-            AddAttribute(atts, "lastName", new AttributeValue { S = LastName }, LastName);
-            AddAttribute(atts, "mobileNumber", new AttributeValue { S = MobileNumber }, MobileNumber);
-            AddAttribute(atts, "otherNumbers", new AttributeValue { S = OtherNumbers }, OtherNumbers);
-            AddAttribute(atts, "emailAddress", new AttributeValue { S = EmailAddress }, EmailAddress);
+            //AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
+            //AddAttribute(atts, "CustomerId", new AttributeValue { S = FirstName }, FirstName);
+            //AddAttribute(atts, "lastName", new AttributeValue { S = LastName }, LastName);
+            //AddAttribute(atts, "mobileNumber", new AttributeValue { S = MobileNumber }, MobileNumber);
+            //AddAttribute(atts, "otherNumbers", new AttributeValue { S = OtherNumbers }, OtherNumbers);
+            //AddAttribute(atts, "emailAddress", new AttributeValue { S = EmailAddress }, EmailAddress);
             return atts;
         }
 
@@ -121,12 +131,12 @@ namespace TBRBooker.Model.Entities
             }
             
             //we are fussier about what is filled in if this is now a booking
-            if (IsBooked)
+            if (IsBooked())
             {
 
             }
 
-            return errors;
+            return new List<string>();
         }
     }
 }

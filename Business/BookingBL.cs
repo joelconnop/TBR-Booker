@@ -13,13 +13,14 @@ namespace TBRBooker.Business
     {
         public List<string> ValidateBooking(Booking booking)
         {
-            List<string> errors;
-            
+            var errors = new List<string>();
+            errors.AddRange(booking.ValidationErrors());
+            return errors;
         }
 
         public static void SaveBookingEtc(Booking booking)
         {
-            DBBox.WriteItem(booking.Customer)
+            DBBox.WriteItem(booking.Customer);
         }
     }
 }
