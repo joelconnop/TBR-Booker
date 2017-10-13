@@ -45,15 +45,25 @@ namespace TBRBooker.FrontEnd
 
         private void databaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var customer = new Customer()
-            {
-                FirstName = "Joeltest",
-                LastName = "Conntest",
-                MobileNumber = "0412345678",
-                OtherNumbers = "",
-                EmailAddress = "joel.connop@gmail.com"
-            };
-            DBBox.WriteItem(customer);
+            //var customer = new Customer()
+            //{
+            //    FirstName = "Joeltest",
+            //    LastName = "Conntest",
+            //    MobileNumber = "0412345678",
+            //    OtherNumbers = "",
+            //    EmailAddress = "joel.connop@gmail.com",
+            //    CreatedDate = DateTime.Now,
+            //    CompanyName = "Happy Testers"
+            //};
+            //DBBox.WriteItem(customer);
+
+            
+        }
+
+        private void databaseReadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var customer = DBBox.ReadItem<Customer>("89f5e12e-8e37-49d7-84ee-becb1e216761");
+            MessageBox.Show(customer.SmartName());
         }
     }
 }

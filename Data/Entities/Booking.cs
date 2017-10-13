@@ -6,16 +6,35 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using TBRBooker.Model.Enums;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
 
 namespace TBRBooker.Model.Entities
 {
     public class Booking : BaseItem
     {
-        [Required(ErrorMessage = "A Booking Date is required")]
+        public const string TABLE_NAME = "booking";
+        public const string IS_OPEN_STR = "Y";
+
+        [JsonIgnore]
         public Customer Customer { get; set; }
 
-        public CorporateAccount Account { get; set; }
+        public string CustomerId { get; set; }
+
+        /// <summary>
+        /// A little bit redundant with Customer.Company, but might need to later change Customer's account - but Booking's account is a historic value
+        /// </summary>
+        [JsonIgnore]
+        public CorporateAccount Company { get; set; }
+
+        public string CompanyId { get; set; }
+
         public BookingStatus Status { get; set; }
+
+        [JsonIgnore]
+        private bool IsOpenInDatabase { get; set; }
+
         public BookingPriorities Priority { get; set; }
 
         public string BirthdayName { get; set; }
@@ -52,7 +71,11 @@ namespace TBRBooker.Model.Entities
 
         public string BookingName => ChooseNameForBooking();
 
+        public LostDealReasons LostDealReason { get; set; }
+
         /// <summary>
+        /// Typically the customer's surname or company name but freely changeable.
+        /// Needs to be on booking so we can display on calendar without reading other tables
         /// Examples 'Smith', 'Little Jon Party', 'Browns GC', 'PCYC Bris'
         /// </summary>
         public string BookingNickame { get; set; }
@@ -63,9 +86,9 @@ namespace TBRBooker.Model.Entities
             {
                 return BookingNickame;
             }
-            else if (Account != null)
+            else if (Company != null)
             {
-                return Account.CompanyName;
+                return Company.CompanyName;
             }
             else if (Customer != null)
             {
@@ -79,21 +102,89 @@ namespace TBRBooker.Model.Entities
 
         }
 
-        public Booking(string tableName) : base("booking")
+        public Booking()
         {
+            TableName = TABLE_NAME;
         }
+
+        //public Booking(string tableName) : base("booking")  //, "bookingDateTicks")
+        //{
+
+        //}
+
+        
 
         public override Dictionary<string, AttributeValue> WriteAttributes()
         {
-            var atts = new Dictionary<string, AttributeValue>();
-            SetIdIfNeeded();
-            //AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
-            //AddAttribute(atts, "CustomerId", new AttributeValue { S = FirstName }, FirstName);
-            //AddAttribute(atts, "lastName", new AttributeValue { S = LastName }, LastName);
-            //AddAttribute(atts, "mobileNumber", new AttributeValue { S = MobileNumber }, MobileNumber);
-            //AddAttribute(atts, "otherNumbers", new AttributeValue { S = OtherNumbers }, OtherNumbers);
-            //AddAttribute(atts, "emailAddress", new AttributeValue { S = EmailAddress }, EmailAddress);
+            //Filter = BookingDate.Value.Ticks.ToString();
+            var atts = base.WriteAttributes();
+            AddAttribute(atts, "customerId", new AttributeValue { S = CustomerId }, CustomerId);
+            var bookingDateTicks = GetBookingDateTicks().ToString();
+            AddAttribute(atts, "bookingDate", new AttributeValue { N = bookingDateTicks }, bookingDateTicks);
+            AddAttribute(atts, "status", new AttributeValue { N = Convert.ToInt32(Status).ToString() }, Convert.ToInt32(Status).ToString());
+            if (IsOpen())
+                AddAttribute(atts, "isOpen", new AttributeValue { S = IS_OPEN_STR }, IS_OPEN_STR);
+            else
+                throw new Exception("use case for intially closed booking?");
             return atts;
+        }
+
+        public override UpdateItemRequest GetUpdateRequest()
+        {
+            //Filter = BookingDate.Value.Ticks.ToString();
+            var request = base.GetUpdateRequest();
+
+            //update the status
+            request.UpdateExpression += ", #s = :newstatus";
+            request.ExpressionAttributeNames.Add("#s", "status");
+            request.ExpressionAttributeValues.Add("newstatus", new AttributeValue { N = Convert.ToInt32(Status).ToString() });
+
+            //update the booking date
+            request.UpdateExpression += ", #b = :bookingdate";
+            request.ExpressionAttributeNames.Add("#b", "bookingDate");
+            request.ExpressionAttributeValues.Add("bookingdate", new AttributeValue { N = GetBookingDateTicks().ToString() });
+
+            //open or close the booking if needed (for super efficient table scanning)
+            if (IsOpen() && !IsOpenInDatabase)
+            {
+                //make the booking super fast to scan
+                request.UpdateExpression += " ADD #o = :openstr";
+                request.ExpressionAttributeNames.Add("#o", "isOpen");
+                request.ExpressionAttributeValues.Add("openstr", new AttributeValue { S = IS_OPEN_STR });
+            }
+            else if (!IsOpen() && IsOpenInDatabase)
+            {
+                //remove the booking from super fast scans
+                request.UpdateExpression += " REMOVE #o = :openstr";
+                request.ExpressionAttributeNames.Add("#o", "isOpen");
+            }
+
+            return request;
+        }
+
+        public override List<string> GetReadAttributes()
+        {
+            var atts = base.GetReadAttributes();
+            atts.Add("isOpen");
+            //other attributes are redundantly stored in json
+            return atts;
+        }
+
+        public override void LoadAttributes(Document doc)
+        {
+            IsOpenInDatabase = doc["isOpen"].AsString().Equals(IS_OPEN_STR);
+        }
+
+        private long GetBookingDateTicks()
+        {
+            if (BookingDate.HasValue)
+            {
+                return BookingDate.Value.Ticks;
+            }
+            else
+            {
+                return DateTime.MaxValue.Ticks;
+            }
         }
 
         public bool IsBooked()
@@ -114,6 +205,28 @@ namespace TBRBooker.Model.Entities
                     return false;
                 default:
                     throw new Exception($"Unknown if status {status} is a booking or lead.");
+            }
+        }
+
+        public bool IsOpen()
+        {
+            //the program should also push user to cancelling/completing old deals/bookings (how about a spank per week for each unresolved booking status)
+            return IsOpenStatus(Status) || BookingDate.Value.AddMonths(1) > DateTime.Now;
+        }
+
+        public static bool IsOpenStatus(BookingStatus status)
+        {
+            switch (status)
+            {
+                case BookingStatus.Completed:
+                case BookingStatus.Cancelled:
+                case BookingStatus.LostLead:
+                    return false;
+                case BookingStatus.Booked:
+                case BookingStatus.OpenLead:
+                    return true;
+                default:
+                    throw new Exception($"Unknown if status {status} is open.");
             }
         }
 

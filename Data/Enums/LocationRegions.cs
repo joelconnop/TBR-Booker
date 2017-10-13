@@ -9,7 +9,7 @@ namespace TBRBooker.Model.Enums
     public enum LocationRegions
     {
         GoldCoastSouth,
-        ColdCoastCentral,
+        GoldCoastCentral,
         GoldCoastNorth,
         GoldCoastHinterland,
         Logan,

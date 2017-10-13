@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
+using Newtonsoft.Json;
 
 namespace TBRBooker.Model.Entities
 {
@@ -11,26 +12,68 @@ namespace TBRBooker.Model.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        /// <summary>
+        /// Good for 'one off' companies that don't need a corporate account
+        /// </summary>
+        public string CompanyName { get; set; }
+
         public string MobileNumber { get; set; }
         public string OtherNumbers { get; set; }
         public string EmailAddress { get; set; }
         public string CompanyId { get; set; }
+        public DateTime CreatedDate { get; set; }
 
-        public Customer() : base("customer")
+        [JsonIgnore]
+        public CorporateAccount Company { get; set; }
+
+        public Customer()
         {
+            TableName = "customer";
         }
+
+        //public Customer() : base("customer")    //, "smartName")
+        //{
+        //}
 
         public override Dictionary<string, AttributeValue> WriteAttributes()
         {
-            var atts = new Dictionary<string, AttributeValue>();
-            SetIdIfNeeded();
-            AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
-            AddAttribute(atts, "firstName", new AttributeValue { S = FirstName }, FirstName);
-            AddAttribute(atts, "lastName", new AttributeValue { S = LastName }, LastName);
-            AddAttribute(atts, "mobileNumber", new AttributeValue { S = MobileNumber },MobileNumber);
-            AddAttribute(atts, "otherNumbers", new AttributeValue { S = OtherNumbers }, OtherNumbers);
-            AddAttribute(atts, "emailAddress", new AttributeValue { S = EmailAddress }, EmailAddress);
+            //Filter = SmartName();
+            var atts = base.WriteAttributes();
+            AddAttribute(atts, "smartName", new AttributeValue { S = SmartName() }, SmartName());
             return atts;
+        }
+
+        public string SmartName()
+        {
+            string companyName = "";
+            if (Company != null)
+            {
+                companyName = Company.SmartName();
+                //if (companyName.Contains(CorporateAccount.SmartNameJoiner))
+                //    return companyName;
+            }
+            else
+            {
+                companyName = CompanyName;
+            }
+
+            string name = FirstName;
+            if (!string.IsNullOrEmpty(LastName))
+            {
+                if (!string.IsNullOrEmpty(FirstName))
+                {
+                    name += " ";
+                }
+                name += LastName;
+            }
+
+            if (!string.IsNullOrEmpty(companyName))
+            {
+                name += " from " + companyName;
+            }
+
+            return name;
         }
     }
 }

@@ -12,8 +12,12 @@ namespace TBRBooker.Model.Entities
     /// </summary>
     public class CorporateAccount : BaseItem
     {
-        public CorporateAccount(string tableName) : base("corporate_account")
+
+        public const string TABLE_NAME = "corporate_account";
+
+        public CorporateAccount()
         {
+            TableName = TABLE_NAME;
           //  Branches = new List<string>();
         }
 
@@ -29,9 +33,21 @@ namespace TBRBooker.Model.Entities
         public string BillingEmail { get; set; }
         public string PhoneNumber { get; set; }
 
-        public override Dictionary<string, AttributeValue> WriteAttributes()
+        //public override Dictionary<string, AttributeValue> WriteAttributes()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public const string SmartNameJoiner = " from ";
+
+        public string SmartName()
         {
-            throw new NotImplementedException();
+            string name = CompanyName;
+            //if (!string.IsNullOrEmpty(BillingContact))
+            //{
+            //    name = BillingContact + SmartNameJoiner;
+            //}
+            return name;
         }
     }
 }
