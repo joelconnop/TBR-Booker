@@ -56,12 +56,13 @@ namespace TBRBooker.Model.Entities
         [Required(ErrorMessage = "Booking Date")]
         public DateTime BookingDate { get; set; }
 
-        [Required(ErrorMessage = "Time Slot")]
-        public TimeSlots TimeSlot { get; set; }
+        //[Required(ErrorMessage = "Time Slot")]
+        //public TimeSlots TimeSlot { get; set; }
 
         /// <summary>
         /// eg 1558 = 15:58, 0 = midnight (notset, not valid for booked status), 110 = 1:10AM
         /// </summary>
+        [Required(ErrorMessage = "Time Slot")]
         public int BookingTime { get; set; }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace TBRBooker.Model.Entities
             doc["bookingName"] = BookingName;
             doc["bookingTime"] = BookingTime;
             doc["bookingDate"] = BookingDate.Ticks;
-            doc["timeSlot"] = Convert.ToInt32(TimeSlot);
+            //doc["timeSlot"] = Convert.ToInt32(TimeSlot);
             doc["status"] = Convert.ToInt32(Status);
 
             //fields we will likely want to report on
@@ -278,7 +279,7 @@ namespace TBRBooker.Model.Entities
                 BookingDate = this.BookingDate,
                 BookingTime = this.BookingTime,
                 BookingStatus = Status,
-                TimeSlot = this.TimeSlot
+              //  TimeSlot = this.TimeSlot
             };
         }
     }

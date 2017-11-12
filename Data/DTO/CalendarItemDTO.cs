@@ -18,10 +18,10 @@ namespace TBRBooker.Model.DTO
         public int BookingTime { get; set; }
         public BookingStates BookingStatus { get; set; }
 
-        /// <summary>
-        /// in case BookingTime is not set
-        /// </summary>
-        public TimeSlots TimeSlot { get; set; }
+        ///// <summary>
+        ///// in case BookingTime is not set
+        ///// </summary>
+        //public TimeSlots TimeSlot { get; set; }
 
     }
 }

@@ -67,14 +67,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.dateGrp = new System.Windows.Forms.GroupBox();
             this.timePick = new System.Windows.Forms.DateTimePicker();
-            this.timeSlotOtherRdo = new System.Windows.Forms.RadioButton();
-            this.timeSlotAllDayRdo = new System.Windows.Forms.RadioButton();
-            this.timeSlotPmRdo = new System.Windows.Forms.RadioButton();
-            this.timeSlotMiddayRdo = new System.Windows.Forms.RadioButton();
-            this.timeSlotAmRdo = new System.Windows.Forms.RadioButton();
             this.datePick = new System.Windows.Forms.DateTimePicker();
             this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -82,13 +76,13 @@
             this.button5 = new System.Windows.Forms.Button();
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.addressGrp = new System.Windows.Forms.GroupBox();
+            this.addressMapBtn = new System.Windows.Forms.Button();
             this.addressVenuFld = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.addressFld = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.addressRegionFld = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.addressMapBtn = new System.Windows.Forms.Button();
             this.pricingGrp = new System.Windows.Forms.GroupBox();
             this.notesGrp = new System.Windows.Forms.GroupBox();
             this.notesFld = new System.Windows.Forms.TextBox();
@@ -471,14 +465,8 @@
             // 
             this.dateGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.dateGrp.Controls.Add(this.timePick);
-            this.dateGrp.Controls.Add(this.timeSlotOtherRdo);
-            this.dateGrp.Controls.Add(this.timeSlotAllDayRdo);
-            this.dateGrp.Controls.Add(this.timeSlotPmRdo);
-            this.dateGrp.Controls.Add(this.timeSlotMiddayRdo);
-            this.dateGrp.Controls.Add(this.timeSlotAmRdo);
             this.dateGrp.Controls.Add(this.datePick);
             this.dateGrp.Controls.Add(this.label15);
-            this.dateGrp.Controls.Add(this.label16);
             this.dateGrp.Controls.Add(this.label17);
             this.dateGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.dateGrp.Location = new System.Drawing.Point(6, 227);
@@ -493,68 +481,13 @@
             // 
             this.timePick.Checked = false;
             this.timePick.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.timePick.Location = new System.Drawing.Point(590, 43);
+            this.timePick.Location = new System.Drawing.Point(249, 43);
             this.timePick.Name = "timePick";
             this.timePick.ShowUpDown = true;
             this.timePick.Size = new System.Drawing.Size(78, 20);
             this.timePick.TabIndex = 21;
             this.timePick.Value = new System.DateTime(2017, 11, 1, 0, 0, 0, 0);
             this.timePick.KeyDown += new System.Windows.Forms.KeyEventHandler(this.timePick_KeyDown);
-            // 
-            // timeSlotOtherRdo
-            // 
-            this.timeSlotOtherRdo.AutoSize = true;
-            this.timeSlotOtherRdo.Location = new System.Drawing.Point(503, 44);
-            this.timeSlotOtherRdo.Name = "timeSlotOtherRdo";
-            this.timeSlotOtherRdo.Size = new System.Drawing.Size(51, 17);
-            this.timeSlotOtherRdo.TabIndex = 20;
-            this.timeSlotOtherRdo.TabStop = true;
-            this.timeSlotOtherRdo.Text = "Other";
-            this.timeSlotOtherRdo.UseVisualStyleBackColor = true;
-            // 
-            // timeSlotAllDayRdo
-            // 
-            this.timeSlotAllDayRdo.AutoSize = true;
-            this.timeSlotAllDayRdo.Location = new System.Drawing.Point(428, 44);
-            this.timeSlotAllDayRdo.Name = "timeSlotAllDayRdo";
-            this.timeSlotAllDayRdo.Size = new System.Drawing.Size(58, 17);
-            this.timeSlotAllDayRdo.TabIndex = 19;
-            this.timeSlotAllDayRdo.TabStop = true;
-            this.timeSlotAllDayRdo.Text = "All Day";
-            this.timeSlotAllDayRdo.UseVisualStyleBackColor = true;
-            // 
-            // timeSlotPmRdo
-            // 
-            this.timeSlotPmRdo.AutoSize = true;
-            this.timeSlotPmRdo.Location = new System.Drawing.Point(371, 44);
-            this.timeSlotPmRdo.Name = "timeSlotPmRdo";
-            this.timeSlotPmRdo.Size = new System.Drawing.Size(41, 17);
-            this.timeSlotPmRdo.TabIndex = 18;
-            this.timeSlotPmRdo.TabStop = true;
-            this.timeSlotPmRdo.Text = "PM";
-            this.timeSlotPmRdo.UseVisualStyleBackColor = true;
-            // 
-            // timeSlotMiddayRdo
-            // 
-            this.timeSlotMiddayRdo.AutoSize = true;
-            this.timeSlotMiddayRdo.Location = new System.Drawing.Point(295, 44);
-            this.timeSlotMiddayRdo.Name = "timeSlotMiddayRdo";
-            this.timeSlotMiddayRdo.Size = new System.Drawing.Size(59, 17);
-            this.timeSlotMiddayRdo.TabIndex = 17;
-            this.timeSlotMiddayRdo.TabStop = true;
-            this.timeSlotMiddayRdo.Text = "Midday";
-            this.timeSlotMiddayRdo.UseVisualStyleBackColor = true;
-            // 
-            // timeSlotAmRdo
-            // 
-            this.timeSlotAmRdo.AutoSize = true;
-            this.timeSlotAmRdo.Location = new System.Drawing.Point(238, 44);
-            this.timeSlotAmRdo.Name = "timeSlotAmRdo";
-            this.timeSlotAmRdo.Size = new System.Drawing.Size(41, 17);
-            this.timeSlotAmRdo.TabIndex = 16;
-            this.timeSlotAmRdo.TabStop = true;
-            this.timeSlotAmRdo.Text = "AM";
-            this.timeSlotAmRdo.UseVisualStyleBackColor = true;
             // 
             // datePick
             // 
@@ -566,20 +499,11 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(587, 26);
+            this.label15.Location = new System.Drawing.Point(246, 26);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(81, 13);
             this.label15.TabIndex = 4;
             this.label15.Text = "Time of Service";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(235, 26);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(55, 13);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "Time Slot*";
             // 
             // label17
             // 
@@ -648,6 +572,15 @@
             this.addressGrp.TabStop = false;
             this.addressGrp.Text = "Service";
             // 
+            // addressMapBtn
+            // 
+            this.addressMapBtn.Location = new System.Drawing.Point(724, 38);
+            this.addressMapBtn.Name = "addressMapBtn";
+            this.addressMapBtn.Size = new System.Drawing.Size(75, 23);
+            this.addressMapBtn.TabIndex = 21;
+            this.addressMapBtn.Text = "View Map";
+            this.addressMapBtn.UseVisualStyleBackColor = true;
+            // 
             // addressVenuFld
             // 
             this.addressVenuFld.Location = new System.Drawing.Point(552, 39);
@@ -696,15 +629,6 @@
             this.label12.Size = new System.Drawing.Size(45, 13);
             this.label12.TabIndex = 3;
             this.label12.Text = "Region*";
-            // 
-            // addressMapBtn
-            // 
-            this.addressMapBtn.Location = new System.Drawing.Point(724, 38);
-            this.addressMapBtn.Name = "addressMapBtn";
-            this.addressMapBtn.Size = new System.Drawing.Size(75, 23);
-            this.addressMapBtn.TabIndex = 21;
-            this.addressMapBtn.Text = "View Map";
-            this.addressMapBtn.UseVisualStyleBackColor = true;
             // 
             // pricingGrp
             // 
@@ -818,16 +742,10 @@
         private System.Windows.Forms.GroupBox dateGrp;
         private System.Windows.Forms.DateTimePicker datePick;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox contactEmailFld;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.RadioButton timeSlotAmRdo;
         private System.Windows.Forms.Button copyLastToNickBtn;
-        private System.Windows.Forms.RadioButton timeSlotOtherRdo;
-        private System.Windows.Forms.RadioButton timeSlotAllDayRdo;
-        private System.Windows.Forms.RadioButton timeSlotPmRdo;
-        private System.Windows.Forms.RadioButton timeSlotMiddayRdo;
         private System.Windows.Forms.DateTimePicker timePick;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button button2;

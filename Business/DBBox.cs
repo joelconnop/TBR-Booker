@@ -265,7 +265,7 @@ namespace TBRBooker.Business
             var config = new QueryOperationConfig()
             {
                 Select = SelectValues.SpecificAttributes,
-                AttributesToGet = new List<string> { "id", "bookingName", "bookingDate", "bookingTime", "timeSlot", "status" },
+                AttributesToGet = new List<string> { "id", "bookingName", "bookingDate", "bookingTime", "status" },
                 Filter = new QueryFilter()
             };
             config.Filter.AddCondition("isOpen", QueryOperator.Equal, Booking.IS_OPEN_STR);
@@ -285,7 +285,7 @@ namespace TBRBooker.Business
                         BookingName = doc["bookingName"],
                         BookingDate = ticks > 0 ? new DateTime(ticks) : default(DateTime),
                         BookingTime = int.Parse(doc["bookingTime"]),
-                        TimeSlot = (TimeSlots)Enum.Parse(typeof(TimeSlots), doc["timeSlot"]),
+                        //TimeSlot = (TimeSlots)Enum.Parse(typeof(TimeSlots), doc["timeSlot"]),
                         BookingStatus = (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"])                        
                     });
                 }
