@@ -55,12 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Address.cs" />
+    <Compile Include="DTO\ExistingCustomerDTO.cs" />
     <Compile Include="Entities\Booking.cs" />
-    <Compile Include="Entities\CalendarEntry.cs" />
+    <Compile Include="DTO\CalendarItemDTO.cs" />
     <Compile Include="Entities\CorporateAccount.cs" />
     <Compile Include="Entities\Service.cs" />
     <Compile Include="Enums\LocationRegions.cs" />
-    <Compile Include="Enums\BookingStatus.cs" />
+    <Compile Include="Enums\BookingStates.cs" />
     <Compile Include="Day.cs" />
     <Compile Include="Entities\BaseItem.cs" />
     <Compile Include="Entities\Customer.cs" />
@@ -77,7 +78,10 @@
     <Analyzer Include="..\packages\AWSSDK.DynamoDBv2.3.3.4.17\analyzers\dotnet\cs\AWSSDK.DynamoDBv2.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DTO\" />
+    <ProjectReference Include="..\Base\Base.csproj">
+      <Project>{CDF1C58E-17F8-4B03-B63D-FBA929C03D85}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -52,6 +52,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BookingBLTest.cs" />
     <Compile Include="DBBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -5,58 +5,76 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
+using Amazon.DynamoDBv2.DocumentModel;
 
 namespace TBRBooker.Model.Entities
 {
     public class Customer : BaseItem
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-
-        /// <summary>
-        /// Good for 'one off' companies that don't need a corporate account
-        /// </summary>
-        public string CompanyName { get; set; }
-
-        public string MobileNumber { get; set; }
-        public string OtherNumbers { get; set; }
-        public string EmailAddress { get; set; }
-        public string CompanyId { get; set; }
-        public DateTime CreatedDate { get; set; }
-
-        [JsonIgnore]
-        public CorporateAccount Company { get; set; }
+        public const string TABLE_NAME = "customer";
 
         public Customer()
         {
             TableName = "customer";
         }
 
-        //public Customer() : base("customer")    //, "smartName")
+        public override bool IsCacheItems()
+        {
+            return true;
+        }
+
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+
+
+        public string PrimaryNumber { get; set; }
+        public string SecondaryNumber { get; set; }
+        public string OtherNumbers { get; set; }
+        public string EmailAddress { get; set; }
+        public string CompanyId { get; set; }
+        public DateTime CreatedDate { get; set; }
+
+        /// <summary>
+        /// A little bit redundant with Booking.Account, but might need to later change Customer's account - but Booking's account is a historic value
+        /// </summary>
+        //[JsonIgnore]
+        //public CorporateAccount Company { get; set; }
+
+        /// <summary>
+        /// Good for 'one off' companies that don't need a corporate account
+        /// </summary>
+        public string CompanyName { get; set; }
+
+
+
+        //public Customer() : base("customer")    //, "directoryName")
         //{
         //}
 
-        public override Dictionary<string, AttributeValue> WriteAttributes()
+        public override Document GetAddUpdateDoc()
         {
-            //Filter = SmartName();
-            var atts = base.WriteAttributes();
-            AddAttribute(atts, "smartName", new AttributeValue { S = SmartName() }, SmartName());
-            return atts;
+            var doc = base.GetAddUpdateDoc();
+
+            doc["directoryName"] = DirectoryName();
+
+            return doc;
         }
 
-        public string SmartName()
+        public string DirectoryName()
         {
-            string companyName = "";
-            if (Company != null)
-            {
-                companyName = Company.SmartName();
-                //if (companyName.Contains(CorporateAccount.SmartNameJoiner))
-                //    return companyName;
-            }
-            else
-            {
-                companyName = CompanyName;
-            }
+            //string companyName = "";
+            //if (Company != null)
+            //{
+            //    companyName = Company.SmartName();
+            //    //if (companyName.Contains(CorporateAccount.SmartNameJoiner))
+            //    //    return companyName;
+            //}
+            //else
+            //{
+            //    companyName = CompanyName;
+            //}
 
             string name = FirstName;
             if (!string.IsNullOrEmpty(LastName))
@@ -68,9 +86,14 @@ namespace TBRBooker.Model.Entities
                 name += LastName;
             }
 
-            if (!string.IsNullOrEmpty(companyName))
+            if (!string.IsNullOrEmpty(CompanyName))
             {
-                name += " from " + companyName;
+                name += " from " + CompanyName;
+            }
+
+            if (!string.IsNullOrEmpty(EmailAddress))
+            {
+                name += "; " + EmailAddress;
             }
 
             return name;

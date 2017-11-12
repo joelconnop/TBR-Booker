@@ -18,12 +18,39 @@ namespace TBRBooker.Model.Entities
         public Object Filter { get; set; }
         public string FilterName { get; set; }
 
+        public abstract bool IsCacheItems();
+
+        //below is a poor man's transaction attempt. At this stage we don't have transactions.
+        //[JsonIgnore]
+        //private bool _isNewItem { get; set; }
+
+        //public bool IsNewItem()
+        //{
+        //    return !string.IsNullOrEmpty(Id) || _isNewItem;
+        //}
+
+        public virtual Document GetAddUpdateDoc()
+        {
+            Document doc = new Document();
+
+            doc["id"] = Id;
+            if (!string.IsNullOrEmpty(FilterName))
+            {
+                doc[FilterName] = Filter.ToString();
+                throw new Exception("this should be INSTEAD of an Id, right? see https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/");
+            }
+            var json = JsonConvert.SerializeObject(this);
+            doc["json"] = json;
+
+            return doc;
+        }
+
 
         public virtual Dictionary<string, AttributeValue> WriteAttributes()
         {
+            //TODO: implement it this way instead: https://aws.amazon.com/blogs/developer/dynamodb-series-document-model/
             var atts = new Dictionary<string, AttributeValue>();
 
-            SetIdIfNeeded();
             AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
             if (!string.IsNullOrEmpty(FilterName))
             {
@@ -40,7 +67,7 @@ namespace TBRBooker.Model.Entities
         {
             var request = new UpdateItemRequest
             {
-                TableName = this.TableName,
+                //TableName = this.TableName,   //TableName to be set by DBBox
                 Key = new Dictionary<string, AttributeValue>
                 {
                     {"id", new AttributeValue{S = Id}}
@@ -63,13 +90,9 @@ namespace TBRBooker.Model.Entities
                 request.ExpressionAttributeValues.Add("filter", new AttributeValue { S = Filter.ToString() });
             }
 
-            return request;
-        }
+            //_isNewItem = false;
 
-        public void SetIdIfNeeded()
-        {
-            if (string.IsNullOrEmpty(Id))
-                Id = DateTime.Now.ToShortDateString() + "-" + Guid.NewGuid().ToString();
+            return request;
         }
 
         public void AddAttribute(Dictionary<string, AttributeValue> atts, string key, AttributeValue value, string strValue)

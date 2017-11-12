@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TBRBooker.Model.Enums
 {
-    public enum LostDealReasons
+    public enum LostJobReasons
     {
         NotSet,
         Other,

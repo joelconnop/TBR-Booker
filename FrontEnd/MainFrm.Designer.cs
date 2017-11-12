@@ -32,13 +32,13 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.databaseReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.datePicker = new System.Windows.Forms.DateTimePicker();
             this.nextBtn = new System.Windows.Forms.Button();
             this.prevBtn = new System.Windows.Forms.Button();
             this.monthsLbl = new System.Windows.Forms.Label();
             this.daysPanel = new System.Windows.Forms.Panel();
-            this.databaseReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -72,9 +72,16 @@
             // databaseToolStripMenuItem
             // 
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.databaseToolStripMenuItem.Text = "Database write";
             this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
+            // 
+            // databaseReadToolStripMenuItem
+            // 
+            this.databaseReadToolStripMenuItem.Name = "databaseReadToolStripMenuItem";
+            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.databaseReadToolStripMenuItem.Text = "Database read";
+            this.databaseReadToolStripMenuItem.Click += new System.EventHandler(this.databaseReadToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -94,6 +101,7 @@
             this.datePicker.Name = "datePicker";
             this.datePicker.Size = new System.Drawing.Size(200, 20);
             this.datePicker.TabIndex = 3;
+            this.datePicker.ValueChanged += new System.EventHandler(this.datePicker_ValueChanged);
             // 
             // nextBtn
             // 
@@ -105,6 +113,7 @@
             this.nextBtn.Size = new System.Drawing.Size(60, 60);
             this.nextBtn.TabIndex = 2;
             this.nextBtn.UseVisualStyleBackColor = true;
+            this.nextBtn.Click += new System.EventHandler(this.nextBtn_Click);
             // 
             // prevBtn
             // 
@@ -116,6 +125,7 @@
             this.prevBtn.Size = new System.Drawing.Size(60, 60);
             this.prevBtn.TabIndex = 1;
             this.prevBtn.UseVisualStyleBackColor = true;
+            this.prevBtn.Click += new System.EventHandler(this.prevBtn_Click);
             // 
             // monthsLbl
             // 
@@ -135,13 +145,6 @@
             this.daysPanel.Name = "daysPanel";
             this.daysPanel.Size = new System.Drawing.Size(1904, 866);
             this.daysPanel.TabIndex = 2;
-            // 
-            // databaseReadToolStripMenuItem
-            // 
-            this.databaseReadToolStripMenuItem.Name = "databaseReadToolStripMenuItem";
-            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.databaseReadToolStripMenuItem.Text = "Database read";
-            this.databaseReadToolStripMenuItem.Click += new System.EventHandler(this.databaseReadToolStripMenuItem_Click);
             // 
             // MainFrm
             // 

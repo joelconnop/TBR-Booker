@@ -9,6 +9,7 @@ namespace TBRBooker.Model.Entities
 {
     /// <summary>
     /// this is not finished until I've seen what is utilised by QB API
+    /// Might need another table that is CorporateAccountId + bookingId with partitionkey on CorporateAccountId?
     /// </summary>
     public class CorporateAccount : BaseItem
     {
@@ -32,6 +33,11 @@ namespace TBRBooker.Model.Entities
         public string BillingContact { get; set; }
         public string BillingEmail { get; set; }
         public string PhoneNumber { get; set; }
+
+        public override bool IsCacheItems()
+        {
+            return true;
+        }
 
         //public override Dictionary<string, AttributeValue> WriteAttributes()
         //{

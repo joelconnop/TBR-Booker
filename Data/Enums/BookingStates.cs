@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace TBRBooker.Model.Enums
 {
-    public enum BookingStatus
+    public enum BookingStates
     {
-        OpenLead,
-        LostLead,
+        OpenEnquiry,
+        LostEnquiry,
         Booked,
         Completed,
-        Cancelled
+        Cancelled,
+        PaymentDue
     }
 }

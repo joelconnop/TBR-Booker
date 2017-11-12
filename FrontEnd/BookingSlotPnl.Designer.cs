@@ -60,6 +60,7 @@
             this.Controls.Add(this.bookingLbl);
             this.Name = "BookingSlotPnl";
             this.Size = new System.Drawing.Size(210, 52);
+            this.Load += new System.EventHandler(this.BookingSlotPnl_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

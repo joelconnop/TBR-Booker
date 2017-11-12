@@ -8,9 +8,11 @@ namespace TBRBooker.Model.Enums
 {
     public enum TimeSlots
     {
+        NotSet,
         AM,
         Midday,
         PM,
+        AllDay,
         Other
     }
 }

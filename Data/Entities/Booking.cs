@@ -9,6 +9,8 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using TBRBooker.Model.DTO;
+using Base;
 
 namespace TBRBooker.Model.Entities
 {
@@ -17,20 +19,31 @@ namespace TBRBooker.Model.Entities
         public const string TABLE_NAME = "booking";
         public const string IS_OPEN_STR = "Y";
 
+        public Booking()
+        {
+            TableName = TABLE_NAME;
+            CustomerId = "";
+            AccountId = "";
+            BirthdayName = "";
+        }
+
+        public override bool IsCacheItems()
+        {
+            return true;
+        }
+
         [JsonIgnore]
         public Customer Customer { get; set; }
 
         public string CustomerId { get; set; }
 
-        /// <summary>
-        /// A little bit redundant with Customer.Company, but might need to later change Customer's account - but Booking's account is a historic value
-        /// </summary>
+
         [JsonIgnore]
-        public CorporateAccount Company { get; set; }
+        public CorporateAccount Account { get; set; }
 
-        public string CompanyId { get; set; }
+        public string AccountId { get; set; }
 
-        public BookingStatus Status { get; set; }
+        public BookingStates Status { get; set; }
 
         [JsonIgnore]
         private bool IsOpenInDatabase { get; set; }
@@ -41,25 +54,39 @@ namespace TBRBooker.Model.Entities
         public int BirthdayAge { get; set; }
 
         [Required(ErrorMessage = "Booking Date")]
-        public DateTime? BookingDate { get; set; }
-
-        /// <summary>
-        /// eg 1015 = 10:15, 
-        /// </summary>
-        public int BookingTime { get; set; }
-
-        /// <summary>
-        /// in minutes
-        /// </summary>
-        public int Duration { get; set; }
-
-        public int EndTime => BookingTime + Duration;
+        public DateTime BookingDate { get; set; }
 
         [Required(ErrorMessage = "Time Slot")]
         public TimeSlots TimeSlot { get; set; }
 
+        /// <summary>
+        /// eg 1558 = 15:58, 0 = midnight (notset, not valid for booked status), 110 = 1:10AM
+        /// </summary>
+        public int BookingTime { get; set; }
+
+        /// <summary>
+        /// eg hour and half = 90
+        /// </summary>
+        public int Duration { get; set; }
+
+        public int EndTime => BookingTime + Duration;
+        private int GetEndTime()
+        {
+            var parsed = Utils.ParseTime(BookingTime);
+            var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
+            return int.Parse(ts.Add(new TimeSpan(0, Duration, 0)).ToString("HHmm"));
+        }
+
+        [JsonIgnore]
+        public int TravelTimeTo { get; set; }
+
+        [JsonIgnore]
+        public int TravelTimeFrom { get; set; }
+
+
+
         public LocationRegions LocationRegion { get; set; }
-        public string VenueName { get; set; }
+        //public string VenueName { get; set; } (part of address)
         public Address Address { get; set; }
 
         /// <summary>
@@ -67,11 +94,13 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public string PurchaseOrderRef { get; set; }
 
+       // public bool IsPaid { get; set; }
+
         public List<string> Notes { get; set; }
 
         public string BookingName => ChooseNameForBooking();
 
-        public LostDealReasons LostDealReason { get; set; }
+        public LostJobReasons LostJobReason { get; set; }
 
         /// <summary>
         /// Typically the customer's surname or company name but freely changeable.
@@ -86,9 +115,9 @@ namespace TBRBooker.Model.Entities
             {
                 return BookingNickame;
             }
-            else if (Company != null)
+            else if (Account != null)
             {
-                return Company.CompanyName;
+                return Account.CompanyName;
             }
             else if (Customer != null)
             {
@@ -102,9 +131,19 @@ namespace TBRBooker.Model.Entities
 
         }
 
-        public Booking()
+        public static string BookingTimeStr(int bookingTime)
         {
-            TableName = TABLE_NAME;
+            if (bookingTime == 0)
+                return "";
+
+            var parsed = Utils.ParseTime(bookingTime);
+            return $"{(parsed.Hour >= 10 ? parsed.Hour.ToString() : "0" + parsed.Hour.ToString())}:{(parsed.Minute >= 10 ? parsed.Minute.ToString() : "0" + parsed.Minute.ToString())}";
+        }
+
+        public static TimeSpan GetBookingTime(int bookingTime)
+        {
+            var parsed = Utils.ParseTime(bookingTime);
+            return new TimeSpan(parsed.Hour, parsed.Minute, 0);
         }
 
         //public Booking(string tableName) : base("booking")  //, "bookingDateTicks")
@@ -112,55 +151,28 @@ namespace TBRBooker.Model.Entities
 
         //}
 
-        
-
-        public override Dictionary<string, AttributeValue> WriteAttributes()
+        public override Document GetAddUpdateDoc()
         {
-            //Filter = BookingDate.Value.Ticks.ToString();
-            var atts = base.WriteAttributes();
-            AddAttribute(atts, "customerId", new AttributeValue { S = CustomerId }, CustomerId);
-            var bookingDateTicks = GetBookingDateTicks().ToString();
-            AddAttribute(atts, "bookingDate", new AttributeValue { N = bookingDateTicks }, bookingDateTicks);
-            AddAttribute(atts, "status", new AttributeValue { N = Convert.ToInt32(Status).ToString() }, Convert.ToInt32(Status).ToString());
-            if (IsOpen())
-                AddAttribute(atts, "isOpen", new AttributeValue { S = IS_OPEN_STR }, IS_OPEN_STR);
-            else
-                throw new Exception("use case for intially closed booking?");
-            return atts;
+            var doc = base.GetAddUpdateDoc();
+
+            //for CalendarItemDTO
+            doc["isOpen"] = IsOpen() ? IS_OPEN_STR : "";
+            doc["bookingName"] = BookingName;
+            doc["bookingTime"] = BookingTime;
+            doc["bookingDate"] = BookingDate.Ticks;
+            doc["timeSlot"] = Convert.ToInt32(TimeSlot);
+            doc["status"] = Convert.ToInt32(Status);
+
+            //fields we will likely want to report on
+            doc["customerId"] = CustomerId;
+            doc["accountId"] = AccountId;
+            doc["locationRegion"] = Convert.ToInt32(LocationRegion);
+            doc["priority"] = Convert.ToInt32(Priority);
+            doc["lostJobReason"] = Convert.ToInt32(LostJobReason);
+
+            return doc;
         }
 
-        public override UpdateItemRequest GetUpdateRequest()
-        {
-            //Filter = BookingDate.Value.Ticks.ToString();
-            var request = base.GetUpdateRequest();
-
-            //update the status
-            request.UpdateExpression += ", #s = :newstatus";
-            request.ExpressionAttributeNames.Add("#s", "status");
-            request.ExpressionAttributeValues.Add("newstatus", new AttributeValue { N = Convert.ToInt32(Status).ToString() });
-
-            //update the booking date
-            request.UpdateExpression += ", #b = :bookingdate";
-            request.ExpressionAttributeNames.Add("#b", "bookingDate");
-            request.ExpressionAttributeValues.Add("bookingdate", new AttributeValue { N = GetBookingDateTicks().ToString() });
-
-            //open or close the booking if needed (for super efficient table scanning)
-            if (IsOpen() && !IsOpenInDatabase)
-            {
-                //make the booking super fast to scan
-                request.UpdateExpression += " ADD #o = :openstr";
-                request.ExpressionAttributeNames.Add("#o", "isOpen");
-                request.ExpressionAttributeValues.Add("openstr", new AttributeValue { S = IS_OPEN_STR });
-            }
-            else if (!IsOpen() && IsOpenInDatabase)
-            {
-                //remove the booking from super fast scans
-                request.UpdateExpression += " REMOVE #o = :openstr";
-                request.ExpressionAttributeNames.Add("#o", "isOpen");
-            }
-
-            return request;
-        }
 
         public override List<string> GetReadAttributes()
         {
@@ -172,58 +184,63 @@ namespace TBRBooker.Model.Entities
 
         public override void LoadAttributes(Document doc)
         {
-            IsOpenInDatabase = doc["isOpen"].AsString().Equals(IS_OPEN_STR);
-        }
-
-        private long GetBookingDateTicks()
-        {
-            if (BookingDate.HasValue)
-            {
-                return BookingDate.Value.Ticks;
-            }
+            if (doc.ContainsKey("isOpen"))
+                IsOpenInDatabase = doc["isOpen"].AsString().Equals(IS_OPEN_STR);
             else
-            {
-                return DateTime.MaxValue.Ticks;
-            }
+                IsOpenInDatabase = false;
         }
 
-        public bool IsBooked()
+        //private long GetBookingDateTicks()
+        //{
+        //    if (BookingDate.HasValue)
+        //    {
+        //        return BookingDate.Value.Ticks;
+        //    }
+        //    else
+        //    {
+        //        return DateTime.MaxValue.Ticks;
+        //    }
+        //}
+
+        public bool IsBooked(bool isIncludeCancelled = false)
         {
-            return IsBooked(Status);
+            return IsBooked(Status, isIncludeCancelled);
         }
 
-        public static bool IsBooked(BookingStatus status)
+        public static bool IsBooked(BookingStates status, bool isIncludeCancelled)
         {
             switch (status)
             {
-                case BookingStatus.Booked:
-                case BookingStatus.Completed:
-                case BookingStatus.Cancelled:
+                case BookingStates.Booked:
+                case BookingStates.Completed:
                     return true;
-                case BookingStatus.OpenLead:
-                case BookingStatus.LostLead:
+                case BookingStates.OpenEnquiry:
+                case BookingStates.LostEnquiry:
                     return false;
+                case BookingStates.Cancelled:
+                    return isIncludeCancelled;
                 default:
-                    throw new Exception($"Unknown if status {status} is a booking or lead.");
+                    throw new Exception($"Unknown if status {status} is a booking or enquiry.");
             }
         }
 
         public bool IsOpen()
         {
             //the program should also push user to cancelling/completing old deals/bookings (how about a spank per week for each unresolved booking status)
-            return IsOpenStatus(Status) || BookingDate.Value.AddMonths(1) > DateTime.Now;
+            return IsOpenStatus(Status) || BookingDate.AddMonths(1) > DateTime.Now;
         }
 
-        public static bool IsOpenStatus(BookingStatus status)
+        public static bool IsOpenStatus(BookingStates status)
         {
             switch (status)
             {
-                case BookingStatus.Completed:
-                case BookingStatus.Cancelled:
-                case BookingStatus.LostLead:
+                case BookingStates.Completed:
+                case BookingStates.Cancelled:
+                case BookingStates.LostEnquiry:
                     return false;
-                case BookingStatus.Booked:
-                case BookingStatus.OpenLead:
+                case BookingStates.OpenEnquiry:
+                case BookingStates.Booked:
+                case BookingStates.PaymentDue:
                     return true;
                 default:
                     throw new Exception($"Unknown if status {status} is open.");
@@ -242,14 +259,27 @@ namespace TBRBooker.Model.Entities
                     missing += $"{result.ErrorMessage}, ";
                 missing = missing.Trim().TrimEnd(',');
             }
-            
-            //we are fussier about what is filled in if this is now a booking
-            if (IsBooked())
+
+                //we are fussier about what is filled in if this is now a booking
+                if (IsBooked())
             {
 
             }
 
             return new List<string>();
+        }
+
+        public CalendarItemDTO ToCalendarItem()
+        {
+            return new CalendarItemDTO()
+            {
+                BookingNum = int.Parse(Id),
+                BookingName = this.BookingName,
+                BookingDate = this.BookingDate,
+                BookingTime = this.BookingTime,
+                BookingStatus = Status,
+                TimeSlot = this.TimeSlot
+            };
         }
     }
 }

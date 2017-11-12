@@ -8,6 +8,7 @@ namespace TBRBooker.Model.Enums
 {
     public enum LocationRegions
     {
+        NotSet,
         GoldCoastSouth,
         GoldCoastCentral,
         GoldCoastNorth,

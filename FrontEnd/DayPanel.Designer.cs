@@ -28,19 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.addLeadBtn = new System.Windows.Forms.Button();
+            this.addEnquiryBtn = new System.Windows.Forms.Button();
             this.dateLbl = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // addLeadBtn
             // 
-            this.addLeadBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.addLeadBtn.Location = new System.Drawing.Point(177, 175);
-            this.addLeadBtn.Name = "addLeadBtn";
-            this.addLeadBtn.Size = new System.Drawing.Size(30, 32);
-            this.addLeadBtn.TabIndex = 5;
-            this.addLeadBtn.Text = "+";
-            this.addLeadBtn.UseVisualStyleBackColor = true;
+            this.addEnquiryBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.addEnquiryBtn.Location = new System.Drawing.Point(177, 175);
+            this.addEnquiryBtn.Name = "addLeadBtn";
+            this.addEnquiryBtn.Size = new System.Drawing.Size(30, 32);
+            this.addEnquiryBtn.TabIndex = 5;
+            this.addEnquiryBtn.Text = "+";
+            this.addEnquiryBtn.UseVisualStyleBackColor = true;
+            this.addEnquiryBtn.Click += new System.EventHandler(this.addLeadBtn_Click);
             // 
             // dateLbl
             // 
@@ -59,7 +60,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.Controls.Add(this.dateLbl);
-            this.Controls.Add(this.addLeadBtn);
+            this.Controls.Add(this.addEnquiryBtn);
             this.Name = "DayPanel";
             this.Size = new System.Drawing.Size(210, 210);
             this.Load += new System.EventHandler(this.DayPanel_Load);
@@ -69,7 +70,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button addLeadBtn;
+        private System.Windows.Forms.Button addEnquiryBtn;
         private System.Windows.Forms.Label dateLbl;
     }
 }

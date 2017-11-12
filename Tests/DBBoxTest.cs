@@ -12,89 +12,55 @@ namespace Tests
     [TestClass]
     public class DBBoxTest
     {
+
         [TestMethod]
-        public void WriteBookings()
+        public void IsInUnitTest()
         {
+            DBBox.InitDynamoDbClient();
+            DBBox.IsTestEnvironment.ShouldBe(true);
+        }
 
-            //old Booking
-            DBBox.WriteItem(new Booking
-            {
-                CustomerId = "89f5e12e-8e37-49d7-84ee-becb1e216761",
-                Status = BookingStatus.OpenLead,
-                Priority = BookingPriorities.PossibleTyreKicker,
-                BirthdayName = "little Joel",
-                BirthdayAge = 6,
-                BookingDate = DateTime.Now.AddMonths(-3),
-                BookingTime = 1430,
-                LocationRegion = LocationRegions.GoldCoastCentral,
-                Address = new Address("", "1 Test St", "Trashmoar", "Qld", "4214"),
-                BookingNickame = "ConnTest",
-            });
 
-            //current booking
-            DBBox.WriteItem(new Booking
-            {
-                CustomerId = "89f5e12e-8e37-49d7-84ee-becb1e216761",
-                Status = BookingStatus.Booked,
-                Priority = BookingPriorities.HighestImportance,
-                BirthdayName = "Child A",
-                BirthdayAge = 10,
-                BookingDate = DateTime.Now.AddDays(1),
-                BookingTime = 1200,
-                LocationRegion = LocationRegions.Brisbane,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "BigjobA",
-            });
-
-            //open lead
-            DBBox.WriteItem(new Booking
-            {
-                CustomerId = "89f5e12e-8e37-49d7-84ee-becb1e216761",
-                Status = BookingStatus.OpenLead,
-                Priority = BookingPriorities.Standard,
-                BirthdayName = "Child B",
-                BirthdayAge = 10,
-                BookingDate = DateTime.Now.AddDays(-7),
-                BookingTime = 1645,
-                LocationRegion = LocationRegions.GoldCoastSouth,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "JobB",
-            });
-
-            //cancelled job
-            DBBox.WriteItem(new Booking
-            {
-                CustomerId = "89f5e12e-8e37-49d7-84ee-becb1e216761",
-                Status = BookingStatus.Cancelled,
-                Priority = BookingPriorities.KeenCustomer,
-                BirthdayName = "Child C",
-                BirthdayAge = 7,
-                BookingDate = DateTime.Now.AddDays(3),
-                BookingTime = 900,
-                LocationRegion = LocationRegions.GoldCoastNorth,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "SomeKidsSurname",
-            });
+        [TestMethod]
+        public void GetCalendarItems()
+        {
+            var calendar = DBBox.GetCalendarItems();
+            calendar.Count.ShouldBe(3);
+            calendar.Where(x => x.BookingName.Equals("JobB")).Count().ShouldBe(1);
+            calendar.Where(x => x.BookingStatus == BookingStates.Booked).Count().ShouldBe(1);
         }
 
         [TestMethod]
-        public void ReadBookings()
+        public void AddCustomers()
         {
-            var bookings = DBBox.GetBookingsForCalendar();
-            bookings.Count.ShouldBe(3);
-     //       bookings.Where(x => x.Address.Suburb.Equals("Trashmoar")).Count().ShouldBe(1);
-            bookings.Where(x => x.BookingNickame.Equals("JobB")).Count().ShouldBe(1);
-            bookings.Where(x => x.BirthdayName.Equals("Child C")).Count().ShouldBe(1);
-            bookings.Where(x => x.Status == BookingStatus.Booked).Count().ShouldBe(1);
+            DBBox.AddOrUpdate(new Customer
+            {
+                FirstName = "Test",
+                LastName = "Connop",
+                CompanyName = "TestComp",
+                PrimaryNumber = "0412345678",
+                EmailAddress = "joel.connop@gmail.com",
+                CreatedDate = DateTime.Now
+            });
+
+            DBBox.AddOrUpdate(new Customer
+            {
+                FirstName = "Typical",
+                LastName = "Mum",
+                PrimaryNumber = "0412345678",
+                CreatedDate = DateTime.Now
+            });
         }
 
+  
         [TestMethod]
-        public void UpdateBooking()
+        public void GetCustomerDirectory()
         {
-            var booking = DBBox.ReadItem<Booking>("14/10/2017-124979da-7434-49c1-b93d-ee364945");
-            booking.Status = BookingStatus.LostLead;
-            booking.LostDealReason = LostDealReasons.Test;
-            DBBox.WriteItem(booking);
+            var calendar = DBBox.GetCustomerDirectory();
+            calendar.Count.ShouldBe(2);
+            calendar.Where(x => x.DirectoryName.Contains("gmail")).Count().ShouldBe(1);
+            calendar.Where(x => x.DirectoryName.Contains("Mum")).Count().ShouldBe(1);
+            calendar.ForEach(x => x.CustomerId.ShouldNotBeNullOrEmpty());
         }
 
     }

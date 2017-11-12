@@ -22,3 +22,8 @@ E:\Programming\TBR Booker\FrontEnd\bin\Debug\Business.pdb
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.csproj.CoreCompileInputs.cache
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\Newtonsoft.Json.dll
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\Newtonsoft.Json.xml
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\Shouldly.dll
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingFrm.resources
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\Base.dll
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\Base.pdb
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.Timeline.resources

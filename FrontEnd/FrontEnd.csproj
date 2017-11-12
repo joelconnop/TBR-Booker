@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BookingFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BookingFrm.Designer.cs">
+      <DependentUpon>BookingFrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlExtensions.cs" />
     <Compile Include="DayPanel.cs">
       <SubType>UserControl</SubType>
@@ -70,6 +76,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Timeline.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Timeline.Designer.cs">
+      <DependentUpon>Timeline.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="BookingFrm.resx">
+      <DependentUpon>BookingFrm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DayPanel.resx">
       <DependentUpon>DayPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -89,6 +104,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Timeline.resx">
+      <DependentUpon>Timeline.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -113,6 +131,10 @@
     <None Include="Resources\next.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Base\Base.csproj">
+      <Project>{cdf1c58e-17f8-4b03-b63d-fba929c03d85}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Business\Business.csproj">
       <Project>{bd185e34-a29b-4db1-852b-c1c92d99eb7c}</Project>
       <Name>Business</Name>
@@ -121,6 +143,12 @@
       <Project>{2547a68b-84fa-4dd7-9172-10898d993223}</Project>
       <Name>Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\crocodile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\nocroc.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

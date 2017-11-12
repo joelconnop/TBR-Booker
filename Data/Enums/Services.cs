@@ -10,10 +10,9 @@ namespace TBRBooker.Model.Enums
     {
         ReptileShow = 0,
         ReptileParty = 1,
-        PartyPackage = 2,
-        Display = 3,
-        RoamingReptiles = 4,
-        PythonAppearance = 5,
-        Other = 6
+        Display = 2,
+        RoamingReptiles = 3,
+        PythonAppearance = 4,
+        Other = 5
     }
 }
