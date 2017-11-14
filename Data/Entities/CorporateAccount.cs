@@ -19,6 +19,7 @@ namespace TBRBooker.Model.Entities
         public CorporateAccount()
         {
             TableName = TABLE_NAME;
+            BookingIds = new List<string>();
           //  Branches = new List<string>();
         }
 
@@ -33,6 +34,12 @@ namespace TBRBooker.Model.Entities
         public string BillingContact { get; set; }
         public string BillingEmail { get; set; }
         public string PhoneNumber { get; set; }
+        public string OtherNumbers { get; set; }
+
+        /// <summary>
+        /// Needed because so db can be queried to extract each booking, as opposed to full table scan
+        /// </summary>
+        public List<string> BookingIds { get; set; }
 
         public override bool IsCacheItems()
         {

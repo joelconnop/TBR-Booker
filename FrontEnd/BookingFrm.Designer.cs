@@ -29,11 +29,10 @@
         private void InitializeComponent()
         {
             this.contactGrp = new System.Windows.Forms.GroupBox();
+            this.contactEmblemPic = new System.Windows.Forms.PictureBox();
             this.copyLastToNickBtn = new System.Windows.Forms.Button();
             this.contactEmailFld = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.contactOtherNumFld = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.contactSecondaryNumFld = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.contactPrimaryNumFld = new System.Windows.Forms.TextBox();
@@ -84,9 +83,23 @@
             this.addressRegionFld = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.pricingGrp = new System.Windows.Forms.GroupBox();
+            this.priceItemsLst = new System.Windows.Forms.ListView();
+            this.itemCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.unitPriceCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.qtyCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.subtotalCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label8 = new System.Windows.Forms.Label();
+            this.priceTotalFld = new System.Windows.Forms.TextBox();
+            this.priceOverrideChk = new System.Windows.Forms.CheckBox();
+            this.priceCalculatedFld = new System.Windows.Forms.Label();
             this.notesGrp = new System.Windows.Forms.GroupBox();
             this.notesFld = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button6 = new System.Windows.Forms.Button();
             this.contactGrp.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).BeginInit();
             this.panel1.SuspendLayout();
             this.serviceGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
@@ -94,17 +107,17 @@
             this.dateGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.addressGrp.SuspendLayout();
+            this.pricingGrp.SuspendLayout();
             this.notesGrp.SuspendLayout();
             this.SuspendLayout();
             // 
             // contactGrp
             // 
             this.contactGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.contactGrp.Controls.Add(this.contactEmblemPic);
             this.contactGrp.Controls.Add(this.copyLastToNickBtn);
             this.contactGrp.Controls.Add(this.contactEmailFld);
             this.contactGrp.Controls.Add(this.label18);
-            this.contactGrp.Controls.Add(this.contactOtherNumFld);
-            this.contactGrp.Controls.Add(this.label8);
             this.contactGrp.Controls.Add(this.contactSecondaryNumFld);
             this.contactGrp.Controls.Add(this.label7);
             this.contactGrp.Controls.Add(this.contactPrimaryNumFld);
@@ -126,6 +139,16 @@
             this.contactGrp.TabStop = false;
             this.contactGrp.Text = "Contact";
             // 
+            // contactEmblemPic
+            // 
+            this.contactEmblemPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.customer_new;
+            this.contactEmblemPic.Location = new System.Drawing.Point(761, 24);
+            this.contactEmblemPic.Name = "contactEmblemPic";
+            this.contactEmblemPic.Size = new System.Drawing.Size(93, 93);
+            this.contactEmblemPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.contactEmblemPic.TabIndex = 19;
+            this.contactEmblemPic.TabStop = false;
+            // 
             // copyLastToNickBtn
             // 
             this.copyLastToNickBtn.Location = new System.Drawing.Point(333, 43);
@@ -138,36 +161,19 @@
             // 
             // contactEmailFld
             // 
-            this.contactEmailFld.Location = new System.Drawing.Point(552, 91);
+            this.contactEmailFld.Location = new System.Drawing.Point(371, 91);
             this.contactEmailFld.Name = "contactEmailFld";
-            this.contactEmailFld.Size = new System.Drawing.Size(256, 20);
+            this.contactEmailFld.Size = new System.Drawing.Size(239, 20);
             this.contactEmailFld.TabIndex = 16;
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(549, 74);
+            this.label18.Location = new System.Drawing.Point(368, 74);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(34, 13);
             this.label18.TabIndex = 15;
             this.label18.Text = "e-mail";
-            // 
-            // contactOtherNumFld
-            // 
-            this.contactOtherNumFld.Location = new System.Drawing.Point(371, 91);
-            this.contactOtherNumFld.Name = "contactOtherNumFld";
-            this.contactOtherNumFld.Size = new System.Drawing.Size(134, 20);
-            this.contactOtherNumFld.TabIndex = 14;
-            this.contactOtherNumFld.Text = "use multi input";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(368, 74);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(118, 13);
-            this.label8.TabIndex = 13;
-            this.label8.Text = "Other Contact Numbers";
             // 
             // contactSecondaryNumFld
             // 
@@ -203,9 +209,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(692, 41);
+            this.button1.Location = new System.Drawing.Point(692, 33);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(116, 23);
+            this.button1.Size = new System.Drawing.Size(63, 42);
             this.button1.TabIndex = 8;
             this.button1.Text = "Corporate Account";
             this.button1.UseVisualStyleBackColor = true;
@@ -633,6 +639,15 @@
             // pricingGrp
             // 
             this.pricingGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.pricingGrp.Controls.Add(this.button6);
+            this.pricingGrp.Controls.Add(this.textBox2);
+            this.pricingGrp.Controls.Add(this.textBox1);
+            this.pricingGrp.Controls.Add(this.label14);
+            this.pricingGrp.Controls.Add(this.priceItemsLst);
+            this.pricingGrp.Controls.Add(this.label8);
+            this.pricingGrp.Controls.Add(this.priceTotalFld);
+            this.pricingGrp.Controls.Add(this.priceOverrideChk);
+            this.pricingGrp.Controls.Add(this.priceCalculatedFld);
             this.pricingGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.pricingGrp.Location = new System.Drawing.Point(6, 647);
             this.pricingGrp.Name = "pricingGrp";
@@ -640,6 +655,73 @@
             this.pricingGrp.TabIndex = 11;
             this.pricingGrp.TabStop = false;
             this.pricingGrp.Text = "Pricing";
+            // 
+            // priceItemsLst
+            // 
+            this.priceItemsLst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.itemCol,
+            this.unitPriceCol,
+            this.qtyCol,
+            this.subtotalCol});
+            this.priceItemsLst.Location = new System.Drawing.Point(281, 19);
+            this.priceItemsLst.Name = "priceItemsLst";
+            this.priceItemsLst.Size = new System.Drawing.Size(424, 97);
+            this.priceItemsLst.TabIndex = 4;
+            this.priceItemsLst.UseCompatibleStateImageBehavior = false;
+            this.priceItemsLst.View = System.Windows.Forms.View.Details;
+            // 
+            // itemCol
+            // 
+            this.itemCol.Text = "Item Description";
+            this.itemCol.Width = 215;
+            // 
+            // unitPriceCol
+            // 
+            this.unitPriceCol.Text = "Unit Price";
+            // 
+            // qtyCol
+            // 
+            this.qtyCol.Text = "Qty";
+            this.qtyCol.Width = 39;
+            // 
+            // subtotalCol
+            // 
+            this.subtotalCol.Text = "Subtotal";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(46, 54);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(43, 13);
+            this.label8.TabIndex = 3;
+            this.label8.Text = "Price: $";
+            // 
+            // priceTotalFld
+            // 
+            this.priceTotalFld.Location = new System.Drawing.Point(93, 52);
+            this.priceTotalFld.Name = "priceTotalFld";
+            this.priceTotalFld.Size = new System.Drawing.Size(61, 20);
+            this.priceTotalFld.TabIndex = 2;
+            // 
+            // priceOverrideChk
+            // 
+            this.priceOverrideChk.AutoSize = true;
+            this.priceOverrideChk.Location = new System.Drawing.Point(192, 54);
+            this.priceOverrideChk.Name = "priceOverrideChk";
+            this.priceOverrideChk.Size = new System.Drawing.Size(66, 17);
+            this.priceOverrideChk.TabIndex = 1;
+            this.priceOverrideChk.Text = "Override";
+            this.priceOverrideChk.UseVisualStyleBackColor = true;
+            // 
+            // priceCalculatedFld
+            // 
+            this.priceCalculatedFld.AutoSize = true;
+            this.priceCalculatedFld.Location = new System.Drawing.Point(20, 29);
+            this.priceCalculatedFld.Name = "priceCalculatedFld";
+            this.priceCalculatedFld.Size = new System.Drawing.Size(69, 13);
+            this.priceCalculatedFld.TabIndex = 0;
+            this.priceCalculatedFld.Text = "Calculated: $";
             // 
             // notesGrp
             // 
@@ -660,6 +742,38 @@
             this.notesFld.Name = "notesFld";
             this.notesFld.Size = new System.Drawing.Size(841, 95);
             this.notesFld.TabIndex = 0;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(712, 20);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(87, 13);
+            this.label14.TabIndex = 5;
+            this.label14.Text = "Add Manual Item";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(715, 37);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(125, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(714, 64);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(82, 20);
+            this.textBox2.TabIndex = 7;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(802, 63);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(38, 23);
+            this.button6.TabIndex = 8;
+            this.button6.Text = "+";
+            this.button6.UseVisualStyleBackColor = true;
             // 
             // BookingFrm
             // 
@@ -685,6 +799,7 @@
             this.Load += new System.EventHandler(this.BookingFrm_Load);
             this.contactGrp.ResumeLayout(false);
             this.contactGrp.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.serviceGrp.ResumeLayout(false);
@@ -697,6 +812,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
             this.addressGrp.ResumeLayout(false);
             this.addressGrp.PerformLayout();
+            this.pricingGrp.ResumeLayout(false);
+            this.pricingGrp.PerformLayout();
             this.notesGrp.ResumeLayout(false);
             this.notesGrp.PerformLayout();
             this.ResumeLayout(false);
@@ -719,8 +836,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox contactFirstNameFld;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox contactOtherNumFld;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox contactSecondaryNumFld;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox contactPrimaryNumFld;
@@ -764,5 +879,19 @@
         private System.Windows.Forms.GroupBox notesGrp;
         private System.Windows.Forms.TextBox notesFld;
         private System.Windows.Forms.GroupBox pricingGrp;
+        private System.Windows.Forms.ListView priceItemsLst;
+        private System.Windows.Forms.ColumnHeader itemCol;
+        private System.Windows.Forms.ColumnHeader unitPriceCol;
+        private System.Windows.Forms.ColumnHeader qtyCol;
+        private System.Windows.Forms.ColumnHeader subtotalCol;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox priceTotalFld;
+        private System.Windows.Forms.CheckBox priceOverrideChk;
+        private System.Windows.Forms.Label priceCalculatedFld;
+        private System.Windows.Forms.PictureBox contactEmblemPic;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label14;
     }
 }

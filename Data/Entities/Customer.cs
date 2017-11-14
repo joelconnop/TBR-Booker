@@ -16,6 +16,7 @@ namespace TBRBooker.Model.Entities
         public Customer()
         {
             TableName = "customer";
+            BookingIds = new List<string>();
         }
 
         public override bool IsCacheItems()
@@ -31,7 +32,6 @@ namespace TBRBooker.Model.Entities
 
         public string PrimaryNumber { get; set; }
         public string SecondaryNumber { get; set; }
-        public string OtherNumbers { get; set; }
         public string EmailAddress { get; set; }
         public string CompanyId { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -47,6 +47,10 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public string CompanyName { get; set; }
 
+        /// <summary>
+        /// Needed because so db can be queried to extract each booking, as opposed to full table scan
+        /// Also a (redundant) subset of CorporateAccount.BookingIds, where applicable
+        public List<string> BookingIds { get; set; }
 
 
         //public Customer() : base("customer")    //, "directoryName")
@@ -76,7 +80,13 @@ namespace TBRBooker.Model.Entities
             //    companyName = CompanyName;
             //}
 
-            string name = FirstName;
+            string name = "";
+
+            if (string.IsNullOrEmpty(LastName))
+                name = FirstName;
+            else if (!string.IsNullOrEmpty(FirstName))
+                name = FirstName.Substring(0, 1) + ".";
+
             if (!string.IsNullOrEmpty(LastName))
             {
                 if (!string.IsNullOrEmpty(FirstName))
@@ -95,6 +105,15 @@ namespace TBRBooker.Model.Entities
             {
                 name += "; " + EmailAddress;
             }
+            if (!string.IsNullOrEmpty(PrimaryNumber))
+            {
+                name += "; " + PrimaryNumber;
+            }
+            if (!string.IsNullOrEmpty(SecondaryNumber))
+            {
+                name += "; " + SecondaryNumber;
+            }
+
 
             return name;
         }

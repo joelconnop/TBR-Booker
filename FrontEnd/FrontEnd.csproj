@@ -150,5 +150,20 @@
   <ItemGroup>
     <None Include="Resources\nocroc.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer-gold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer-overdue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer-return.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer-new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer-rebook.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
