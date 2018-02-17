@@ -1,10 +1,5 @@
-E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.exe.config
-E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.exe
-E:\Programming\TBR Booker\FrontEnd\bin\Debug\FrontEnd.pdb
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.csprojResolveAssemblyReference.cache
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.csproj.GenerateResource.Cache
-E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.exe
-E:\Programming\TBR Booker\FrontEnd\obj\Debug\FrontEnd.pdb
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.DayPanel.resources
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingSlotPnl.resources
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.MainFrm.resources
@@ -27,3 +22,10 @@ E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingFrm.resou
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\Base.dll
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\Base.pdb
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.Timeline.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingPnl.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingsFrm.resources
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\TBR Booker.exe.config
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\TBR Booker.exe
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\TBR Booker.pdb
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.exe
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.pdb

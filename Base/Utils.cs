@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Base
+namespace TBRBooker.Base
 {
     public class Utils
     {
@@ -28,6 +28,41 @@ namespace Base
             }
 
             return (hour, min);
+        }
+
+        public static int TimeInt(DateTime time)
+        {
+            string min = time.Minute.ToString();
+            if (time.Minute < 10)
+                min = "0" + min;
+            return int.Parse($"{time.Hour}{min}");
+        }
+
+        public static string DisplayHour(int hour)
+        {
+            if (Settings.Inst().Is24HourTime || hour <= 12)
+                return hour.ToString();
+            else
+                return (hour - 12).ToString();
+        }
+
+        public static string DisplayTime(int time)
+        {
+            var parsed = ParseTime(time);
+            var amPm = Settings.Inst().Is24HourTime ? "" : (parsed.Hour >= 12 ? " PM" : " AM");
+            return $"{DisplayHour(parsed.Hour)}:{(parsed.Minute == 0 ? "00" : parsed.Minute.ToString())}{amPm}"; 
+        }
+
+        public static string DurationToDisplayStr(int minutes)
+        {
+            string display = "";
+            int hours = minutes / 60;
+            int min = minutes % 60;
+            if (hours > 0)
+                display = hours.ToString() + " " + (hours > 1 ? "hours" : "hour");
+            if (min > 0)
+                display += " " + min + " min";
+            return display.Trim();
         }
 
     }

@@ -5,23 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using TBRBooker.Model.Enums;
-using Base;
+using TBRBooker.Base;
 
 namespace TBRBooker.Model.DTO
 {
 
     public class CalendarItemDTO
     {
-        public int BookingNum { get; set; }
-        public string BookingName { get; set; }
-        public DateTime BookingDate { get; set; }
-        public int BookingTime { get; set; }
-        public BookingStates BookingStatus { get; set; }
+        public readonly int BookingNum;
+        public readonly string BookingName;
+        public readonly DateTime BookingDate;
+        public readonly int BookingTime;
+        public readonly BookingStates BookingStatus;
 
         ///// <summary>
         ///// in case BookingTime is not set
         ///// </summary>
         //public TimeSlots TimeSlot { get; set; }
+
+        public CalendarItemDTO(int num, string name, DateTime date, int time, BookingStates status)
+        {
+            BookingNum = num;
+            BookingName = name;
+            BookingDate = date;
+            BookingTime = time;
+            BookingStatus = status;
+        }
 
     }
 }

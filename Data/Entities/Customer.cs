@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
 using Amazon.DynamoDBv2.DocumentModel;
+using TBRBooker.Model.Enums;
 
 namespace TBRBooker.Model.Entities
 {
@@ -35,6 +36,8 @@ namespace TBRBooker.Model.Entities
         public string EmailAddress { get; set; }
         public string CompanyId { get; set; }
         public DateTime CreatedDate { get; set; }
+        public LeadSources LeadSource { get; set; }
+        public string PastNotes { get; set; }
 
         /// <summary>
         /// A little bit redundant with Booking.Account, but might need to later change Customer's account - but Booking's account is a historic value
@@ -61,8 +64,12 @@ namespace TBRBooker.Model.Entities
         {
             var doc = base.GetAddUpdateDoc();
 
-            doc["directoryName"] = DirectoryName();
+            //fields we will likely want to report on
+            doc["leadSource"] = LeadSource.ToString();
 
+            //for customer lookup functionality
+            doc["directoryName"] = DirectoryName();
+            
             return doc;
         }
 
@@ -80,6 +87,27 @@ namespace TBRBooker.Model.Entities
             //    companyName = CompanyName;
             //}
 
+            var name = SmartName();
+
+            if (!string.IsNullOrEmpty(EmailAddress))
+            {
+                name += "; " + EmailAddress;
+            }
+            if (!string.IsNullOrEmpty(PrimaryNumber))
+            {
+                name += "; " + PrimaryNumber;
+            }
+            if (!string.IsNullOrEmpty(SecondaryNumber))
+            {
+                name += "; " + SecondaryNumber;
+            }
+
+
+            return name;
+        }
+
+        public string SmartName()
+        {
             string name = "";
 
             if (string.IsNullOrEmpty(LastName))
@@ -101,21 +129,19 @@ namespace TBRBooker.Model.Entities
                 name += " from " + CompanyName;
             }
 
-            if (!string.IsNullOrEmpty(EmailAddress))
-            {
-                name += "; " + EmailAddress;
-            }
-            if (!string.IsNullOrEmpty(PrimaryNumber))
-            {
-                name += "; " + PrimaryNumber;
-            }
+            return name;
+        }
+
+        public string SmartPhone()
+        {
+            string phone = PrimaryNumber;
             if (!string.IsNullOrEmpty(SecondaryNumber))
             {
-                name += "; " + SecondaryNumber;
+                if (!string.IsNullOrEmpty(PrimaryNumber))
+                    phone += ", ";
+                phone += SecondaryNumber;
             }
-
-
-            return name;
+            return phone;
         }
     }
 }

@@ -9,22 +9,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Model.Entities;
 using TBRBooker.Model.DTO;
+using TBRBooker.Business;
 
 namespace TBRBooker.FrontEnd
 {
     public partial class DayPanel : UserControl
     {
 
+        private MainFrm _owner;
         private DateTime _day;
         private List<CalendarItemDTO> _items;
         private bool _showCancelled;
 
-        public DayPanel(DateTime day, List<CalendarItemDTO> items, bool showCancelled)
+        public DayPanel(DateTime day, List<CalendarItemDTO> items, bool showCancelled,
+            MainFrm owner)
         {
             InitializeComponent();
 
+            _owner = owner;
             _day = day;
-            _items = items;
+            _items = items.OrderBy(x => x.BookingTime).ToList();
             _showCancelled = showCancelled;
 
             dateLbl.Text = day.Day.ToString();
@@ -36,7 +40,7 @@ namespace TBRBooker.FrontEnd
         {
             for (int i = 0; i < _items.Count; i++)
             {
-                var slot = new BookingSlotPnl(_items[i]);
+                var slot = new BookingSlotPnl(_items[i], _owner);
                 Controls.Add(slot);
                 slot.Location = new Point(0, i * (slot.Height + 2));
                 var divider = new Label()
@@ -54,9 +58,20 @@ namespace TBRBooker.FrontEnd
 
         private void addLeadBtn_Click(object sender, EventArgs e)
         {
-            var booking = new Booking() { BookingDate = _day };
-            var frm = new BookingFrm(null);
-            frm.Show();
+            var booking = new Booking() {
+                Id = BookingBL.GetNextBookingNum(),
+                BookingDate = _day,
+                IsNewBooking = true,
+                Status = Model.Enums.BookingStates.OpenEnquiry,
+                Priority = Model.Enums.BookingPriorities.Standard,
+                PaymentHistory = new List<Payment>(),
+                Service = new Service()
+                {
+                    ServiceType = Model.Enums.ServiceTypes.NotSet,
+                    PriceItems = new List<PriceItem>(),
+                }
+            };
+            _owner.ShowBooking(booking);
         }
     }
 }

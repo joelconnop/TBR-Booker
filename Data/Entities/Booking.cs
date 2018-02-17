@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using TBRBooker.Model.DTO;
-using Base;
+using TBRBooker.Base;
 
 namespace TBRBooker.Model.Entities
 {
@@ -24,13 +24,25 @@ namespace TBRBooker.Model.Entities
             TableName = TABLE_NAME;
             CustomerId = "";
             AccountId = "";
-            BirthdayName = "";
+
         }
 
         public override bool IsCacheItems()
         {
             return true;
         }
+
+        //public override bool IsNew()
+        //{
+        //    return IsNewBooking;
+        //}
+
+        /// <summary>
+        /// because in this case we can't rely on checking the Id to decide if new
+        /// (because its created straight away)
+        /// </summary>
+        [JsonIgnore]
+        public bool IsNewBooking { get; set; }
 
         [JsonIgnore]
         public Customer Customer { get; set; }
@@ -50,8 +62,7 @@ namespace TBRBooker.Model.Entities
 
         public BookingPriorities Priority { get; set; }
 
-        public string BirthdayName { get; set; }
-        public int BirthdayAge { get; set; }
+
 
         [Required(ErrorMessage = "Booking Date")]
         public DateTime BookingDate { get; set; }
@@ -70,13 +81,14 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public int Duration { get; set; }
 
-        public int EndTime => BookingTime + Duration;
+        public int EndTime => GetEndTime();
         private int GetEndTime()
         {
             var parsed = Utils.ParseTime(BookingTime);
             var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
-            return int.Parse(ts.Add(new TimeSpan(0, Duration, 0)).ToString("HHmm"));
+            return int.Parse(ts.Add(new TimeSpan(0, Duration, 0)).ToString("hhmm"));
         }
+
 
         [JsonIgnore]
         public int TravelTimeTo { get; set; }
@@ -87,34 +99,46 @@ namespace TBRBooker.Model.Entities
 
 
         public LocationRegions LocationRegion { get; set; }
-        //public string VenueName { get; set; } (part of address)
-        public Address Address { get; set; }
+        public string VenueName { get; set; } //(part of address if using address entity)
+        public string Address { get; set; }
+        //public Address Address { get; set; }
+
 
         /// <summary>
         /// this comes from customer, when relevant (eg. Gold Coast City Council)
         /// </summary>
         public string PurchaseOrderRef { get; set; }
 
-       // public bool IsPaid { get; set; }
+        // public bool IsPaid { get; set; }
 
-        public List<string> Notes { get; set; }
+        public string BookingNotes { get; set; }
 
         public string BookingName => ChooseNameForBooking();
 
         public LostJobReasons LostJobReason { get; set; }
+
+        public decimal AmountPaid => PaymentHistory == null ? 0 : PaymentHistory.Sum(x => x.Amount);
+
+        public string QbListId { get; set; }
+
+        public List<Payment> PaymentHistory {get; set;}
+
+        public bool IsInvoiced { get; set; }
+
+        public bool IsPayOnDay { get; set; }
 
         /// <summary>
         /// Typically the customer's surname or company name but freely changeable.
         /// Needs to be on booking so we can display on calendar without reading other tables
         /// Examples 'Smith', 'Little Jon Party', 'Browns GC', 'PCYC Bris'
         /// </summary>
-        public string BookingNickame { get; set; }
+        public string BookingNickname { get; set; }
 
         private string ChooseNameForBooking()
         {
-            if (!string.IsNullOrEmpty(BookingNickame))
+            if (!string.IsNullOrEmpty(BookingNickname))
             {
-                return BookingNickame;
+                return BookingNickname;
             }
             else if (Account != null)
             {
@@ -151,6 +175,11 @@ namespace TBRBooker.Model.Entities
         //{
 
         //}
+
+            //we will read/write this separately?
+           // [JsonIgnore]
+        public Service Service { get; set; }
+
 
         public override Document GetAddUpdateDoc()
         {
@@ -214,11 +243,13 @@ namespace TBRBooker.Model.Entities
             {
                 case BookingStates.Booked:
                 case BookingStates.Completed:
+                case BookingStates.PaymentDue:
                     return true;
                 case BookingStates.OpenEnquiry:
                 case BookingStates.LostEnquiry:
                     return false;
                 case BookingStates.Cancelled:
+                case BookingStates.CancelledWithoutPayment:
                     return isIncludeCancelled;
                 default:
                     throw new Exception($"Unknown if status {status} is a booking or enquiry.");
@@ -228,7 +259,15 @@ namespace TBRBooker.Model.Entities
         public bool IsOpen()
         {
             //the program should also push user to cancelling/completing old deals/bookings (how about a spank per week for each unresolved booking status)
-            return IsOpenStatus(Status) || BookingDate.AddMonths(1) > DateTime.Now;
+            return IsBookingOpen(Status, BookingDate);
+        }
+
+        public static bool IsBookingOpen(BookingStates status, DateTime bookingDate)
+        {
+            //it atleast has to be 3 months until we have solved the problem of reading older bookings
+            //in a date range, then can probably drop back to 1 month
+            //in MainFrm, the idea is: for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
+            return IsOpenStatus(status) || bookingDate.AddMonths(3) > DateTime.Now;
         }
 
         public static bool IsOpenStatus(BookingStates status)
@@ -238,6 +277,7 @@ namespace TBRBooker.Model.Entities
                 case BookingStates.Completed:
                 case BookingStates.Cancelled:
                 case BookingStates.LostEnquiry:
+                case BookingStates.CancelledWithoutPayment:
                     return false;
                 case BookingStates.OpenEnquiry:
                 case BookingStates.Booked:
@@ -248,7 +288,7 @@ namespace TBRBooker.Model.Entities
             }
         }
 
-        public List<string> ValidationErrors()
+        public string ValidationErrors()
         {
             ValidationContext context = new ValidationContext(this, null, null);
             IList<ValidationResult> validationErrors = new List<ValidationResult>();
@@ -259,28 +299,35 @@ namespace TBRBooker.Model.Entities
                 foreach (ValidationResult result in validationErrors)
                     missing += $"{result.ErrorMessage}, ";
                 missing = missing.Trim().TrimEnd(',');
+                return missing;
             }
 
-                //we are fussier about what is filled in if this is now a booking
-                if (IsBooked())
+            //we are fussier about what is filled in if this is now a booking (but not much fussier, right?)
+            if (IsBooked())
             {
-
+                string missing = "";
+                if (LocationRegion == LocationRegions.NotSet)
+                    missing += "location region, ";
+                if (BookingTime == 0)
+                    missing += "time of service, ";
+                if (Duration == 0)
+                    missing += "service duration, ";
+                if (!string.IsNullOrEmpty(missing))
+                    return $"The booking is missing the following: " + missing.TrimEnd(',');
             }
 
-            return new List<string>();
+            return null;
+        }
+
+        public string Summary()
+        {
+            return $"{Id} {BookingNickname} - {Status.ToString().ToUpper()} - {BookingDate.ToShortDateString()}";
         }
 
         public CalendarItemDTO ToCalendarItem()
         {
-            return new CalendarItemDTO()
-            {
-                BookingNum = int.Parse(Id),
-                BookingName = this.BookingName,
-                BookingDate = this.BookingDate,
-                BookingTime = this.BookingTime,
-                BookingStatus = Status,
-              //  TimeSlot = this.TimeSlot
-            };
+            return new CalendarItemDTO(int.Parse(Id), this.BookingName, this.BookingDate,
+                this.BookingTime, Status);
         }
     }
 }

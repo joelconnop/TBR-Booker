@@ -41,6 +41,9 @@
             this.bookingLbl.Size = new System.Drawing.Size(123, 16);
             this.bookingLbl.TabIndex = 0;
             this.bookingLbl.Text = "17123 Tchakoivsky";
+            this.bookingLbl.Click += new System.EventHandler(this.bookingLbl_Click);
+            this.bookingLbl.MouseEnter += new System.EventHandler(this.bookingLbl_MouseEnter);
+            this.bookingLbl.MouseLeave += new System.EventHandler(this.bookingLbl_MouseLeave);
             // 
             // timeLbl
             // 
@@ -51,6 +54,9 @@
             this.timeLbl.Size = new System.Drawing.Size(39, 16);
             this.timeLbl.TabIndex = 1;
             this.timeLbl.Text = "15:30";
+            this.timeLbl.Click += new System.EventHandler(this.timeLbl_Click);
+            this.timeLbl.MouseEnter += new System.EventHandler(this.timeLbl_MouseEnter);
+            this.timeLbl.MouseLeave += new System.EventHandler(this.timeLbl_MouseLeave);
             // 
             // BookingSlotPnl
             // 
@@ -61,6 +67,9 @@
             this.Name = "BookingSlotPnl";
             this.Size = new System.Drawing.Size(210, 52);
             this.Load += new System.EventHandler(this.BookingSlotPnl_Load);
+            this.MouseEnter += new System.EventHandler(this.BookingSlotPnl_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.BookingSlotPnl_MouseLeave);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BookingSlotPnl_MouseUp);
             this.ResumeLayout(false);
             this.PerformLayout();
 

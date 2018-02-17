@@ -85,10 +85,14 @@ namespace TBRBooker.Business
         {
             if (!IsCheckedTestEnvironment && !IsTestEnvironment)
             {
+                // IsTestEnvironment = true;
+#if DEBUG
                 IsTestEnvironment = true;
-                //string testAssemblyName = "Microsoft.VisualStudio.TestPlatform.TestFramework";
-                //IsTestEnvironment = AppDomain.CurrentDomain.GetAssemblies()
-                //    .Any(a => a.FullName.StartsWith(testAssemblyName));
+#else
+                string testAssemblyName = "Microsoft.VisualStudio.TestPlatform.TestFramework";
+                IsTestEnvironment = AppDomain.CurrentDomain.GetAssemblies()
+                    .Any(a => a.FullName.StartsWith(testAssemblyName));
+#endif
                 IsCheckedTestEnvironment = true;
             }
 
@@ -138,7 +142,7 @@ namespace TBRBooker.Business
             AmazonDynamoDBClient client = GetDynamoDBClient();
             Table table = Table.LoadTable(client, CheckTablenameForTest(itm.TableName));
 
-            if (string.IsNullOrEmpty(itm.Id))
+            if (itm.IsNew())
             {
                 itm.Id = GetUniqueId(itm);
                 var doc = itm.GetAddUpdateDoc();
@@ -163,14 +167,6 @@ namespace TBRBooker.Business
                 table.UpdateItem(doc);
             }
 
-            if (itm is Booking)
-            {
-                var calendar = GetCalendarItems();
-                var calendarItem = calendar.FirstOrDefault(x => x.BookingNum == int.Parse(itm.Id));
-                if (calendarItem != null)
-                    calendar.Remove(calendarItem);
-                calendar.Add((itm as Booking).ToCalendarItem());
-            }
         }
 
         //public static List<T> GetItemsLike<T>(string filterText) where T : BaseItem
@@ -195,7 +191,7 @@ namespace TBRBooker.Business
         //    }
         //}
 
-        public static T ReadItem<T>(string id) where T: BaseItem
+        public static T ReadItem<T>(string id) where T : BaseItem
         {
             var temp = Activator.CreateInstance<T>();
 
@@ -207,7 +203,7 @@ namespace TBRBooker.Business
                     return (T)cache[id];
             }
 
-            AmazonDynamoDBClient client = GetDynamoDBClient();          
+            AmazonDynamoDBClient client = GetDynamoDBClient();
             Table table = Table.LoadTable(client, CheckTablenameForTest(temp.TableName));
             GetItemOperationConfig config = new GetItemOperationConfig()
             {
@@ -252,14 +248,15 @@ namespace TBRBooker.Business
 
         private static List<CalendarItemDTO> Calendar { get; set; }
 
-        public static List<CalendarItemDTO> GetCalendarItems()
+        public static List<CalendarItemDTO> GetCalendarItems(bool isForceRefresh)
         {
-            if (Calendar != null)
+            if (Calendar != null && !isForceRefresh)
             {
                 return Calendar;
             }
 
             Calendar = new List<CalendarItemDTO>();
+            var dbCalendar = new List<CalendarItemDTO>();
 
             AmazonDynamoDBClient client = GetDynamoDBClient();
             var config = new QueryOperationConfig()
@@ -279,17 +276,21 @@ namespace TBRBooker.Business
                 foreach (var doc in search.GetNextSet())
                 {
                     long ticks = Convert.ToInt64(doc["bookingDate"]);
-                    Calendar.Add(new CalendarItemDTO()
-                    {
-                        BookingNum = int.Parse(doc["id"]),
-                        BookingName = doc["bookingName"],
-                        BookingDate = ticks > 0 ? new DateTime(ticks) : default(DateTime),
-                        BookingTime = int.Parse(doc["bookingTime"]),
+                    dbCalendar.Add(new CalendarItemDTO(int.Parse(doc["id"]), doc["bookingName"],
+                        ticks > 0 ? new DateTime(ticks) : default(DateTime),
+                        int.Parse(doc["bookingTime"]),
+                        (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"])));
                         //TimeSlot = (TimeSlots)Enum.Parse(typeof(TimeSlots), doc["timeSlot"]),
-                        BookingStatus = (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"])                        
-                    });
                 }
             } while (!search.IsDone);
+
+            //update calendar items that are out of date due to the passing of time
+            foreach (var item in dbCalendar)
+            {
+                var revisedItem = BookingBL.UpdateCalendarItemAndUnderlyingBooking(item);
+                if (revisedItem != null)    //null means the item should no longer be shown on calendars
+                    Calendar.Add(revisedItem);
+            }
 
             return Calendar;
         }
@@ -320,15 +321,18 @@ namespace TBRBooker.Business
             {
                 foreach (var doc in search.GetNextSet())
                 {
-                    CustomerDirectory.Add(new ExistingCustomerDTO()
-                    {
-                        CustomerId = doc["id"],
-                        DirectoryName = doc["directoryName"],
-                    });
+                    CustomerDirectory.Add(new ExistingCustomerDTO(doc["id"], doc["directoryName"]));
                 }
             } while (!search.IsDone);
 
             return CustomerDirectory;
+        }
+
+        public static List<ErrorLog> SearchErrorLog(string action)
+        {
+            //a bit like GetCustomerDirectory, except there must be an easier way when
+            //we are just grabbing all records for a partitionkey (action)
+            throw new NotImplementedException();
         }
 
         //public static void CleanupBookings()

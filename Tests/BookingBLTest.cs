@@ -26,14 +26,14 @@ namespace Tests
                 Status = BookingStates.LostEnquiry,
                 LostJobReason = LostJobReasons.Test,
                 Priority = BookingPriorities.PossibleTyreKicker,
-                BirthdayName = "little Joel",
-                BirthdayAge = 6,
+                //BirthdayName = "little Joel",
+                //BirthdayAge = 6,
                 BookingDate = DateTime.Now.AddMonths(-3),
                 BookingTime = 1430,
               //  TimeSlot = TimeSlots.PM,
                 LocationRegion = LocationRegions.GoldCoastCentral,
-                Address = new Address("", "1 Test St", "Trashmoar", "Qld", "4214"),
-                BookingNickame = "ConnTest",
+                Address = new Address("", "1 Test St", "Trashmoar", "Qld", "4214").ToString(),
+                BookingNickname = "ConnTest",
             });
 
             //current booking
@@ -43,14 +43,14 @@ namespace Tests
                 Customer = DBBox.ReadItem<Customer>("636448923715552119-29/10/2017-101"),
                 Status = BookingStates.Booked,
                 Priority = BookingPriorities.HighestImportance,
-                BirthdayName = "Child A",
-                BirthdayAge = 10,
+                //BirthdayName = "Child A",
+                //BirthdayAge = 10,
                 BookingDate = DateTime.Now.AddDays(1),
                 BookingTime = 1200,
             //    TimeSlot = TimeSlots.Midday,
                 LocationRegion = LocationRegions.Brisbane,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "BigjobA",
+                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214").ToString(),
+                BookingNickname = "BigjobA",
             });
 
             //open lead
@@ -60,14 +60,14 @@ namespace Tests
                 Customer = DBBox.ReadItem<Customer>("636448923717452227-29/10/2017-102"),
                 Status = BookingStates.OpenEnquiry,
                 Priority = BookingPriorities.Standard,
-                BirthdayName = "Child B",
-                BirthdayAge = 10,
+                //BirthdayName = "Child B",
+                //BirthdayAge = 10,
                 BookingDate = DateTime.Now.AddDays(-7),
                 BookingTime = 1645,
               //  TimeSlot = TimeSlots.PM,
                 LocationRegion = LocationRegions.GoldCoastSouth,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "JobB",
+                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214").ToString(),
+                BookingNickname = "JobB",
             });
 
             //cancelled job
@@ -77,14 +77,14 @@ namespace Tests
                 Customer = DBBox.ReadItem<Customer>("636448923717452227-29/10/2017-102"),
                 Status = BookingStates.Cancelled,
                 Priority = BookingPriorities.KeenCustomer,
-                BirthdayName = "Child C",
-                BirthdayAge = 7,
+                //BirthdayName = "Child C",
+                //BirthdayAge = 7,
                 BookingDate = DateTime.Now.AddDays(3),
                 BookingTime = 900,
              //   TimeSlot = TimeSlots.AM,
                 LocationRegion = LocationRegions.GoldCoastNorth,
-                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214"),
-                BookingNickame = "SomeKidsSurname",
+                Address = new Address("", "2 Test St", "Trashless", "Qld", "4214").ToString(),
+                BookingNickname = "SomeKidsSurname",
             });
         }
 

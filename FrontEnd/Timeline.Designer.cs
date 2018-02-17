@@ -34,6 +34,8 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.setTimeMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.openBookingMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this.timeTmr = new System.Windows.Forms.Timer(this.components);
+            this.selectedLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Box)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -41,12 +43,17 @@
             // Box
             // 
             this.Box.BackColor = System.Drawing.Color.Transparent;
+            this.Box.ContextMenuStrip = this.contextMenuStrip1;
             this.Box.Location = new System.Drawing.Point(3, 3);
             this.Box.Name = "Box";
-            this.Box.Size = new System.Drawing.Size(817, 88);
+            this.Box.Size = new System.Drawing.Size(891, 88);
             this.Box.TabIndex = 0;
             this.Box.TabStop = false;
             this.Box.Click += new System.EventHandler(this.Box_Click);
+            this.Box.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Box_MouseDoubleClick);
+            this.Box.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Box_MouseDown);
+            this.Box.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Box_MouseMove);
+            this.Box.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Box_MouseUp);
             // 
             // contextMenuStrip1
             // 
@@ -77,18 +84,36 @@
             this.openBookingMnu.Text = "Open Booking";
             this.openBookingMnu.Click += new System.EventHandler(this.openBookingMnu_Click);
             // 
+            // timeTmr
+            // 
+            this.timeTmr.Interval = 500;
+            this.timeTmr.Tick += new System.EventHandler(this.timeTmr_Tick);
+            // 
+            // selectedLbl
+            // 
+            this.selectedLbl.AutoSize = true;
+            this.selectedLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectedLbl.Location = new System.Drawing.Point(15, 38);
+            this.selectedLbl.Name = "selectedLbl";
+            this.selectedLbl.Size = new System.Drawing.Size(131, 16);
+            this.selectedLbl.TabIndex = 1;
+            this.selectedLbl.Text = "Selected Booking";
+            this.selectedLbl.Visible = false;
+            // 
             // Timeline
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.selectedLbl);
             this.Controls.Add(this.Box);
             this.Name = "Timeline";
-            this.Size = new System.Drawing.Size(820, 94);
+            this.Size = new System.Drawing.Size(900, 94);
             this.Load += new System.EventHandler(this.Timeline_Load);
             ((System.ComponentModel.ISupportInitialize)(this.Box)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -99,5 +124,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem setTimeMnu;
         private System.Windows.Forms.ToolStripMenuItem openBookingMnu;
+        private System.Windows.Forms.Timer timeTmr;
+        private System.Windows.Forms.Label selectedLbl;
     }
 }

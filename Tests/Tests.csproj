@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="BookingBLTest.cs" />
     <Compile Include="DBBoxTest.cs" />
+    <Compile Include="PriceItemsBLTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

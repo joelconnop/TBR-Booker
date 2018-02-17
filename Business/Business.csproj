@@ -57,7 +57,9 @@
     <Compile Include="BaseItemFactory.cs" />
     <Compile Include="BookingBL.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CustomerBL.cs" />
     <Compile Include="DBBox.cs" />
+    <Compile Include="PriceItemsBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +69,10 @@
     <Analyzer Include="..\packages\AWSSDK.DynamoDBv2.3.3.4.17\analyzers\dotnet\cs\AWSSDK.DynamoDBv2.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Base\Base.csproj">
+      <Project>{cdf1c58e-17f8-4b03-b63d-fba929c03d85}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Data\Model.csproj">
       <Project>{2547a68b-84fa-4dd7-9172-10898d993223}</Project>
       <Name>Model</Name>

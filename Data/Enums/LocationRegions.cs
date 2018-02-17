@@ -14,7 +14,7 @@ namespace TBRBooker.Model.Enums
         GoldCoastNorth,
         GoldCoastHinterland,
         Logan,
-        Ipsich,
+        Ipswich,
         Brisbane,
         BeyondBrisbane
     }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using TBRBooker.Business;
 using TBRBooker.Model.Enums;
 using TBRBooker.Model.Entities;
+using TBRBooker.Base;
 
 namespace TBRBooker.FrontEnd
 {
@@ -18,7 +19,8 @@ namespace TBRBooker.FrontEnd
         //private 
         private DayPanel[,] _days;
         private DateTime _calendarStartDate;
-
+        private BookingsFrm _bookingsFrm;
+        private int _screenId;
 
         public MainFrm()
         {
@@ -30,12 +32,15 @@ namespace TBRBooker.FrontEnd
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            UpdateDate();
+            _screenId = Settings.Inst().MainScreenDefaultId;
+            MoveFormToCurrentScreenId();
+
+            UpdateCalendar();
         }
 
-        private void UpdateDate()
+        public void UpdateCalendar()
         {
-            AddDayPanels();
+            AddDayPanels(false);
 
             //display date range
             string dateRangeStr = _calendarStartDate.ToString("MMM yy");
@@ -67,14 +72,14 @@ namespace TBRBooker.FrontEnd
             return targetInclude.AddDays(-1 * numDaysToSubtract);
         }
 
-        private void AddDayPanels()
+        private void AddDayPanels(bool isForceRefresh)
         {
             daysPanel.Controls.Clear();
             _days = new DayPanel[4,7];
 
             //HACK: parse in date, and have DBBox track which dates have been read.
             //      for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
-            var items = DBBox.GetCalendarItems();
+            var items = DBBox.GetCalendarItems(isForceRefresh);
 
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)
@@ -82,7 +87,8 @@ namespace TBRBooker.FrontEnd
                 for (int j = 0; j <= 6; j++)
                 {
                     var dayPnl = new DayPanel(day, 
-                        items.Where(x => x.BookingDate.DayOfYear == day.DayOfYear).ToList(), true);
+                        items.Where(x => x.BookingDate.DayOfYear == day.DayOfYear).ToList(),
+                        true, this);
                     daysPanel.Controls.Add(dayPnl);
                     dayPnl.Location = new Point(j * (dayPnl.Size.Height + 5) + 5, i * (dayPnl.Size.Width + 5) + 5);
                     _days[i, j] = dayPnl;
@@ -116,20 +122,73 @@ namespace TBRBooker.FrontEnd
 
         private void datePicker_ValueChanged(object sender, EventArgs e)
         {
-            _calendarStartDate = datePicker.Value;
-            UpdateDate();
+            _calendarStartDate = PickCalendarStartDate(datePicker.Value);
+            UpdateCalendar();
         }
 
         private void prevBtn_Click(object sender, EventArgs e)
         {
             _calendarStartDate = _calendarStartDate.AddDays(-7);
-            UpdateDate();
+            UpdateCalendar();
         }
 
         private void nextBtn_Click(object sender, EventArgs e)
         {
             _calendarStartDate = _calendarStartDate.AddDays(7);
-            UpdateDate();
+            UpdateCalendar();
+        }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_bookingsFrm != null)
+            {
+                _bookingsFrm.Quit();
+            }
+            Close();
+        }
+
+        private void switchMonitorBtn_Click(object sender, EventArgs e)
+        {
+            _screenId = _screenId == 0 ? 1 : 0;
+            MoveFormToCurrentScreenId();
+        }
+
+        private void MoveFormToCurrentScreenId()
+        {
+            Screen[] screens = Screen.AllScreens;
+            if (screens.Length > 1)
+            {
+                WindowState = FormWindowState.Normal;
+                Location = screens[_screenId].WorkingArea.Location;
+
+                WindowState = FormWindowState.Maximized;
+            }
+        }
+
+        private void showBookingsBtn_Click(object sender, EventArgs e)
+        {
+            InitBookingsFrm();
+            _bookingsFrm.ShowOnAppropriateMonitor();
+        }
+
+        private void refreshBtn_Click(object sender, EventArgs e)
+        {
+            AddDayPanels(true);
+        }
+
+        private void InitBookingsFrm()
+        {
+            if (_bookingsFrm == null || _bookingsFrm.IsDisposed)
+            {
+                _bookingsFrm = new BookingsFrm(this);
+                _bookingsFrm.Show(this);
+            }
+        }
+
+        public void ShowBooking(Booking booking)
+        {
+            InitBookingsFrm();
+            _bookingsFrm.ShowBooking(booking);
         }
     }
 }

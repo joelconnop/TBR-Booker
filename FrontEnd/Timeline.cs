@@ -8,9 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Model.Entities;
-using Base;
+using TBRBooker.Base;
 using TBRBooker.Business;
 using System.Drawing.Text;
+using System.Diagnostics;
 
 namespace TBRBooker.FrontEnd
 {
@@ -19,40 +20,70 @@ namespace TBRBooker.FrontEnd
 
         private Bitmap _pic;
 
-        private Booking _booking;
+        private BookingsFrm _bookingsFrm;
+        private BookingPnl _owner;
+        private string _bookingId;
         private List<Booking> _others;
 
         private const int _inset = 5;
         private const int _insetGraphY = 20;
-        private Point _lastClick;
-        private Booking _clickedBooking;
+        private int _setTimeStartX;
         private Font _font = new Font("Microsoft Sans Serif", 8);
 
-        public Timeline(Booking booking, List<Booking> others)
+        private bool _isSetTimeMode;
+        private bool _isSettingTime;
+        private Dictionary<int, (int Time, int Mins)> _timeScale;
+        private int _lastX;
+        private Booking _lastBooking;
+        private int _lastBookingStartX;
+        
+        public DateTime BookingDate { get; set; }
+        public int Time { get; set; }
+        public int Duration { get; set; }
+
+
+        public Timeline(Booking booking, BookingsFrm bookingsFrm, BookingPnl owner)
         {
             InitializeComponent();
 
-            _booking = booking;
-            _others = others;
-            //_others = DBBox.GetItemCache()[Booking.TABLE_NAME]
-            //    .Where(x as Booking => 
+            _bookingsFrm = bookingsFrm;
+            _owner = owner;
+            _bookingId = booking.Id;
 
-            _pic = new Bitmap(Box.Size.Width, Box.Size.Height);
-            Box.Image = _pic;
+            BookingDate = booking.BookingDate;
+            Time = booking.BookingTime;
+            Duration = booking.Duration;
+            _isSettingTime = false;
+            _isSetTimeMode = booking.Duration == 0;
+            _timeScale = new Dictionary<int, (int Time, int Mins)>();
+
         }
 
         private void Timeline_Load(object sender, EventArgs e)
         {
-            Redraw(_booking, _others);
+            UpdateOtherBookings();
+        }
+
+        public void UpdateOtherBookings()
+        {
+            _others = new List<Booking>();
+            foreach (var summary in DBBox.GetCalendarItems(false)
+                .Where(x => x.BookingDate.ToShortDateString().Equals(BookingDate.ToShortDateString())
+                && !x.BookingNum.ToString().Equals(_bookingId)))
+            {
+                _others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
+            }
+            Redraw();
         }
 
 
-
-        public void Redraw(Booking booking, List<Booking> others)
+        public void Redraw()
         {
-            _booking = booking;
-            _others = others;
+            if (!Enabled)
+                return;
 
+            _pic = new Bitmap(Box.Size.Width, Box.Size.Height);
+            Box.Image = _pic;
             var g = Graphics.FromImage(_pic);
 
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
@@ -60,10 +91,19 @@ namespace TBRBooker.FrontEnd
             //_others.ForEach(x => DrawBooking(g, x));
             //DrawBooking(g, booking);
 
-
-            DrawTimeline(g);
-
-            g.Dispose();
+            try
+            {
+                DrawTimeline(g);
+            }
+            catch (Exception ex)
+            {
+                Enabled = false;
+                ErrorHandler.HandleError(ParentForm, "Unexpected error displaying time line", ex);
+            }
+            finally
+            {
+                g.Dispose();
+            }
         }
 
         private int GetTimeX(int time)
@@ -77,7 +117,7 @@ namespace TBRBooker.FrontEnd
             if (parsed.Hour < 9)
             {
                 hourScale /= 9; //midnight to 9am
-                hourScale += hourScale * parsed.Hour;
+                x += Convert.ToInt32(hourScale * parsed.Hour);
             }
             else if (parsed.Hour > 17)
             {
@@ -95,12 +135,19 @@ namespace TBRBooker.FrontEnd
             return x;
         }
 
+        private int GetBarHeight()
+        {
+            return Box.Height - 2 * _insetGraphY;
+        }
+
         private void DrawTimeline(Graphics g)
         {
             int lastx = 0;
-            var height = Box.Height - 2 * _insetGraphY;
+            var height = GetBarHeight();
+
+            bool isNeedToSetScale = _timeScale.Count == 0;
             
-            for (int i = 1; i <= 2399; i++)
+            for (int i = 0; i <= 2399; i++)
             {
                 //the loop isn't great; need to skip numbers that aren't legit minutes
                 if (i - (i / 100 * 100) >= 60)
@@ -108,36 +155,67 @@ namespace TBRBooker.FrontEnd
 
                 var x = GetTimeX(i);
                 if (x == lastx)
-                    continue;   //ie out of hours can be the same number again
-                g.FillRectangle(GetBrush(i), 
+                    continue;   //ie out of hours can be the same number again    
+
+                var parsed = Utils.ParseTime(i);
+
+                g.FillRectangle(FindBookingsHereAndGetBrush(g, i, x),
                     new Rectangle(new Point(lastx, _insetGraphY), new Size(x - lastx, height)));
                 lastx = x;
 
+                //first iteration
+                if (_timeScale.Count == 0)
+                {
+                    _timeScale.Add(0, (i, AllTheMinutesForAllTheHours(parsed)));
+                }
                 //15 min notch
-                var parsed = Utils.ParseTime(i);
-                if (parsed.Minute % 15 == 0 && parsed.Hour >= 9 && parsed.Hour <= 17
+                else if (parsed.Minute % 15 == 0 && parsed.Hour >= 9 && parsed.Hour <= 17
                     && (parsed.Hour < 17 || parsed.Minute == 0))
                 {
+                    if (isNeedToSetScale)
+                        _timeScale.Add(x, (i, AllTheMinutesForAllTheHours(parsed)));
+
                     g.DrawLine(Pens.Black, 
                         new Point(x, Box.Height - _insetGraphY), 
                         new Point(x, Box.Height - _insetGraphY / 2));
                     if (parsed.Minute == 0)
                     {
-                        string hourMark = parsed.Hour + ":00";
+                        string hourMark = Utils.DisplayHour(parsed.Hour) + ":00";
                         var drawStr = g.MeasureString(hourMark, _font, 50);
                         g.DrawString(hourMark, _font, Brushes.Black,
                             new PointF(x - drawStr.Width / 2, _inset));
                     }
                 }
+
             }
+
+            Box.Refresh();
         }
 
-        private Brush GetBrush(int time)
+        private int AllTheMinutesForAllTheHours((int Hour, int Minute) parsedTime)
+        {
+            return parsedTime.Hour * 60 + parsedTime.Minute;
+        }
+
+        private Brush FindBookingsHereAndGetBrush(Graphics g, int time, int timeX)
         {
             var bookings = BookingBL.GetClashBookings(_others, time, time);
 
-            var isThisBooking = BookingBL.GetClashBookings(
-                new List<Booking> { _booking }, time, time).Count == 1;
+            //show summary for the last booking, once we have finished drawing its graph
+            if (_lastBooking != null && (bookings.Count == 0 || bookings[0] != _lastBooking))
+            {
+                g.DrawString($"{_lastBooking.BookingNickname} - {_lastBooking.LocationRegion}",
+                    _font, Brushes.Black, new PointF(timeX, _insetGraphY + 5));
+                _lastBooking = null;
+            }
+            if (_lastBooking == null && bookings.Count > 0)
+            {
+                _lastBooking = bookings[0];
+                _lastBookingStartX = timeX + 10;
+            }
+
+            var isThisBooking = Duration > 0 && BookingBL.GetClashBookings(new List<Booking> {
+                new Booking() { BookingTime = Time, Duration = Duration } }, time, time).Count == 1;
 
             if (isThisBooking && bookings.Count > 0)
             {
@@ -145,7 +223,7 @@ namespace TBRBooker.FrontEnd
             }
 
             if (isThisBooking)
-                return Brushes.Green;
+                return Brushes.LimeGreen;
 
             if (bookings.Count > 0)
             {
@@ -153,7 +231,7 @@ namespace TBRBooker.FrontEnd
                 {
                     return bookings.All(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
                 }
-                return bookings[0].IsBooked() ? Brushes.MediumBlue : Brushes.DimGray;
+                return bookings[0].IsBooked() ? new SolidBrush(Color.FromArgb(35, 168, 239)) : Brushes.DimGray;
             }
 
             return Brushes.White;
@@ -161,31 +239,114 @@ namespace TBRBooker.FrontEnd
 
         private void Box_Click(object sender, EventArgs e)
         {
-            _lastClick = MousePosition;
-            //detect booking click!
-            _clickedBooking = null;
-            if (_clickedBooking == _booking)
-                _clickedBooking = null; //meaningless to click the booking already on this form
+            if (_isSettingTime)
+                return;
+
+            var clickedBooking = DetectClickedBooking();
+            if (clickedBooking != null)
+            {
+                selectedLbl.Text = clickedBooking.Summary();
+                selectedLbl.Left = MousePosition.X;
+                selectedLbl.Visible = true;
+            }
+            else
+            {
+                selectedLbl.Visible = false;
+            }
+        }
+
+        private Booking DetectClickedBooking()
+        {
+            var time = _timeScale.OrderBy(x => Math.Abs(x.Key - MousePosition.X)).First().Value.Time;
+            return BookingBL.GetClashBookings(_others, time, time).FirstOrDefault();
         }
 
         private void contextMenuStrip1_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
-            _clickedBooking = null;
+            
         }
 
         private void setTimeMnu_Click(object sender, EventArgs e)
         {
-
+            _isSetTimeMode = true;
+            _setTimeStartX = -1;
         }
 
         private void openBookingMnu_Click(object sender, EventArgs e)
         {
-            //more like, this frm should have a reference to the master booking frm,
-            //and add/show a booking tab to it
-            var bookingFrm = new BookingFrm(_clickedBooking);
-            bookingFrm.Show();
+            var clickedBooking = DetectClickedBooking();
+            if (clickedBooking != null)
+                _bookingsFrm.ShowBooking(BookingBL.GetBookingFull(clickedBooking.Id), _bookingId);
         }
 
+        private void Box_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right || !_isSetTimeMode || e.X < _timeScale.First().Key || e.X > _timeScale.Last().Key)
+                return;
 
+            if (_isSettingTime)
+            {
+                MessageBox.Show("Unexpected state during setting time");
+                return;
+            }
+
+            try
+            {
+                _setTimeStartX = _timeScale.OrderBy(x => Math.Abs(x.Key - e.X)).First().Key;
+                _lastX = _setTimeStartX;
+                Time = _timeScale[_setTimeStartX].Time;
+                _isSettingTime = true;
+                Duration = 15;
+                Redraw();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(ParentForm, "Failed to capture time slot", ex, true);
+                _isSetTimeMode = _isSettingTime = false;
+            }
+        }
+
+        private void Box_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            //open other booking
+            MessageBox.Show("double clicked.");
+        }
+
+        private void Box_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isSettingTime || e.X <= _setTimeStartX)
+                return;
+
+            var currentX = _timeScale.OrderBy(x => Math.Abs(x.Key - e.X)).First().Key;
+            if (currentX != _lastX)
+            {
+                Duration = _timeScale[currentX].Mins - _timeScale[_setTimeStartX].Mins;
+                Redraw();
+            }
+            _lastX = currentX;
+
+            //if (!timeTmr.Enabled)
+            //{
+            //    timeTmr.Enabled = true;
+            //    timeTmr.Start();
+            //}
+        }
+
+        private void Box_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (_isSettingTime)
+            {
+                _isSetTimeMode = _isSettingTime = false;
+                _owner.SetTime(Time, Duration);
+            }
+        }
+
+        private void timeTmr_Tick(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Drawing!");
+            Redraw();
+            timeTmr.Stop();
+            timeTmr.Enabled = false;
+        }
     }
 }

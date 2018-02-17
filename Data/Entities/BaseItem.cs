@@ -20,6 +20,11 @@ namespace TBRBooker.Model.Entities
 
         public abstract bool IsCacheItems();
 
+        public virtual bool IsNew()
+        {
+            return string.IsNullOrEmpty(Id);
+        }
+
         //below is a poor man's transaction attempt. At this stage we don't have transactions.
         //[JsonIgnore]
         //private bool _isNewItem { get; set; }
@@ -45,23 +50,22 @@ namespace TBRBooker.Model.Entities
             return doc;
         }
 
+        //replaced by GetAddUpdateDoc
+        //public virtual Dictionary<string, AttributeValue> WriteAttributes()
+        //{
+        //    var atts = new Dictionary<string, AttributeValue>();
 
-        public virtual Dictionary<string, AttributeValue> WriteAttributes()
-        {
-            //TODO: implement it this way instead: https://aws.amazon.com/blogs/developer/dynamodb-series-document-model/
-            var atts = new Dictionary<string, AttributeValue>();
+        //    AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
+        //    if (!string.IsNullOrEmpty(FilterName))
+        //    {
+        //        AddAttribute(atts, FilterName, new AttributeValue { S = Filter.ToString() }, Filter.ToString());
+        //        throw new Exception("this should be INSTEAD of an Id, right? see https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/");
+        //    }
+        //    var json = JsonConvert.SerializeObject(this);
+        //    AddAttribute(atts, "json", new AttributeValue { S = json }, json);
 
-            AddAttribute(atts, "id", new AttributeValue { S = Id }, Id);
-            if (!string.IsNullOrEmpty(FilterName))
-            {
-                AddAttribute(atts, FilterName, new AttributeValue { S = Filter.ToString() }, Filter.ToString());
-                throw new Exception("this should be INSTEAD of an Id, right? see https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/");
-            }
-            var json = JsonConvert.SerializeObject(this);
-            AddAttribute(atts, "json", new AttributeValue { S = json }, json);
-
-            return atts;
-        }
+        //    return atts;
+        //}
 
         public virtual UpdateItemRequest GetUpdateRequest()
         {

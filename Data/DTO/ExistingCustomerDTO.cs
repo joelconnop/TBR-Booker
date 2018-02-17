@@ -8,7 +8,13 @@ namespace TBRBooker.Model.DTO
 {
     public class ExistingCustomerDTO
     {
-        public string CustomerId { get; set; }
-        public string DirectoryName { get; set; }
+        public readonly string CustomerId;
+        public readonly string DirectoryName;
+
+        public ExistingCustomerDTO(string id, string name)
+        {
+            CustomerId = id;
+            DirectoryName = name;
+        }
     }
 }
