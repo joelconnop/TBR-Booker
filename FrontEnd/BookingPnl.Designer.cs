@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.timePick = new System.Windows.Forms.DateTimePicker();
             this.label13 = new System.Windows.Forms.Label();
             this.addressFld = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -38,7 +37,6 @@
             this.label26 = new System.Windows.Forms.Label();
             this.servicePaxFld = new System.Windows.Forms.TextBox();
             this.label25 = new System.Windows.Forms.Label();
-            this.crocPic = new System.Windows.Forms.PictureBox();
             this.serviceAddCrocChk = new System.Windows.Forms.CheckBox();
             this.partyPnl = new System.Windows.Forms.Panel();
             this.partyAgeFld = new System.Windows.Forms.TextBox();
@@ -116,7 +114,6 @@
             this.titleLbl = new System.Windows.Forms.Label();
             this.contactSearchChk = new System.Windows.Forms.CheckBox();
             this.contactResetBtn = new System.Windows.Forms.Button();
-            this.contactEmblemPic = new System.Windows.Forms.PictureBox();
             this.copyLastToNickBtn = new System.Windows.Forms.Button();
             this.contactEmailFld = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
@@ -139,8 +136,13 @@
             this.savedFld = new System.Windows.Forms.Label();
             this.savedTmr = new System.Windows.Forms.Timer(this.components);
             this.completeBtn = new System.Windows.Forms.Button();
+            this.label29 = new System.Windows.Forms.Label();
+            this.crocPic = new System.Windows.Forms.PictureBox();
+            this.contactEmblemPic = new System.Windows.Forms.PictureBox();
+            this.startPick = new TBRBooker.FrontEnd.TimePicker();
+            this.endPick = new TBRBooker.FrontEnd.TimePicker();
+            this.timeSwitchChk = new System.Windows.Forms.CheckBox();
             this.serviceGrp.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
             this.displayPnl.SuspendLayout();
             this.addressGrp.SuspendLayout();
@@ -151,22 +153,10 @@
             this.pricingMnu.SuspendLayout();
             this.pricingGrp.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).BeginInit();
             this.contactGrp.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).BeginInit();
             this.SuspendLayout();
-            // 
-            // timePick
-            // 
-            this.timePick.Checked = false;
-            this.timePick.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.timePick.Location = new System.Drawing.Point(249, 43);
-            this.timePick.Name = "timePick";
-            this.timePick.ShowUpDown = true;
-            this.timePick.Size = new System.Drawing.Size(78, 20);
-            this.timePick.TabIndex = 1;
-            this.timePick.Value = new System.DateTime(2017, 11, 1, 0, 0, 0, 0);
-            this.timePick.ValueChanged += new System.EventHandler(this.timePick_ValueChanged);
-            this.timePick.KeyDown += new System.Windows.Forms.KeyEventHandler(this.timePick_KeyDown);
             // 
             // label13
             // 
@@ -244,17 +234,6 @@
             this.label25.Size = new System.Drawing.Size(273, 13);
             this.label25.TabIndex = 6;
             this.label25.Text = "PAX (approximation only, use Pricing for related charges)";
-            // 
-            // crocPic
-            // 
-            this.crocPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.crocPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.crocodile;
-            this.crocPic.Location = new System.Drawing.Point(765, 50);
-            this.crocPic.Name = "crocPic";
-            this.crocPic.Size = new System.Drawing.Size(150, 75);
-            this.crocPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.crocPic.TabIndex = 4;
-            this.crocPic.TabStop = false;
             // 
             // serviceAddCrocChk
             // 
@@ -488,9 +467,9 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(246, 26);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(81, 13);
+            this.label15.Size = new System.Drawing.Size(55, 13);
             this.label15.TabIndex = 5;
-            this.label15.Text = "Time of Service";
+            this.label15.Text = "Start Time";
             // 
             // label17
             // 
@@ -504,10 +483,13 @@
             // dateGrp
             // 
             this.dateGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.dateGrp.Controls.Add(this.timeSwitchChk);
+            this.dateGrp.Controls.Add(this.startPick);
+            this.dateGrp.Controls.Add(this.endPick);
+            this.dateGrp.Controls.Add(this.label29);
             this.dateGrp.Controls.Add(this.durationDescFld);
             this.dateGrp.Controls.Add(this.label24);
             this.dateGrp.Controls.Add(this.durationFld);
-            this.dateGrp.Controls.Add(this.timePick);
             this.dateGrp.Controls.Add(this.datePick);
             this.dateGrp.Controls.Add(this.label15);
             this.dateGrp.Controls.Add(this.label17);
@@ -522,7 +504,7 @@
             // durationDescFld
             // 
             this.durationDescFld.AutoSize = true;
-            this.durationDescFld.Location = new System.Drawing.Point(450, 49);
+            this.durationDescFld.Location = new System.Drawing.Point(555, 49);
             this.durationDescFld.Name = "durationDescFld";
             this.durationDescFld.Size = new System.Drawing.Size(96, 13);
             this.durationDescFld.TabIndex = 3;
@@ -531,7 +513,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(368, 26);
+            this.label24.Location = new System.Drawing.Point(473, 26);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(47, 13);
             this.label24.TabIndex = 6;
@@ -539,7 +521,7 @@
             // 
             // durationFld
             // 
-            this.durationFld.Location = new System.Drawing.Point(367, 43);
+            this.durationFld.Location = new System.Drawing.Point(472, 43);
             this.durationFld.Name = "durationFld";
             this.durationFld.Size = new System.Drawing.Size(77, 20);
             this.durationFld.TabIndex = 2;
@@ -1007,18 +989,6 @@
             this.contactResetBtn.UseVisualStyleBackColor = true;
             this.contactResetBtn.Click += new System.EventHandler(this.contactResetBtn_Click);
             // 
-            // contactEmblemPic
-            // 
-            this.contactEmblemPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.contactEmblemPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.customer_new;
-            this.contactEmblemPic.Location = new System.Drawing.Point(809, 16);
-            this.contactEmblemPic.Name = "contactEmblemPic";
-            this.contactEmblemPic.Size = new System.Drawing.Size(106, 106);
-            this.contactEmblemPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.contactEmblemPic.TabIndex = 19;
-            this.contactEmblemPic.TabStop = false;
-            this.contactEmblemPic.Click += new System.EventHandler(this.contactEmblemPic_Click);
-            // 
             // copyLastToNickBtn
             // 
             this.copyLastToNickBtn.Location = new System.Drawing.Point(333, 38);
@@ -1232,6 +1202,62 @@
             this.completeBtn.UseVisualStyleBackColor = true;
             this.completeBtn.Click += new System.EventHandler(this.completeBtn_Click);
             // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(356, 26);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(52, 13);
+            this.label29.TabIndex = 8;
+            this.label29.Text = "End Time";
+            // 
+            // crocPic
+            // 
+            this.crocPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.crocPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.crocodile;
+            this.crocPic.Location = new System.Drawing.Point(765, 50);
+            this.crocPic.Name = "crocPic";
+            this.crocPic.Size = new System.Drawing.Size(150, 75);
+            this.crocPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.crocPic.TabIndex = 4;
+            this.crocPic.TabStop = false;
+            // 
+            // contactEmblemPic
+            // 
+            this.contactEmblemPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.contactEmblemPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.customer_new;
+            this.contactEmblemPic.Location = new System.Drawing.Point(809, 16);
+            this.contactEmblemPic.Name = "contactEmblemPic";
+            this.contactEmblemPic.Size = new System.Drawing.Size(106, 106);
+            this.contactEmblemPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.contactEmblemPic.TabIndex = 19;
+            this.contactEmblemPic.TabStop = false;
+            this.contactEmblemPic.Click += new System.EventHandler(this.contactEmblemPic_Click);
+            // 
+            // startPick
+            // 
+            this.startPick.Location = new System.Drawing.Point(242, 42);
+            this.startPick.Name = "startPick";
+            this.startPick.Size = new System.Drawing.Size(84, 27);
+            this.startPick.TabIndex = 10;
+            // 
+            // endPick
+            // 
+            this.endPick.Location = new System.Drawing.Point(359, 42);
+            this.endPick.Name = "endPick";
+            this.endPick.Size = new System.Drawing.Size(84, 27);
+            this.endPick.TabIndex = 9;
+            // 
+            // timeSwitchChk
+            // 
+            this.timeSwitchChk.AutoSize = true;
+            this.timeSwitchChk.Location = new System.Drawing.Point(670, 42);
+            this.timeSwitchChk.Name = "timeSwitchChk";
+            this.timeSwitchChk.Size = new System.Drawing.Size(155, 17);
+            this.timeSwitchChk.TabIndex = 11;
+            this.timeSwitchChk.Text = "Switch to precise time input";
+            this.timeSwitchChk.UseVisualStyleBackColor = true;
+            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1258,7 +1284,6 @@
             this.Load += new System.EventHandler(this.BookingPnl_Load);
             this.serviceGrp.ResumeLayout(false);
             this.serviceGrp.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).EndInit();
             this.partyPnl.ResumeLayout(false);
             this.partyPnl.PerformLayout();
             this.displayPnl.ResumeLayout(false);
@@ -1276,17 +1301,16 @@
             this.pricingGrp.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).EndInit();
             this.contactGrp.ResumeLayout(false);
             this.contactGrp.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DateTimePicker timePick;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox addressFld;
         private System.Windows.Forms.Label label11;
@@ -1396,5 +1420,9 @@
         private System.Windows.Forms.Timer savedTmr;
         private System.Windows.Forms.ListBox priceHistoryLst;
         private System.Windows.Forms.Button completeBtn;
+        private System.Windows.Forms.Label label29;
+        private TimePicker startPick;
+        private TimePicker endPick;
+        private System.Windows.Forms.CheckBox timeSwitchChk;
     }
 }

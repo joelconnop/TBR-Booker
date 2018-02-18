@@ -26,3 +26,4 @@ E:\Programming\TBR Booker\Tests\obj\Debug\Tests.pdb
 E:\Programming\TBR Booker\Tests\bin\Debug\Shouldly.dll
 E:\Programming\TBR Booker\Tests\bin\Debug\Base.dll
 E:\Programming\TBR Booker\Tests\bin\Debug\Base.pdb
+E:\Programming\TBR Booker\Tests\bin\Debug\ja\Base.resources.dll

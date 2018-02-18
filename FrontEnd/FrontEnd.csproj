@@ -93,6 +93,12 @@
     <Compile Include="Timeline.Designer.cs">
       <DependentUpon>Timeline.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimePicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TimePicker.Designer.cs">
+      <DependentUpon>TimePicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="ValidatingTextbox.cs" />
     <EmbeddedResource Include="BookingFrm.resx">
       <DependentUpon>BookingFrm.cs</DependentUpon>
@@ -124,6 +130,9 @@
     </Compile>
     <EmbeddedResource Include="Timeline.resx">
       <DependentUpon>Timeline.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimePicker.resx">
+      <DependentUpon>TimePicker.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

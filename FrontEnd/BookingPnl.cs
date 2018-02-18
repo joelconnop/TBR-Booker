@@ -89,7 +89,8 @@ namespace TBRBooker.FrontEnd
             //configure time
             _isChangingTime = true;
             datePick.Value = _booking.BookingDate;
-            timePick.CustomFormat = "h:mm tt";
+            //timePick.CustomFormat = "h:mm tt";
+            startPick.SetEventHandler(StartTimeChanged);
             SetTime(_booking.BookingTime, _booking.Duration);
 
             Timeline = new Timeline(_booking, _owner, this);
@@ -323,23 +324,7 @@ namespace TBRBooker.FrontEnd
             return pastBookings;
         }
 
-        private void timePick_KeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            { 
-            if (e.KeyCode == Keys.Down)
-                timePick.Value = timePick.Value.AddMinutes(-15);
-            else if (e.KeyCode == Keys.Up)
-                timePick.Value = timePick.Value.AddMinutes(15);
-            e.Handled = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to change the time", ex);
-            }
-        }
-
-        private void timePick_ValueChanged(object sender, EventArgs e)
+        public void StartTimeChanged(TimePicker.TimePickerValue tpv)
         {
             try
             {
@@ -348,7 +333,7 @@ namespace TBRBooker.FrontEnd
 
                 if (Timeline != null)
                 {
-                    Timeline.Time = Utils.TimeInt(timePick.Value);
+                    Timeline.Time = tpv.Value;
                     Timeline.Redraw();
                 }
             }
@@ -357,6 +342,41 @@ namespace TBRBooker.FrontEnd
                 ErrorHandler.HandleError(this, "Failed to update the timeline", ex);
             }
         }
+
+        //private void timePick_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    try
+        //    { 
+        //    if (e.KeyCode == Keys.Down)
+        //        timePick.Value = timePick.Value.AddMinutes(-15);
+        //    else if (e.KeyCode == Keys.Up)
+        //        timePick.Value = timePick.Value.AddMinutes(15);
+        //    e.Handled = true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorHandler.HandleError(this, "Failed to change the time", ex);
+        //    }
+        //}
+
+        //private void timePick_ValueChanged(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (_isChangingTime)
+        //            return;
+
+        //        if (Timeline != null)
+        //        {
+        //            Timeline.Time = Utils.TimeInt(timePick.Value);
+        //            Timeline.Redraw();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorHandler.HandleError(this, "Failed to update the timeline", ex);
+        //    }
+        //}
 
         private void durationFld_TextChanged(object sender, EventArgs e)
         {
@@ -401,10 +421,13 @@ namespace TBRBooker.FrontEnd
         public void SetTime(int time, int duration)
         {
             _isChangingTime = true;
-            // var parsed = Utils.ParseTime(time);
-            //timePick.Value = new DateTime(2000, 1, 1, parsed.Hour, parsed.Minute, 0, 0);
-            timePick.Value = DateTime.Parse("1/1/2000 12:00:00 AM") 
-                + Booking.GetBookingTime(time);
+            //// var parsed = Utils.ParseTime(time);
+            ////timePick.Value = new DateTime(2000, 1, 1, parsed.Hour, parsed.Minute, 0, 0);
+            //timePick.Value = DateTime.Parse("1/1/2000 12:00:00 AM") 
+            //    + Booking.GetBookingTime(time);
+
+            startPick.InitTimes(600, 1900, 15, time);
+
             durationFld.Text = duration.ToString();
             durationDescFld.Text = "(" + Utils.DurationToDisplayStr(duration) + ")";
             _isChangingTime = false;
@@ -750,7 +773,7 @@ namespace TBRBooker.FrontEnd
 
             if (!datePick.Value.ToShortDateString().Equals(_booking.BookingDate.ToShortDateString()))
                 unsavedChanges += "booking date, ";
-            if (Utils.TimeInt(timePick.Value) != _booking.BookingTime)
+            if (startPick.GetSelected().Value != _booking.BookingTime)
                 unsavedChanges += "booking time, ";
             if (!durationFld.Text.Equals(_booking.Duration.ToString()))
                 unsavedChanges += "duration, ";
@@ -840,7 +863,7 @@ namespace TBRBooker.FrontEnd
                 //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
                 _booking.BookingNickname = contactNicknameFld.Text;
                 _booking.BookingDate = datePick.Value;
-                _booking.BookingTime = Utils.TimeInt(timePick.Value);
+                _booking.BookingTime = startPick.GetSelected().Value;
                 _booking.Duration = int.Parse(durationFld.Text);
 
                 _booking.LocationRegion = (LocationRegions)addressRegionBox.SelectedValue;

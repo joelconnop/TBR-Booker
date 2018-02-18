@@ -48,9 +48,13 @@ namespace TBRBooker.Base
 
         public static string DisplayTime(int time)
         {
-            var parsed = ParseTime(time);
+            return DisplayTime(ParseTime(time));
+        }
+
+        public static string DisplayTime((int Hour, int Minute) parsed)
+        {
             var amPm = Settings.Inst().Is24HourTime ? "" : (parsed.Hour >= 12 ? " PM" : " AM");
-            return $"{DisplayHour(parsed.Hour)}:{(parsed.Minute == 0 ? "00" : parsed.Minute.ToString())}{amPm}"; 
+            return $"{DisplayHour(parsed.Hour)}:{(parsed.Minute == 0 ? "00" : parsed.Minute.ToString())}{amPm}";
         }
 
         public static string DurationToDisplayStr(int minutes)
@@ -63,6 +67,16 @@ namespace TBRBooker.Base
             if (min > 0)
                 display += " " + min + " min";
             return display.Trim();
+        }
+
+        public int MinuteDifference(int time1, int time2)
+        {
+            var time1Parsed = ParseTime(time1);
+            var time2Parsed = ParseTime(time2);
+
+            int diff = (time2Parsed.Hour - time1Parsed.Hour) * 60;
+            diff += time2Parsed.Minute - time1Parsed.Minute;
+            return diff;
         }
 
     }

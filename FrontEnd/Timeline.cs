@@ -146,6 +146,8 @@ namespace TBRBooker.FrontEnd
             var height = GetBarHeight();
 
             bool isNeedToSetScale = _timeScale.Count == 0;
+            var hourPen = new Pen(Brushes.Black);
+            hourPen.Width = 3;
             
             for (int i = 0; i <= 2399; i++)
             {
@@ -175,7 +177,7 @@ namespace TBRBooker.FrontEnd
                     if (isNeedToSetScale)
                         _timeScale.Add(x, (i, AllTheMinutesForAllTheHours(parsed)));
 
-                    g.DrawLine(Pens.Black, 
+                    g.DrawLine(parsed.Minute == 0 ? hourPen : Pens.Black, 
                         new Point(x, Box.Height - _insetGraphY), 
                         new Point(x, Box.Height - _insetGraphY / 2));
                     if (parsed.Minute == 0)
@@ -188,6 +190,8 @@ namespace TBRBooker.FrontEnd
                 }
 
             }
+
+            hourPen.Dispose();
 
             Box.Refresh();
         }
