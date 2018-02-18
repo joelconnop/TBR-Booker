@@ -40,3 +40,5 @@ FrontEnd/obj/Debug/FrontEnd.pdb
 FrontEnd/obj/Debug/TempPE/Properties.Resources.Designer.cs.dll
 .vs/TBR Booker/v15/sqlite3/storage.ide
 .vs/TBR Booker/v15/.suo
+*.cache
+FrontEnd/obj/Debug/FrontEnd.csprojResolveAssemblyReference.cache
