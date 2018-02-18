@@ -24,7 +24,6 @@ namespace TBRBooker.Model.Entities
             TableName = TABLE_NAME;
             CustomerId = "";
             AccountId = "";
-
         }
 
         public override bool IsCacheItems()
@@ -132,6 +131,7 @@ namespace TBRBooker.Model.Entities
         /// Needs to be on booking so we can display on calendar without reading other tables
         /// Examples 'Smith', 'Little Jon Party', 'Browns GC', 'PCYC Bris'
         /// </summary>
+        [Required(ErrorMessage = "Booking Name")]
         public string BookingNickname { get; set; }
 
         private string ChooseNameForBooking()
@@ -152,7 +152,7 @@ namespace TBRBooker.Model.Entities
                     return Customer.FirstName;
             }
 
-                return string.Empty;
+            return string.Empty;
 
         }
 
@@ -267,7 +267,8 @@ namespace TBRBooker.Model.Entities
             //it atleast has to be 3 months until we have solved the problem of reading older bookings
             //in a date range, then can probably drop back to 1 month
             //in MainFrm, the idea is: for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
-            return IsOpenStatus(status) || bookingDate.AddMonths(3) > DateTime.Now;
+            return IsOpenStatus(status) || 
+                bookingDate.AddMonths(Settings.Inst().MonthsForBookingHistory) > DateTime.Now;
         }
 
         public static bool IsOpenStatus(BookingStates status)
@@ -295,26 +296,36 @@ namespace TBRBooker.Model.Entities
 
             if (!Validator.TryValidateObject(this, context, validationErrors, true))
             {
-                string missing = $"The {Status} is missing the following: ";
+                string criticalMissing = $"The {Status} is missing the following: ";
                 foreach (ValidationResult result in validationErrors)
-                    missing += $"{result.ErrorMessage}, ";
-                missing = missing.Trim().TrimEnd(',');
-                return missing;
+                    criticalMissing += $"{result.ErrorMessage}, ";
+                criticalMissing = criticalMissing.Trim().TrimEnd(',');
+                return criticalMissing;
             }
+
+            string missing = "";
+
+            if (BookingDate == default(DateTime))
+                missing += "booking date, ";
+            if (string.IsNullOrEmpty(BookingName))
+                missing += "booking name, ";
+            if (string.IsNullOrEmpty(Customer.DirectoryName()))
+                missing += "at least one customer detail for the customer directory, ";
 
             //we are fussier about what is filled in if this is now a booking (but not much fussier, right?)
             if (IsBooked())
             {
-                string missing = "";
                 if (LocationRegion == LocationRegions.NotSet)
                     missing += "location region, ";
                 if (BookingTime == 0)
                     missing += "time of service, ";
                 if (Duration == 0)
                     missing += "service duration, ";
-                if (!string.IsNullOrEmpty(missing))
-                    return $"The booking is missing the following: " + missing.TrimEnd(',');
+               
             }
+
+            if (!string.IsNullOrEmpty(missing))
+                return $"The booking is missing the following: " + missing.Trim().TrimEnd(',');
 
             return null;
         }

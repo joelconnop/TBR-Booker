@@ -60,6 +60,8 @@ namespace TBRBooker.FrontEnd
         {
             if (!string.IsNullOrEmpty(contactLastNameFld.Text))
                 contactNicknameFld.Text = contactLastNameFld.Text.Trim();
+            else if (!string.IsNullOrEmpty(contactFirstNameFld.Text))
+                contactNicknameFld.Text = contactFirstNameFld.Text.Trim();
         }
 
         private void BookingPnl_Load(object sender, EventArgs e)
@@ -576,7 +578,8 @@ namespace TBRBooker.FrontEnd
                 LoadCustomer();
                 SetCustomerEmblem(pastBookings);
 
-                _isSearchModeForBookings = true;
+                //this flag is kind of dangerous as it determines different types to put on LVI tags. Planning to make booking search a separate window
+                //_isSearchModeForBookings = true;
 
 
                 searchPnl.Visible = false;
@@ -593,38 +596,38 @@ namespace TBRBooker.FrontEnd
             _owner.ShowBooking((Booking)searchLst.SelectedItems[0].Tag);
         }
 
-        private void ShowBookings(List<Booking> pastBookings)
-        {
-            Enabled = false;
-            Cursor = Cursors.WaitCursor;
+        //private void ShowBookings(List<Booking> pastBookings)
+        //{
+        //    Enabled = false;
+        //    Cursor = Cursors.WaitCursor;
 
-            try
-            {
-                searchLst.Items.Clear();
-                if (searchPnl.Visible == false)
-                {
-                    searchPnl.Height = 180;
-                    searchPnl.Visible = true;
-                }
+        //    try
+        //    {
+        //        searchLst.Items.Clear();
+        //        if (searchPnl.Visible == false)
+        //        {
+        //            searchPnl.Height = 180;
+        //            searchPnl.Visible = true;
+        //        }
 
-                foreach (var pastBooking in pastBookings)
-                {
-                    var itm = new ListViewItem(pastBooking.Summary());
-                    itm.Tag = pastBooking;
-                    searchLst.Items.Add(itm);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to search past customers", ex, true);
-                contactSearchChk.Checked = false;   //disable searching for now                
-            }
-            finally
-            {
-                Enabled = true;
-                Cursor = Cursors.Default;
-            }
-        }
+        //        foreach (var pastBooking in pastBookings)
+        //        {
+        //            var itm = new ListViewItem(pastBooking.Summary());
+        //            itm.Tag = pastBooking;
+        //            searchLst.Items.Add(itm);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorHandler.HandleError(this, "Failed to search past customers", ex, true);
+        //        contactSearchChk.Checked = false;   //disable searching for now                
+        //    }
+        //    finally
+        //    {
+        //        Enabled = true;
+        //        Cursor = Cursors.Default;
+        //    }
+        //}
 
         private void statusLbl_Click(object sender, EventArgs e)
         {
@@ -734,7 +737,7 @@ namespace TBRBooker.FrontEnd
                 unsavedChanges += "first name, ";
             if (!contactLastNameFld.Text.Equals(_booking.Customer.LastName))
                 unsavedChanges += "last name, ";
-            if (!contactNicknameFld.Text.Equals(_booking.BookingNickname))
+            if (!contactNicknameFld.Text.Equals(_booking.BookingName) && !contactNicknameFld.Text.Equals(string.Empty))
                 unsavedChanges += "booking nickname, ";
             if (!contactPrimaryNumFld.Text.Equals(_booking.Customer.PrimaryNumber))
                 unsavedChanges += "contact number, ";
@@ -827,7 +830,6 @@ namespace TBRBooker.FrontEnd
 
                 _customer.FirstName = contactFirstNameFld.Text;
                 _customer.LastName = contactLastNameFld.Text;
-                _booking.BookingNickname = contactNicknameFld.Text;
                 _customer.PrimaryNumber = contactPrimaryNumFld.Text;
                 _customer.SecondaryNumber = contactSecondaryNumFld.Text;
                 _customer.CompanyName = contactCompanyFld.Text;
@@ -835,6 +837,8 @@ namespace TBRBooker.FrontEnd
                 _customer.EmailAddress = contactEmailFld.Text;
                 _customer.LeadSource = (LeadSources)contactLeadBox.SelectedItem;
 
+                //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
+                _booking.BookingNickname = contactNicknameFld.Text;
                 _booking.BookingDate = datePick.Value;
                 _booking.BookingTime = Utils.TimeInt(timePick.Value);
                 _booking.Duration = int.Parse(durationFld.Text);

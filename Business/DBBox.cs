@@ -248,28 +248,46 @@ namespace TBRBooker.Business
 
         private static List<CalendarItemDTO> Calendar { get; set; }
 
-        public static List<CalendarItemDTO> GetCalendarItems(bool isForceRefresh)
+        public static List<CalendarItemDTO> GetCalendarItems(bool isForceReadAll)
         {
-            if (Calendar != null && !isForceRefresh)
+            if (Calendar != null && !isForceReadAll)
             {
                 return Calendar;
             }
 
             Calendar = new List<CalendarItemDTO>();
+
             var dbCalendar = new List<CalendarItemDTO>();
 
             AmazonDynamoDBClient client = GetDynamoDBClient();
-            var config = new QueryOperationConfig()
-            {
-                Select = SelectValues.SpecificAttributes,
-                AttributesToGet = new List<string> { "id", "bookingName", "bookingDate", "bookingTime", "status" },
-                Filter = new QueryFilter()
-            };
-            config.Filter.AddCondition("isOpen", QueryOperator.Equal, Booking.IS_OPEN_STR);
-            config.IndexName = "isOpenIdx";
             Table table = Table.LoadTable(client, CheckTablenameForTest(Booking.TABLE_NAME));
+            var attsToGet = new List<string> { "id", "bookingName", "bookingDate", "bookingTime", "status" };
+            QueryOperationConfig qryConfig = null;
+            ScanOperationConfig scanConfig = null;
+
+            if (isForceReadAll)
+            {
+                //all bookings from all time
+                scanConfig = new ScanOperationConfig()
+                {
+                    Select = SelectValues.SpecificAttributes,
+                    AttributesToGet = attsToGet
+                };
+            }
+            else
+            {
+                //typical case
+                qryConfig = new QueryOperationConfig()
+                {
+                    Select = SelectValues.SpecificAttributes,
+                    AttributesToGet = attsToGet,
+                    Filter = new QueryFilter()
+                };
+                qryConfig.Filter.AddCondition("isOpen", QueryOperator.Equal, Booking.IS_OPEN_STR);
+                qryConfig.IndexName = "isOpenIdx";
+            }          
             
-            var search = table.Query(config);
+            var search = isForceReadAll ? table.Scan(scanConfig) : table.Query(qryConfig);
             List<Document> documentList = new List<Document>();
             do
             {
@@ -287,9 +305,16 @@ namespace TBRBooker.Business
             //update calendar items that are out of date due to the passing of time
             foreach (var item in dbCalendar)
             {
-                var revisedItem = BookingBL.UpdateCalendarItemAndUnderlyingBooking(item);
-                if (revisedItem != null)    //null means the item should no longer be shown on calendars
-                    Calendar.Add(revisedItem);
+                if (isForceReadAll)
+                {
+                    Calendar.Add(item);
+                }
+                else
+                {
+                    var revisedItem = BookingBL.UpdateCalendarItemAndUnderlyingBooking(item);
+                    if (revisedItem != null)    //null means the item should no longer be shown on calendars
+                        Calendar.Add(revisedItem);
+                }
             }
 
             return Calendar;

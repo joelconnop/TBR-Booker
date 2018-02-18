@@ -46,6 +46,8 @@ namespace TBRBooker.Business
 
             try
             {
+                if (string.IsNullOrEmpty(booking.BookingNickname))
+                    booking.BookingNickname = booking.BookingName;
                 DBBox.AddOrUpdate(booking);
                 if (!booking.Customer.BookingIds.Contains(booking.Id))
                 {

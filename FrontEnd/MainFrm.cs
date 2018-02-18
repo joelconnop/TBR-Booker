@@ -35,19 +35,27 @@ namespace TBRBooker.FrontEnd
             _screenId = Settings.Inst().MainScreenDefaultId;
             MoveFormToCurrentScreenId();
 
-            UpdateCalendar();
+            //(below not needed - updates calendar when initial date value set)
+            //UpdateCalendar();
         }
 
         public void UpdateCalendar()
         {
-            AddDayPanels(false);
+            try
+            {
+                AddDayPanels(false);
 
-            //display date range
-            string dateRangeStr = _calendarStartDate.ToString("MMM yy");
-            var lastDay = _calendarStartDate.AddDays(28);
-            if (lastDay.Month != _calendarStartDate.Month)
-                dateRangeStr += $" - {lastDay.ToString("MMM yy")}";
-            monthsLbl.Text = dateRangeStr;
+                //display date range
+                string dateRangeStr = _calendarStartDate.ToString("MMM yy");
+                var lastDay = _calendarStartDate.AddDays(28);
+                if (lastDay.Month != _calendarStartDate.Month)
+                    dateRangeStr += $" - {lastDay.ToString("MMM yy")}";
+                monthsLbl.Text = dateRangeStr;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+            }
         }
 
         /// <summary>
@@ -72,14 +80,12 @@ namespace TBRBooker.FrontEnd
             return targetInclude.AddDays(-1 * numDaysToSubtract);
         }
 
-        private void AddDayPanels(bool isForceRefresh)
+        private void AddDayPanels(bool isForceReadAll)
         {
             daysPanel.Controls.Clear();
             _days = new DayPanel[4,7];
 
-            //HACK: parse in date, and have DBBox track which dates have been read.
-            //      for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
-            var items = DBBox.GetCalendarItems(isForceRefresh);
+            var items = DBBox.GetCalendarItems(isForceReadAll);
 
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)
@@ -173,7 +179,12 @@ namespace TBRBooker.FrontEnd
 
         private void refreshBtn_Click(object sender, EventArgs e)
         {
-            AddDayPanels(true);
+            if (MessageBox.Show(this, "Reloading the entire calendar is an expensive read operation to scan every " +
+                "booking since the beginning of time (normally we just want to see < 3 months expired, or still " +
+                "having outstanding payments).\r\nYou should only do this if you need to view old bookings." +
+                " Proceed anyway?", "Reload Calendar", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+                == DialogResult.OK)
+                AddDayPanels(true);
         }
 
         private void InitBookingsFrm()

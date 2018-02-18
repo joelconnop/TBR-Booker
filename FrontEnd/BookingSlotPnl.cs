@@ -48,13 +48,13 @@ namespace TBRBooker.FrontEnd
                     BackColor = Color.Silver;
                     break;
                 case Model.Enums.BookingStates.Completed:
-                    BackColor = Color.DarkSeaGreen;
+                    BackColor = Color.Transparent;
                     break;
                 case Model.Enums.BookingStates.Booked:
                     BackColor = Color.LightSkyBlue;
                     break;
                 case Model.Enums.BookingStates.OpenEnquiry:
-                    BackColor = Color.Transparent;
+                    BackColor = Color.Orange;
                     break;
                 case Model.Enums.BookingStates.PaymentDue:
                 case Model.Enums.BookingStates.CancelledWithoutPayment:

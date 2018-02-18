@@ -35,7 +35,12 @@
             this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.refreshBtn = new System.Windows.Forms.Button();
+            this.showBookingsBtn = new System.Windows.Forms.Button();
+            this.switchMonitorBtn = new System.Windows.Forms.Button();
             this.datePicker = new System.Windows.Forms.DateTimePicker();
+            this.nextBtn = new System.Windows.Forms.Button();
+            this.prevBtn = new System.Windows.Forms.Button();
             this.monthsLbl = new System.Windows.Forms.Label();
             this.daysPanel = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -51,11 +56,6 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.refreshBtn = new System.Windows.Forms.Button();
-            this.showBookingsBtn = new System.Windows.Forms.Button();
-            this.switchMonitorBtn = new System.Windows.Forms.Button();
-            this.nextBtn = new System.Windows.Forms.Button();
-            this.prevBtn = new System.Windows.Forms.Button();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -125,6 +125,42 @@
             this.panel1.Size = new System.Drawing.Size(1904, 100);
             this.panel1.TabIndex = 1;
             // 
+            // refreshBtn
+            // 
+            this.refreshBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.refresh;
+            this.refreshBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.refreshBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.refreshBtn.Location = new System.Drawing.Point(1388, 9);
+            this.refreshBtn.Name = "refreshBtn";
+            this.refreshBtn.Size = new System.Drawing.Size(100, 87);
+            this.refreshBtn.TabIndex = 14;
+            this.refreshBtn.UseVisualStyleBackColor = true;
+            this.refreshBtn.Click += new System.EventHandler(this.refreshBtn_Click);
+            // 
+            // showBookingsBtn
+            // 
+            this.showBookingsBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.bookings;
+            this.showBookingsBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.showBookingsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.showBookingsBtn.Location = new System.Drawing.Point(52, 9);
+            this.showBookingsBtn.Name = "showBookingsBtn";
+            this.showBookingsBtn.Size = new System.Drawing.Size(100, 87);
+            this.showBookingsBtn.TabIndex = 5;
+            this.showBookingsBtn.UseVisualStyleBackColor = true;
+            this.showBookingsBtn.Click += new System.EventHandler(this.showBookingsBtn_Click);
+            // 
+            // switchMonitorBtn
+            // 
+            this.switchMonitorBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.switch_monitors;
+            this.switchMonitorBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.switchMonitorBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.switchMonitorBtn.Location = new System.Drawing.Point(208, 9);
+            this.switchMonitorBtn.Name = "switchMonitorBtn";
+            this.switchMonitorBtn.Size = new System.Drawing.Size(194, 87);
+            this.switchMonitorBtn.TabIndex = 4;
+            this.switchMonitorBtn.UseVisualStyleBackColor = true;
+            this.switchMonitorBtn.Click += new System.EventHandler(this.switchMonitorBtn_Click);
+            // 
             // datePicker
             // 
             this.datePicker.Location = new System.Drawing.Point(864, 9);
@@ -132,6 +168,30 @@
             this.datePicker.Size = new System.Drawing.Size(200, 20);
             this.datePicker.TabIndex = 3;
             this.datePicker.ValueChanged += new System.EventHandler(this.datePicker_ValueChanged);
+            // 
+            // nextBtn
+            // 
+            this.nextBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
+            this.nextBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.nextBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.nextBtn.Location = new System.Drawing.Point(1260, 27);
+            this.nextBtn.Name = "nextBtn";
+            this.nextBtn.Size = new System.Drawing.Size(60, 60);
+            this.nextBtn.TabIndex = 2;
+            this.nextBtn.UseVisualStyleBackColor = true;
+            this.nextBtn.Click += new System.EventHandler(this.nextBtn_Click);
+            // 
+            // prevBtn
+            // 
+            this.prevBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
+            this.prevBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.prevBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.prevBtn.Location = new System.Drawing.Point(615, 27);
+            this.prevBtn.Name = "prevBtn";
+            this.prevBtn.Size = new System.Drawing.Size(60, 60);
+            this.prevBtn.TabIndex = 1;
+            this.prevBtn.UseVisualStyleBackColor = true;
+            this.prevBtn.Click += new System.EventHandler(this.prevBtn_Click);
             // 
             // monthsLbl
             // 
@@ -288,66 +348,6 @@
             this.label13.Size = new System.Drawing.Size(71, 16);
             this.label13.TabIndex = 13;
             this.label13.Text = "SUNDAY";
-            // 
-            // refreshBtn
-            // 
-            this.refreshBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.refresh;
-            this.refreshBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.refreshBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.refreshBtn.Location = new System.Drawing.Point(1388, 9);
-            this.refreshBtn.Name = "refreshBtn";
-            this.refreshBtn.Size = new System.Drawing.Size(100, 87);
-            this.refreshBtn.TabIndex = 14;
-            this.refreshBtn.UseVisualStyleBackColor = true;
-            this.refreshBtn.Click += new System.EventHandler(this.refreshBtn_Click);
-            // 
-            // showBookingsBtn
-            // 
-            this.showBookingsBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.bookings;
-            this.showBookingsBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.showBookingsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.showBookingsBtn.Location = new System.Drawing.Point(52, 9);
-            this.showBookingsBtn.Name = "showBookingsBtn";
-            this.showBookingsBtn.Size = new System.Drawing.Size(100, 87);
-            this.showBookingsBtn.TabIndex = 5;
-            this.showBookingsBtn.UseVisualStyleBackColor = true;
-            this.showBookingsBtn.Click += new System.EventHandler(this.showBookingsBtn_Click);
-            // 
-            // switchMonitorBtn
-            // 
-            this.switchMonitorBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.switch_monitors;
-            this.switchMonitorBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.switchMonitorBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.switchMonitorBtn.Location = new System.Drawing.Point(208, 9);
-            this.switchMonitorBtn.Name = "switchMonitorBtn";
-            this.switchMonitorBtn.Size = new System.Drawing.Size(194, 87);
-            this.switchMonitorBtn.TabIndex = 4;
-            this.switchMonitorBtn.UseVisualStyleBackColor = true;
-            this.switchMonitorBtn.Click += new System.EventHandler(this.switchMonitorBtn_Click);
-            // 
-            // nextBtn
-            // 
-            this.nextBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
-            this.nextBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.nextBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.nextBtn.Location = new System.Drawing.Point(1260, 27);
-            this.nextBtn.Name = "nextBtn";
-            this.nextBtn.Size = new System.Drawing.Size(60, 60);
-            this.nextBtn.TabIndex = 2;
-            this.nextBtn.UseVisualStyleBackColor = true;
-            this.nextBtn.Click += new System.EventHandler(this.nextBtn_Click);
-            // 
-            // prevBtn
-            // 
-            this.prevBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
-            this.prevBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.prevBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.prevBtn.Location = new System.Drawing.Point(615, 27);
-            this.prevBtn.Name = "prevBtn";
-            this.prevBtn.Size = new System.Drawing.Size(60, 60);
-            this.prevBtn.TabIndex = 1;
-            this.prevBtn.UseVisualStyleBackColor = true;
-            this.prevBtn.Click += new System.EventHandler(this.prevBtn_Click);
             // 
             // MainFrm
             // 

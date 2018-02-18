@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using TBRBooker.Model.Entities;
 using TBRBooker.Model.DTO;
 using TBRBooker.Business;
+using TBRBooker.Base;
 
 namespace TBRBooker.FrontEnd
 {
@@ -21,10 +22,20 @@ namespace TBRBooker.FrontEnd
         private List<CalendarItemDTO> _items;
         private bool _showCancelled;
 
-        public DayPanel(DateTime day, List<CalendarItemDTO> items, bool showCancelled,
-            MainFrm owner)
+        public DayPanel(DateTime day, List<CalendarItemDTO> items, bool showCancelled, MainFrm owner)
         {
             InitializeComponent();
+
+            if (day.AddMonths(Settings.Inst().MonthsForBookingHistory) < DateTime.Now)
+            {
+                //pink or purple for bookings days that might be hiding old bookings
+                if (day.Month % 2 == 0)
+                    BackColor = Color.FromArgb(213, 199, 234);
+                else
+                    BackColor = Color.FromArgb(237, 211, 230);  
+            }
+            else if (day.Month % 2 == 0)
+                BackColor = Color.FromArgb(200, 237, 189);   //this is the green for alternate months
 
             _owner = owner;
             _day = day;
