@@ -73,11 +73,16 @@ namespace TBRBooker.FrontEnd
             {
                 _others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
             }
-            Redraw();
+            DoRedraw();
         }
 
-
         public void Redraw()
+        {
+            _isSetTimeMode = false;
+            DoRedraw();
+        }
+
+        private void DoRedraw()
         {
             if (!Enabled)
                 return;
@@ -146,6 +151,8 @@ namespace TBRBooker.FrontEnd
             var height = GetBarHeight();
 
             bool isNeedToSetScale = _timeScale.Count == 0;
+            var hourPen = new Pen(Brushes.Black);
+            hourPen.Width = 3;
             
             for (int i = 0; i <= 2399; i++)
             {
@@ -154,7 +161,7 @@ namespace TBRBooker.FrontEnd
                     continue;
 
                 var x = GetTimeX(i);
-                if (x == lastx)
+                if (x == lastx && i != 900)
                     continue;   //ie out of hours can be the same number again    
 
                 var parsed = Utils.ParseTime(i);
@@ -175,7 +182,7 @@ namespace TBRBooker.FrontEnd
                     if (isNeedToSetScale)
                         _timeScale.Add(x, (i, AllTheMinutesForAllTheHours(parsed)));
 
-                    g.DrawLine(Pens.Black, 
+                    g.DrawLine(parsed.Minute == 0 ? hourPen : Pens.Black, 
                         new Point(x, Box.Height - _insetGraphY), 
                         new Point(x, Box.Height - _insetGraphY / 2));
                     if (parsed.Minute == 0)
@@ -188,6 +195,8 @@ namespace TBRBooker.FrontEnd
                 }
 
             }
+
+            hourPen.Dispose();
 
             Box.Refresh();
         }
@@ -297,7 +306,7 @@ namespace TBRBooker.FrontEnd
                 Time = _timeScale[_setTimeStartX].Time;
                 _isSettingTime = true;
                 Duration = 15;
-                Redraw();
+                DoRedraw();
             }
             catch (Exception ex)
             {
@@ -321,7 +330,7 @@ namespace TBRBooker.FrontEnd
             if (currentX != _lastX)
             {
                 Duration = _timeScale[currentX].Mins - _timeScale[_setTimeStartX].Mins;
-                Redraw();
+                DoRedraw();
             }
             _lastX = currentX;
 
@@ -343,8 +352,8 @@ namespace TBRBooker.FrontEnd
 
         private void timeTmr_Tick(object sender, EventArgs e)
         {
-            Debug.WriteLine("Drawing!");
-            Redraw();
+            //Debug.WriteLine("Drawing!");
+            DoRedraw();
             timeTmr.Stop();
             timeTmr.Enabled = false;
         }

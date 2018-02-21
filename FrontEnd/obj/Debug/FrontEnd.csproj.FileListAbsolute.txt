@@ -29,3 +29,5 @@ E:\Programming\TBR Booker\FrontEnd\bin\Debug\TBR Booker.exe
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\TBR Booker.pdb
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.exe
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.pdb
+E:\Programming\TBR Booker\FrontEnd\bin\Debug\ja\Base.resources.dll
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.TimePicker.resources
