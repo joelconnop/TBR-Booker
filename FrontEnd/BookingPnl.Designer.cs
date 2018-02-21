@@ -37,6 +37,7 @@
             this.label26 = new System.Windows.Forms.Label();
             this.servicePaxFld = new System.Windows.Forms.TextBox();
             this.label25 = new System.Windows.Forms.Label();
+            this.crocPic = new System.Windows.Forms.PictureBox();
             this.serviceAddCrocChk = new System.Windows.Forms.CheckBox();
             this.partyPnl = new System.Windows.Forms.Panel();
             this.partyAgeFld = new System.Windows.Forms.TextBox();
@@ -63,6 +64,11 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.dateGrp = new System.Windows.Forms.GroupBox();
+            this.timePick = new System.Windows.Forms.DateTimePicker();
+            this.timeSwitchChk = new System.Windows.Forms.CheckBox();
+            this.startPick = new TBRBooker.FrontEnd.TimePicker();
+            this.endPick = new TBRBooker.FrontEnd.TimePicker();
+            this.label29 = new System.Windows.Forms.Label();
             this.durationDescFld = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.durationFld = new System.Windows.Forms.TextBox();
@@ -130,19 +136,15 @@
             this.contactGrp = new System.Windows.Forms.GroupBox();
             this.contactLeadBox = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.contactEmblemPic = new System.Windows.Forms.PictureBox();
             this.contactFirstNameFld = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.printBtn = new System.Windows.Forms.Button();
             this.savedFld = new System.Windows.Forms.Label();
             this.savedTmr = new System.Windows.Forms.Timer(this.components);
             this.completeBtn = new System.Windows.Forms.Button();
-            this.label29 = new System.Windows.Forms.Label();
-            this.crocPic = new System.Windows.Forms.PictureBox();
-            this.contactEmblemPic = new System.Windows.Forms.PictureBox();
-            this.startPick = new TBRBooker.FrontEnd.TimePicker();
-            this.endPick = new TBRBooker.FrontEnd.TimePicker();
-            this.timeSwitchChk = new System.Windows.Forms.CheckBox();
             this.serviceGrp.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
             this.displayPnl.SuspendLayout();
             this.addressGrp.SuspendLayout();
@@ -154,7 +156,6 @@
             this.pricingGrp.SuspendLayout();
             this.panel1.SuspendLayout();
             this.contactGrp.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).BeginInit();
             this.SuspendLayout();
             // 
@@ -185,7 +186,7 @@
             // 
             // serviceGrp
             // 
-            this.serviceGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.serviceGrp.BackColor = System.Drawing.SystemColors.ControlLight;
             this.serviceGrp.Controls.Add(this.serviceAnimalsToCome);
             this.serviceGrp.Controls.Add(this.label26);
             this.serviceGrp.Controls.Add(this.servicePaxFld);
@@ -196,7 +197,7 @@
             this.serviceGrp.Controls.Add(this.serviceBox);
             this.serviceGrp.Controls.Add(this.displayPnl);
             this.serviceGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.serviceGrp.Location = new System.Drawing.Point(6, 516);
+            this.serviceGrp.Location = new System.Drawing.Point(6, 512);
             this.serviceGrp.Name = "serviceGrp";
             this.serviceGrp.Size = new System.Drawing.Size(923, 159);
             this.serviceGrp.TabIndex = 4;
@@ -234,6 +235,17 @@
             this.label25.Size = new System.Drawing.Size(273, 13);
             this.label25.TabIndex = 6;
             this.label25.Text = "PAX (approximation only, use Pricing for related charges)";
+            // 
+            // crocPic
+            // 
+            this.crocPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.crocPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.crocodile;
+            this.crocPic.Location = new System.Drawing.Point(765, 50);
+            this.crocPic.Name = "crocPic";
+            this.crocPic.Size = new System.Drawing.Size(150, 75);
+            this.crocPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.crocPic.TabIndex = 4;
+            this.crocPic.TabStop = false;
             // 
             // serviceAddCrocChk
             // 
@@ -376,7 +388,7 @@
             // 
             // addressGrp
             // 
-            this.addressGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.addressGrp.BackColor = System.Drawing.SystemColors.ControlLight;
             this.addressGrp.Controls.Add(this.addressMapBtn);
             this.addressGrp.Controls.Add(this.addressVenuFld);
             this.addressGrp.Controls.Add(this.label13);
@@ -385,7 +397,7 @@
             this.addressGrp.Controls.Add(this.addressRegionBox);
             this.addressGrp.Controls.Add(this.label12);
             this.addressGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.addressGrp.Location = new System.Drawing.Point(6, 421);
+            this.addressGrp.Location = new System.Drawing.Point(6, 417);
             this.addressGrp.Name = "addressGrp";
             this.addressGrp.Size = new System.Drawing.Size(923, 86);
             this.addressGrp.TabIndex = 3;
@@ -482,7 +494,8 @@
             // 
             // dateGrp
             // 
-            this.dateGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.dateGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.dateGrp.Controls.Add(this.timePick);
             this.dateGrp.Controls.Add(this.timeSwitchChk);
             this.dateGrp.Controls.Add(this.startPick);
             this.dateGrp.Controls.Add(this.endPick);
@@ -494,17 +507,64 @@
             this.dateGrp.Controls.Add(this.label15);
             this.dateGrp.Controls.Add(this.label17);
             this.dateGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.dateGrp.Location = new System.Drawing.Point(6, 234);
+            this.dateGrp.Location = new System.Drawing.Point(6, 231);
             this.dateGrp.Name = "dateGrp";
             this.dateGrp.Size = new System.Drawing.Size(923, 177);
             this.dateGrp.TabIndex = 2;
             this.dateGrp.TabStop = false;
             this.dateGrp.Text = "Date and Time";
             // 
+            // timePick
+            // 
+            this.timePick.CustomFormat = "h:mm tt";
+            this.timePick.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.timePick.Location = new System.Drawing.Point(244, 43);
+            this.timePick.Name = "timePick";
+            this.timePick.ShowUpDown = true;
+            this.timePick.Size = new System.Drawing.Size(82, 20);
+            this.timePick.TabIndex = 12;
+            this.timePick.Visible = false;
+            this.timePick.ValueChanged += new System.EventHandler(this.timePick_ValueChanged);
+            this.timePick.KeyDown += new System.Windows.Forms.KeyEventHandler(this.timePick_KeyDown);
+            // 
+            // timeSwitchChk
+            // 
+            this.timeSwitchChk.AutoSize = true;
+            this.timeSwitchChk.Location = new System.Drawing.Point(664, 45);
+            this.timeSwitchChk.Name = "timeSwitchChk";
+            this.timeSwitchChk.Size = new System.Drawing.Size(155, 17);
+            this.timeSwitchChk.TabIndex = 11;
+            this.timeSwitchChk.Text = "Switch to precise time input";
+            this.timeSwitchChk.UseVisualStyleBackColor = true;
+            this.timeSwitchChk.CheckedChanged += new System.EventHandler(this.timeSwitchChk_CheckedChanged);
+            // 
+            // startPick
+            // 
+            this.startPick.Location = new System.Drawing.Point(242, 40);
+            this.startPick.Name = "startPick";
+            this.startPick.Size = new System.Drawing.Size(84, 27);
+            this.startPick.TabIndex = 10;
+            // 
+            // endPick
+            // 
+            this.endPick.Location = new System.Drawing.Point(354, 40);
+            this.endPick.Name = "endPick";
+            this.endPick.Size = new System.Drawing.Size(84, 27);
+            this.endPick.TabIndex = 9;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(356, 26);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(52, 13);
+            this.label29.TabIndex = 8;
+            this.label29.Text = "End Time";
+            // 
             // durationDescFld
             // 
             this.durationDescFld.AutoSize = true;
-            this.durationDescFld.Location = new System.Drawing.Point(555, 49);
+            this.durationDescFld.Location = new System.Drawing.Point(555, 46);
             this.durationDescFld.Name = "durationDescFld";
             this.durationDescFld.Size = new System.Drawing.Size(96, 13);
             this.durationDescFld.TabIndex = 3;
@@ -525,7 +585,7 @@
             this.durationFld.Name = "durationFld";
             this.durationFld.Size = new System.Drawing.Size(77, 20);
             this.durationFld.TabIndex = 2;
-            this.durationFld.TextChanged += new System.EventHandler(this.durationFld_TextChanged);
+            this.durationFld.Leave += new System.EventHandler(this.durationFld_Leave);
             // 
             // searchLst
             // 
@@ -540,7 +600,7 @@
             // 
             // searchPnl
             // 
-            this.searchPnl.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.searchPnl.BackColor = System.Drawing.SystemColors.ControlLight;
             this.searchPnl.Controls.Add(this.searcCloseBtn);
             this.searchPnl.Controls.Add(this.searchLst);
             this.searchPnl.Location = new System.Drawing.Point(6, 223);
@@ -569,7 +629,7 @@
             // 
             // notesGrp
             // 
-            this.notesGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.notesGrp.BackColor = System.Drawing.SystemColors.ControlLight;
             this.notesGrp.Controls.Add(this.label28);
             this.notesGrp.Controls.Add(this.notesPastFld);
             this.notesGrp.Controls.Add(this.label27);
@@ -711,7 +771,7 @@
             // 
             // pricingGrp
             // 
-            this.pricingGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.pricingGrp.BackColor = System.Drawing.SystemColors.ControlLight;
             this.pricingGrp.Controls.Add(this.priceHistoryLst);
             this.pricingGrp.Controls.Add(this.pricingPayOnDayChk);
             this.pricingGrp.Controls.Add(this.priceProductBox);
@@ -740,7 +800,7 @@
             this.pricingGrp.Controls.Add(this.label16);
             this.pricingGrp.Controls.Add(this.label14);
             this.pricingGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.pricingGrp.Location = new System.Drawing.Point(6, 681);
+            this.pricingGrp.Location = new System.Drawing.Point(6, 679);
             this.pricingGrp.Name = "pricingGrp";
             this.pricingGrp.Size = new System.Drawing.Size(923, 158);
             this.pricingGrp.TabIndex = 5;
@@ -1102,7 +1162,7 @@
             // 
             // contactGrp
             // 
-            this.contactGrp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.contactGrp.BackColor = System.Drawing.SystemColors.ControlLight;
             this.contactGrp.Controls.Add(this.contactLeadBox);
             this.contactGrp.Controls.Add(this.label7);
             this.contactGrp.Controls.Add(this.contactSearchChk);
@@ -1147,6 +1207,18 @@
             this.label7.Size = new System.Drawing.Size(140, 13);
             this.label7.TabIndex = 18;
             this.label7.Text = "How did you hear about us?";
+            // 
+            // contactEmblemPic
+            // 
+            this.contactEmblemPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.contactEmblemPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.customer_new;
+            this.contactEmblemPic.Location = new System.Drawing.Point(809, 16);
+            this.contactEmblemPic.Name = "contactEmblemPic";
+            this.contactEmblemPic.Size = new System.Drawing.Size(106, 106);
+            this.contactEmblemPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.contactEmblemPic.TabIndex = 19;
+            this.contactEmblemPic.TabStop = false;
+            this.contactEmblemPic.Click += new System.EventHandler(this.contactEmblemPic_Click);
             // 
             // contactFirstNameFld
             // 
@@ -1202,62 +1274,6 @@
             this.completeBtn.UseVisualStyleBackColor = true;
             this.completeBtn.Click += new System.EventHandler(this.completeBtn_Click);
             // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(356, 26);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(52, 13);
-            this.label29.TabIndex = 8;
-            this.label29.Text = "End Time";
-            // 
-            // crocPic
-            // 
-            this.crocPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.crocPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.crocodile;
-            this.crocPic.Location = new System.Drawing.Point(765, 50);
-            this.crocPic.Name = "crocPic";
-            this.crocPic.Size = new System.Drawing.Size(150, 75);
-            this.crocPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.crocPic.TabIndex = 4;
-            this.crocPic.TabStop = false;
-            // 
-            // contactEmblemPic
-            // 
-            this.contactEmblemPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.contactEmblemPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.customer_new;
-            this.contactEmblemPic.Location = new System.Drawing.Point(809, 16);
-            this.contactEmblemPic.Name = "contactEmblemPic";
-            this.contactEmblemPic.Size = new System.Drawing.Size(106, 106);
-            this.contactEmblemPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.contactEmblemPic.TabIndex = 19;
-            this.contactEmblemPic.TabStop = false;
-            this.contactEmblemPic.Click += new System.EventHandler(this.contactEmblemPic_Click);
-            // 
-            // startPick
-            // 
-            this.startPick.Location = new System.Drawing.Point(242, 42);
-            this.startPick.Name = "startPick";
-            this.startPick.Size = new System.Drawing.Size(84, 27);
-            this.startPick.TabIndex = 10;
-            // 
-            // endPick
-            // 
-            this.endPick.Location = new System.Drawing.Point(359, 42);
-            this.endPick.Name = "endPick";
-            this.endPick.Size = new System.Drawing.Size(84, 27);
-            this.endPick.TabIndex = 9;
-            // 
-            // timeSwitchChk
-            // 
-            this.timeSwitchChk.AutoSize = true;
-            this.timeSwitchChk.Location = new System.Drawing.Point(670, 42);
-            this.timeSwitchChk.Name = "timeSwitchChk";
-            this.timeSwitchChk.Size = new System.Drawing.Size(155, 17);
-            this.timeSwitchChk.TabIndex = 11;
-            this.timeSwitchChk.Text = "Switch to precise time input";
-            this.timeSwitchChk.UseVisualStyleBackColor = true;
-            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1284,6 +1300,7 @@
             this.Load += new System.EventHandler(this.BookingPnl_Load);
             this.serviceGrp.ResumeLayout(false);
             this.serviceGrp.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).EndInit();
             this.partyPnl.ResumeLayout(false);
             this.partyPnl.PerformLayout();
             this.displayPnl.ResumeLayout(false);
@@ -1303,7 +1320,6 @@
             this.panel1.PerformLayout();
             this.contactGrp.ResumeLayout(false);
             this.contactGrp.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.crocPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1424,5 +1440,6 @@
         private TimePicker startPick;
         private TimePicker endPick;
         private System.Windows.Forms.CheckBox timeSwitchChk;
+        private System.Windows.Forms.DateTimePicker timePick;
     }
 }

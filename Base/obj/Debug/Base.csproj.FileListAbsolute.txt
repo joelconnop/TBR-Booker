@@ -3,3 +3,4 @@ E:\Programming\TBR Booker\Base\bin\Debug\Base.pdb
 E:\Programming\TBR Booker\Base\obj\Debug\Base.csproj.CoreCompileInputs.cache
 E:\Programming\TBR Booker\Base\obj\Debug\Base.dll
 E:\Programming\TBR Booker\Base\obj\Debug\Base.pdb
+E:\Programming\TBR Booker\Base\obj\Debug\Base.csprojResolveAssemblyReference.cache

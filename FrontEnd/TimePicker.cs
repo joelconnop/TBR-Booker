@@ -26,14 +26,31 @@ namespace TBRBooker.FrontEnd
             _onChange = onChange;
         }
 
-        public void InitTimes(int startTime = 0, int endTime = 0, int interval = 15, int startingValue = 0)
+        public void SetValues(int startTime = 0, int endTime = 0, int interval = 15, int startingValue = 0)
         {
             _isSettingUp = true;
             picker.BeginUpdate();
             picker.Items.Clear();
-
-            startingValue = Math.Max(Math.Min(startingValue, endTime), startTime);
             TimePickerValue selected = null;
+
+            if (startingValue < startTime)
+            {
+                if (startingValue == 0)
+                {
+                    //   startingValue = startTime;
+                    selected = new TimePickerValue(0, "");
+                    picker.Items.Add(selected);
+                }
+                else
+                {
+                    startTime = startingValue;
+                }
+            }
+
+            if (startingValue > endTime)
+            {
+                endTime = startingValue;
+            }
 
             for (int i = startTime; i <= endTime; i++)
             {

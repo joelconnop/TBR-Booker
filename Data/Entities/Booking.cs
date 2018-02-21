@@ -80,13 +80,7 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public int Duration { get; set; }
 
-        public int EndTime => GetEndTime();
-        private int GetEndTime()
-        {
-            var parsed = Utils.ParseTime(BookingTime);
-            var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
-            return int.Parse(ts.Add(new TimeSpan(0, Duration, 0)).ToString("hhmm"));
-        }
+        public int EndTime => Utils.EndTime(BookingTime, Duration);
 
 
         [JsonIgnore]
