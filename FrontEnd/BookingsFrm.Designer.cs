@@ -28,22 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BookingsFrm));
             this.leftTabs = new System.Windows.Forms.TabControl();
             this.rightTabs = new System.Windows.Forms.TabControl();
             this.SuspendLayout();
             // 
-            // tabs1
+            // leftTabs
             // 
             this.leftTabs.Location = new System.Drawing.Point(5, 5);
-            this.leftTabs.Name = "tabs1";
+            this.leftTabs.Name = "leftTabs";
             this.leftTabs.SelectedIndex = 0;
             this.leftTabs.Size = new System.Drawing.Size(945, 990);
             this.leftTabs.TabIndex = 0;
             // 
-            // tabs2
+            // rightTabs
             // 
             this.rightTabs.Location = new System.Drawing.Point(954, 5);
-            this.rightTabs.Name = "tabs2";
+            this.rightTabs.Name = "rightTabs";
             this.rightTabs.SelectedIndex = 0;
             this.rightTabs.Size = new System.Drawing.Size(945, 990);
             this.rightTabs.TabIndex = 1;
@@ -56,6 +57,7 @@
             this.ClientSize = new System.Drawing.Size(1904, 1001);
             this.Controls.Add(this.rightTabs);
             this.Controls.Add(this.leftTabs);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BookingsFrm";
             this.Text = "BookingsFrm";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;

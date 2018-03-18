@@ -6,7 +6,6 @@ E:\Programming\TBR Booker\Base\obj\Debug\Base.pdb
 E:\Programming\TBR Booker\Base\obj\Debug\Base.csprojResolveAssemblyReference.cache
 C:\Programming\TBR-Booker\Base\bin\Debug\Base.dll
 C:\Programming\TBR-Booker\Base\bin\Debug\Base.pdb
-C:\Programming\TBR-Booker\Base\obj\Debug\Base.csprojResolveAssemblyReference.cache
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.csproj.CoreCompileInputs.cache
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.dll
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.pdb

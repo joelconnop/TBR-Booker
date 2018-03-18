@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\tbrv3.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Shouldly, Version=2.8.3.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
       <HintPath>..\packages\Shouldly.2.8.3\lib\net451\Shouldly.dll</HintPath>
@@ -216,6 +219,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\exclamation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tbr_icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tbr icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tbr.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tbrv3.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
