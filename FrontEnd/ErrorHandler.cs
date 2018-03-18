@@ -20,11 +20,24 @@ namespace TBRBooker.FrontEnd
                 ExceptionMsg = ex.Message,
                 StackTrace = ex.StackTrace,
             };
-            DBBox.AddOrUpdate(errorLog);
+
+            string dbError = "";
+            try
+            {
+                DBBox.AddOrUpdate(errorLog);
+            }
+            catch (Exception dbEx)
+            {
+                dbError = dbEx.Message;
+            }
 
             MessageBox.Show(owner, (isStable ? "" : 
-                "An unexpected error has occurred, and the program could be unstable. You should make a note of what you were working on (hint: Print Screen) and restart the program. ")
-                + action + ": " + ex.Message, "Error", 
+                "An unexpected error has occurred, and the program could be unstable. You should make a note of what you were working on (hint: Print Screen) and restart the program.")
+                + Environment.NewLine + Environment.NewLine + action + ": " 
+                + Environment.NewLine + Environment.NewLine + ex.Message
+                + Environment.NewLine + Environment.NewLine + "Additionally, this error failed to log because:"
+                + Environment.NewLine + dbError, 
+                "Error", 
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 

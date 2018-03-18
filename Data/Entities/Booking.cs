@@ -61,8 +61,6 @@ namespace TBRBooker.Model.Entities
 
         public BookingPriorities Priority { get; set; }
 
-
-
         [Required(ErrorMessage = "Booking Date")]
         public DateTime BookingDate { get; set; }
 
@@ -111,6 +109,10 @@ namespace TBRBooker.Model.Entities
         public LostJobReasons LostJobReason { get; set; }
 
         public decimal AmountPaid => PaymentHistory == null ? 0 : PaymentHistory.Sum(x => x.Amount);
+        public decimal Balance => Service == null ? 0
+            : (PaymentHistory == null ? Service.TotalPrice 
+            : Service.TotalPrice - AmountPaid);
+        public bool IsFullyPaid => IsBooked(true) && Service != null && Service.TotalPrice > 0 && Balance == 0;
 
         public string QbListId { get; set; }
 
@@ -119,6 +121,15 @@ namespace TBRBooker.Model.Entities
         public bool IsInvoiced { get; set; }
 
         public bool IsPayOnDay { get; set; }
+
+        /// <summary>
+        /// like a foreign key to the Followup object, except that there is no table to Followup
+        /// </summary>
+        public List<Followup> Followups { get; set; }
+
+        public Followup ConfirmationCall { get; set; }
+
+        public int EditSequence { get; set; }
 
         /// <summary>
         /// Typically the customer's surname or company name but freely changeable.
@@ -187,6 +198,11 @@ namespace TBRBooker.Model.Entities
             //doc["timeSlot"] = Convert.ToInt32(TimeSlot);
             doc["status"] = Convert.ToInt32(Status);
 
+            //followup for calendar
+            doc["followupDate"] = GetCurrentFollowup()?.FollowupDate.Ticks ?? 0;
+            doc["confirmationDate"] = ConfirmationCall != null && ConfirmationCall.IsOutstanding()
+                ? ConfirmationCall.FollowupDate.Ticks : 0;
+
             //fields we will likely want to report on
             doc["customerId"] = CustomerId;
             doc["accountId"] = AccountId;
@@ -253,10 +269,11 @@ namespace TBRBooker.Model.Entities
         public bool IsOpen()
         {
             //the program should also push user to cancelling/completing old deals/bookings (how about a spank per week for each unresolved booking status)
-            return IsBookingOpen(Status, BookingDate);
+            return IsBookingOpen(Status, BookingDate, GetCurrentFollowup() != null
+                || (!ConfirmationCall?.CompletedDate.HasValue ?? false));
         }
 
-        public static bool IsBookingOpen(BookingStates status, DateTime bookingDate)
+        public static bool IsBookingOpen(BookingStates status, DateTime bookingDate, bool isFollowupSet)
         {
             //it atleast has to be 3 months until we have solved the problem of reading older bookings
             //in a date range, then can probably drop back to 1 month
@@ -281,6 +298,13 @@ namespace TBRBooker.Model.Entities
                 default:
                     throw new Exception($"Unknown if status {status} is open.");
             }
+        }
+
+        public Followup GetCurrentFollowup()
+        {
+            if (Followups == null)
+                return null;
+            return Followups.SingleOrDefault(x => x.IsOutstanding());
         }
 
         public string ValidationErrors()
@@ -332,7 +356,9 @@ namespace TBRBooker.Model.Entities
         public CalendarItemDTO ToCalendarItem()
         {
             return new CalendarItemDTO(int.Parse(Id), this.BookingName, this.BookingDate,
-                this.BookingTime, Status);
+                this.BookingTime, Status, GetCurrentFollowup()?.FollowupDate.Date ?? null,
+                (ConfirmationCall != null && ConfirmationCall.IsOutstanding())
+                ? ConfirmationCall?.FollowupDate : null);
         }
     }
 }

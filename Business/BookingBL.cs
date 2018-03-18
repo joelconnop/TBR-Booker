@@ -34,6 +34,10 @@ namespace TBRBooker.Business
             {
                 booking.Account = DBBox.ReadItem<CorporateAccount>(booking.AccountId);
             }
+            if (booking.Followups == null)
+            {
+                booking.Followups = new List<Followup>();
+            }
         }
 
         public static void SaveBookingEtc(Booking booking)
@@ -48,13 +52,16 @@ namespace TBRBooker.Business
             {
                 if (string.IsNullOrEmpty(booking.BookingNickname))
                     booking.BookingNickname = booking.BookingName;
+                booking.EditSequence++;
                 DBBox.AddOrUpdate(booking);
                 if (!booking.Customer.BookingIds.Contains(booking.Id))
                 {
                     booking.Customer.BookingIds.Add(booking.Id);
                     DBBox.AddOrUpdate(booking.Customer);
                 }
+                GenerateBookingHtmlFile(booking, true);
                 booking.IsNewBooking = false;   //not a database field, just so calling functions know its in DB
+
             }
             catch (Amazon.DynamoDBv2.Model.ConditionalCheckFailedException)
             {
@@ -124,7 +131,7 @@ namespace TBRBooker.Business
             return nextNum.ToString();
         }
 
-        public static string GenerateBookingFormFilename(Booking booking)
+        public static string GenerateBookingHtmlFile(Booking booking, bool isForArchive)
         {
             string form = Resources.BookingForm;
             //var assembly = Assembly.GetExecutingAssembly();
@@ -163,7 +170,9 @@ namespace TBRBooker.Business
             else
                 form = form.Replace("[crocodile]", "<label> No</label>");
 
-            var filename = Settings.Inst().SaveFilesPath + $"\\bookings\\TBR Booker\\{booking.BookingDate.ToString("yyyyMMdd")}-{booking.BookingDate.DayOfWeek.ToString().Substring(0, 3)} {booking.BookingNickname}.html";
+            string archivePrefix = isForArchive ? "Backups\\" : "";
+            string archiveSuffix = isForArchive ? $"_v{booking.EditSequence}" : "";
+            var filename = Settings.Inst().WorkingDir + $"\\Booking Forms\\{archivePrefix}{booking.BookingDate.ToString("yyyyMMdd")}-{booking.BookingDate.DayOfWeek.ToString().Substring(0, 3)} {booking.BookingNickname}{archiveSuffix}.html";
             File.WriteAllText(filename, form);
             return filename;
         }
@@ -171,7 +180,7 @@ namespace TBRBooker.Business
         public static CalendarItemDTO UpdateCalendarItemAndUnderlyingBooking(CalendarItemDTO item)
         {
             bool isRemoveFromFutureCalendars = 
-                !Booking.IsBookingOpen(item.BookingStatus, item.BookingDate);
+                !Booking.IsBookingOpen(item.BookingStatus, item.BookingDate, item.FollowupDate.HasValue);
             bool isJobRecentlyCompleted = item.BookingStatus == Model.Enums.BookingStates.Booked
                 && GetBookingDateAndTime(item) < DateTime.Now;
 
@@ -200,8 +209,7 @@ namespace TBRBooker.Business
             var parsed = Utils.ParseTime(item.BookingTime);
             var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
          //   var finishTs = ts.Add(new TimeSpan(0, item.Duration, 0));
-            var bookingDateStart = new DateTime(item.BookingDate.Year, 
-                item.BookingDate.Month, item.BookingDate.Day);
+            var bookingDateStart = Utils.StartOfDay(item.BookingDate);  //should always be the start of day, but wasn't from day 1
             return bookingDateStart.AddTicks(ts.Ticks);
         }
 

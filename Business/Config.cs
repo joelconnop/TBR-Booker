@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TBRBooker.Base;
 
 namespace TBRBooker.Business
 {
@@ -11,7 +12,7 @@ namespace TBRBooker.Business
 
     public class Config
     {
-        private const string ConfigFilePath = @"..\..\..\..\TBRBookerConfig.txt";
+        private static string ConfigFilePath = Settings.Inst().WorkingDir + "\\config\\TBRBookerConfig.txt";
         private const char KVPSeperator = ':';
         private static Config _Instance { get; set; }
 

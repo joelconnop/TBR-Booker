@@ -26,7 +26,7 @@ namespace TBRBooker.Model.Entities
 
         public override string ToString()
         {
-            return $"{Date.ToString("G")}: {Amount.ToString("C")} ({Method.ToString()})";
+            return $"{Date.ToString("d")}: {Amount.ToString("C")} ({Method.ToString()})";
         }
 
     }

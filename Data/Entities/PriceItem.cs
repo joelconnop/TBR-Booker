@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TBRBooker.Base;
 using TBRBooker.Model.Enums;
 
 namespace TBRBooker.Model.Entities
@@ -16,13 +17,18 @@ namespace TBRBooker.Model.Entities
 
         public decimal Total => UnitPrice * Quantity;
 
+        public PriceItem()
+        {
+            //for deserialisation (somehow wasn't needed?)
+        }
+
         public PriceItem(ProductIds productId, decimal unitPrice, int quantity, string overrideDescription = null)
         {
             ProductId = productId;
             if (overrideDescription != null)
                 Description = overrideDescription;
             else
-                Description = Enum.GetName(typeof(ProductIds), ProductId);
+                Description = EnumHelper.GetEnumDescription(ProductId);
             UnitPrice = unitPrice;
             Quantity = quantity;
         }

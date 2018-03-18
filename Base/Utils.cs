@@ -86,5 +86,10 @@ namespace TBRBooker.Base
             return int.Parse(ts.Add(new TimeSpan(0, duration, 0)).ToString("hhmm"));
         }
 
+        public static DateTime StartOfDay(DateTime? dayIfNotForToday = null)
+        {
+            DateTime date = dayIfNotForToday.HasValue ? dayIfNotForToday.Value : DateTime.Now;
+            return new DateTime(date.Year, date.Month, date.Day);
+        }
     }
 }

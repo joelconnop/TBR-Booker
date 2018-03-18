@@ -50,6 +50,21 @@ namespace TBRBooker.Model.Entities
             return doc;
         }
 
+        public virtual List<string> GetReadAttributes()
+        {
+            return new List<string>() { "json" };
+        }
+
+        public virtual void LoadAttributes(Document doc)
+        {
+            //json is loaded from DBBox, and pretty much all attributes are loaded from json. Only override if something is missing or out of date in json.
+        }
+
+        public BaseItem()
+        {
+            //for deserialisation
+        }
+
         //replaced by GetAddUpdateDoc
         //public virtual Dictionary<string, AttributeValue> WriteAttributes()
         //{
@@ -67,60 +82,45 @@ namespace TBRBooker.Model.Entities
         //    return atts;
         //}
 
-        public virtual UpdateItemRequest GetUpdateRequest()
-        {
-            var request = new UpdateItemRequest
-            {
-                //TableName = this.TableName,   //TableName to be set by DBBox
-                Key = new Dictionary<string, AttributeValue>
-                {
-                    {"id", new AttributeValue{S = Id}}
-                },
-                UpdateExpression = "SET #j = :jsonval",
-                ExpressionAttributeNames = new Dictionary<string, string>
-                {
-                    {"#j", "json"},
-                },
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    {":jsonval", new AttributeValue{S = JsonConvert.SerializeObject(this)}},
-                }
-            };
+        //public virtual UpdateItemRequest GetUpdateRequest()
+        //{
+        //    var request = new UpdateItemRequest
+        //    {
+        //        //TableName = this.TableName,   //TableName to be set by DBBox
+        //        Key = new Dictionary<string, AttributeValue>
+        //        {
+        //            {"id", new AttributeValue{S = Id}}
+        //        },
+        //        UpdateExpression = "SET #j = :jsonval",
+        //        ExpressionAttributeNames = new Dictionary<string, string>
+        //        {
+        //            {"#j", "json"},
+        //        },
+        //        ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+        //        {
+        //            {":jsonval", new AttributeValue{S = JsonConvert.SerializeObject(this)}},
+        //        }
+        //    };
 
-            if (!string.IsNullOrEmpty(FilterName))
-            {
-                request.UpdateExpression += ", #f = :filter";
-                request.ExpressionAttributeNames.Add("#f", FilterName);
-                request.ExpressionAttributeValues.Add("filter", new AttributeValue { S = Filter.ToString() });
-            }
+        //    if (!string.IsNullOrEmpty(FilterName))
+        //    {
+        //        request.UpdateExpression += ", #f = :filter";
+        //        request.ExpressionAttributeNames.Add("#f", FilterName);
+        //        request.ExpressionAttributeValues.Add("filter", new AttributeValue { S = Filter.ToString() });
+        //    }
 
-            //_isNewItem = false;
+        //    //_isNewItem = false;
 
-            return request;
-        }
+        //    return request;
+        //}
 
-        public void AddAttribute(Dictionary<string, AttributeValue> atts, string key, AttributeValue value, string strValue)
-        {
-            if (!string.IsNullOrEmpty(strValue))
-            {
-                atts.Add(key, value);
-            }
-        }
-
-        public virtual List<string> GetReadAttributes()
-        {
-            return new List<string>() { "json" };
-        }
-
-        public virtual void LoadAttributes(Document doc)
-        {
-            //json is loaded from DBBox, and pretty much all attributes are loaded from json. Only override if something is missing or out of date in json.
-        }
-
-        public BaseItem()
-        {
-            //for deserialisation
-        }
+        //public void AddAttribute(Dictionary<string, AttributeValue> atts, string key, AttributeValue value, string strValue)
+        //{
+        //    if (!string.IsNullOrEmpty(strValue))
+        //    {
+        //        atts.Add(key, value);
+        //    }
+        //}
 
         //public BaseItem(string tableName, string filterName = null) //, Type filterType = null)
         //{

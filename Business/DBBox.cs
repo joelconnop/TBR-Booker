@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Shouldly;
 using TBRBooker.Model.DTO;
 using TBRBooker.Model.Enums;
+using TBRBooker.Base;
 
 namespace TBRBooker.Business
 {
@@ -64,13 +65,11 @@ namespace TBRBooker.Business
 
         //horrible practise but could be just the ticket for regression testing.
         //and real data can be copied to test data in AWS console, probably.
-        public static bool IsTestEnvironment { get; private set; }
-        private static bool IsCheckedTestEnvironment { get; set; }
-        public void SetTestEnvironment(bool isTestEnv)
+        public static bool IsTestEnvironment()
         {
-            IsTestEnvironment = isTestEnv;
+            return Settings.Inst().IsTestMode;
         }
-
+        private static bool IsCheckedTestEnvironment { get; set; }
 
 
         /// <summary>
@@ -83,19 +82,6 @@ namespace TBRBooker.Business
 
         private static AmazonDynamoDBClient GetDynamoDBClient()
         {
-            if (!IsCheckedTestEnvironment && !IsTestEnvironment)
-            {
-                // IsTestEnvironment = true;
-#if DEBUG
-                IsTestEnvironment = true;
-#else
-                string testAssemblyName = "Microsoft.VisualStudio.TestPlatform.TestFramework";
-                IsTestEnvironment = AppDomain.CurrentDomain.GetAssemblies()
-                    .Any(a => a.FullName.StartsWith(testAssemblyName));
-#endif
-                IsCheckedTestEnvironment = true;
-            }
-
             if (DbClient != null)
             {
                 return DbClient;
@@ -128,10 +114,10 @@ namespace TBRBooker.Business
         {
             string test = "test_";
             bool isTestTable = tableName.StartsWith(test);
-            if (isTestTable && !IsTestEnvironment)
+            if (isTestTable && !IsTestEnvironment())
                 //return tableName.Replace(test, "");   //use this if we decide we do need to hit here
                 throw new Exception("Should not have encountered " + tableName + " outside of testing.");
-            else if (!isTestTable && IsTestEnvironment)
+            else if (!isTestTable && IsTestEnvironment())
                 return test + tableName;
             else
                 return tableName;
@@ -261,7 +247,8 @@ namespace TBRBooker.Business
 
             AmazonDynamoDBClient client = GetDynamoDBClient();
             Table table = Table.LoadTable(client, CheckTablenameForTest(Booking.TABLE_NAME));
-            var attsToGet = new List<string> { "id", "bookingName", "bookingDate", "bookingTime", "status" };
+            var attsToGet = new List<string> { "id", "bookingName", "bookingDate",
+                "bookingTime", "status", "followupDate", "confirmationDate" };
             QueryOperationConfig qryConfig = null;
             ScanOperationConfig scanConfig = null;
 
@@ -293,11 +280,28 @@ namespace TBRBooker.Business
             {
                 foreach (var doc in search.GetNextSet())
                 {
-                    long ticks = Convert.ToInt64(doc["bookingDate"]);
+                    long bookingTicks = Convert.ToInt64(doc["bookingDate"]);
+
+                    DateTime? followupDate = null;
+                    if (doc.ContainsKey("followupDate"))    //(didn't have this field from beginning)
+                    {
+                        long followupTicks = long.Parse(doc["followupDate"]);
+                        if (followupTicks > 0)
+                            followupDate = new DateTime(followupTicks);
+                    }
+                    DateTime? confirmationDate = null;
+                    if (doc.ContainsKey("confirmationDate"))    //(didn't have this field from beginning)
+                    {
+                        long confirmationTicks = long.Parse(doc["confirmationDate"]);
+                        if (confirmationTicks > 0)
+                            confirmationDate = new DateTime(confirmationTicks);
+                    }
+
                     dbCalendar.Add(new CalendarItemDTO(int.Parse(doc["id"]), doc["bookingName"],
-                        ticks > 0 ? new DateTime(ticks) : default(DateTime),
+                        bookingTicks > 0 ? new DateTime(bookingTicks) : default(DateTime),
                         int.Parse(doc["bookingTime"]),
-                        (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"])));
+                        (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"]),
+                        followupDate, confirmationDate));
                         //TimeSlot = (TimeSlots)Enum.Parse(typeof(TimeSlots), doc["timeSlot"]),
                 }
             } while (!search.IsDone);

@@ -255,7 +255,7 @@ namespace TBRBooker.FrontEnd
             if (clickedBooking != null)
             {
                 selectedLbl.Text = clickedBooking.Summary();
-                selectedLbl.Left = MousePosition.X;
+                selectedLbl.Left = Box.PointToClient(MousePosition).X;
                 selectedLbl.Visible = true;
             }
             else
@@ -266,7 +266,8 @@ namespace TBRBooker.FrontEnd
 
         private Booking DetectClickedBooking()
         {
-            var time = _timeScale.OrderBy(x => Math.Abs(x.Key - MousePosition.X)).First().Value.Time;
+            var boxClickedX = Box.PointToClient(MousePosition).X;
+            var time = _timeScale.OrderBy(x => Math.Abs(x.Key - boxClickedX)).First().Value.Time;
             return BookingBL.GetClashBookings(_others, time, time).FirstOrDefault();
         }
 
@@ -282,6 +283,11 @@ namespace TBRBooker.FrontEnd
         }
 
         private void openBookingMnu_Click(object sender, EventArgs e)
+        {
+            OpenOtherBooking();
+        }
+
+        private void OpenOtherBooking()
         {
             var clickedBooking = DetectClickedBooking();
             if (clickedBooking != null)
@@ -317,8 +323,7 @@ namespace TBRBooker.FrontEnd
 
         private void Box_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            //open other booking
-            MessageBox.Show("double clicked.");
+            OpenOtherBooking();
         }
 
         private void Box_MouseMove(object sender, MouseEventArgs e)

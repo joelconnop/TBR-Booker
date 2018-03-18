@@ -42,5 +42,14 @@ namespace Tests
             result.ProductId.ShouldBe(ProductIds.ReptileShowBrisbane);
         }
 
+        [TestMethod]
+        public void PriceItemsBL_GetBaseService_4()
+        {
+            var result = PriceItemsBL.GetBaseItem(LocationRegions.BeyondBrisbane,
+                ServiceTypes.Other, PartyPackages.NotSet);
+
+            result.ProductId.ShouldBeNull();
+        }
+
     }
 }

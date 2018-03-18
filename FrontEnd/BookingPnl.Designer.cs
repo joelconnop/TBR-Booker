@@ -66,8 +66,6 @@
             this.dateGrp = new System.Windows.Forms.GroupBox();
             this.timePick = new System.Windows.Forms.DateTimePicker();
             this.timeSwitchChk = new System.Windows.Forms.CheckBox();
-            this.startPick = new TBRBooker.FrontEnd.TimePicker();
-            this.endPick = new TBRBooker.FrontEnd.TimePicker();
             this.label29 = new System.Windows.Forms.Label();
             this.durationDescFld = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
@@ -94,26 +92,29 @@
             this.pricingMnu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pricingGrp = new System.Windows.Forms.GroupBox();
-            this.priceHistoryLst = new System.Windows.Forms.ListBox();
-            this.pricingPayOnDayChk = new System.Windows.Forms.CheckBox();
-            this.priceProductBox = new System.Windows.Forms.ComboBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.priceMethodFld = new System.Windows.Forms.ComboBox();
-            this.priceSubmitBtn = new System.Windows.Forms.Button();
-            this.label22 = new System.Windows.Forms.Label();
-            this.priceSubmitFld = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.priceBalanceFld = new System.Windows.Forms.Label();
-            this.pricePaidLbl = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.priceDepositFld = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pricePaidPic = new System.Windows.Forms.PictureBox();
+            this.priceHistoryLst = new System.Windows.Forms.ListBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.pricePaidLbl = new System.Windows.Forms.Label();
+            this.priceBalanceFld = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.priceMethodBox = new System.Windows.Forms.ComboBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.priceSubmitBtn = new System.Windows.Forms.Button();
+            this.priceSubmitFld = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.priceIssuePic = new System.Windows.Forms.PictureBox();
+            this.pricingPayOnDayChk = new System.Windows.Forms.CheckBox();
+            this.priceProductBox = new System.Windows.Forms.ComboBox();
             this.priceQtyFld = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.priceAddBtn = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
             this.priceInvoiceBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.statusLbl = new System.Windows.Forms.Label();
@@ -143,6 +144,37 @@
             this.savedFld = new System.Windows.Forms.Label();
             this.savedTmr = new System.Windows.Forms.Timer(this.components);
             this.completeBtn = new System.Windows.Forms.Button();
+            this.fuPurposeFld = new System.Windows.Forms.TextBox();
+            this.fuTabs = new System.Windows.Forms.TabControl();
+            this.fuNextPage = new System.Windows.Forms.TabPage();
+            this.fuSetBtn = new System.Windows.Forms.Button();
+            this.label32 = new System.Windows.Forms.Label();
+            this.fuDatePick = new System.Windows.Forms.DateTimePicker();
+            this.label1 = new System.Windows.Forms.Label();
+            this.fuScheduleChk = new System.Windows.Forms.CheckBox();
+            this.fuCurrentPage = new System.Windows.Forms.TabPage();
+            this.label34 = new System.Windows.Forms.Label();
+            this.fuCompleteFld = new System.Windows.Forms.TextBox();
+            this.fuDateLbl = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.fuCompleteBtn = new System.Windows.Forms.Button();
+            this.fuPurposeLbl = new System.Windows.Forms.Label();
+            this.fuConfirmationPage = new System.Windows.Forms.TabPage();
+            this.fuConfirmationPick = new System.Windows.Forms.DateTimePicker();
+            this.label30 = new System.Windows.Forms.Label();
+            this.fuConfirmationNoteFld = new System.Windows.Forms.TextBox();
+            this.label35 = new System.Windows.Forms.Label();
+            this.fuConfirmationCompleteBtn = new System.Windows.Forms.Button();
+            this.fuHistoryPage = new System.Windows.Forms.TabPage();
+            this.fuHistoryLst = new System.Windows.Forms.ListView();
+            this.fuScheduledCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fuPurposeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fuCompletedCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.startPick = new TBRBooker.FrontEnd.TimePicker();
+            this.endPick = new TBRBooker.FrontEnd.TimePicker();
+            this.moveLeftBtn = new System.Windows.Forms.Button();
+            this.moveRightBtn = new System.Windows.Forms.Button();
             this.serviceGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
@@ -154,15 +186,24 @@
             this.notesGrp.SuspendLayout();
             this.pricingMnu.SuspendLayout();
             this.pricingGrp.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pricePaidPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.priceIssuePic)).BeginInit();
             this.panel1.SuspendLayout();
             this.contactGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).BeginInit();
+            this.fuTabs.SuspendLayout();
+            this.fuNextPage.SuspendLayout();
+            this.fuCurrentPage.SuspendLayout();
+            this.fuConfirmationPage.SuspendLayout();
+            this.fuHistoryPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(652, 23);
+            this.label13.Location = new System.Drawing.Point(652, 22);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(69, 13);
             this.label13.TabIndex = 6;
@@ -170,7 +211,7 @@
             // 
             // addressFld
             // 
-            this.addressFld.Location = new System.Drawing.Point(192, 39);
+            this.addressFld.Location = new System.Drawing.Point(192, 38);
             this.addressFld.Name = "addressFld";
             this.addressFld.Size = new System.Drawing.Size(417, 20);
             this.addressFld.TabIndex = 1;
@@ -178,7 +219,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(189, 22);
+            this.label11.Location = new System.Drawing.Point(189, 21);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(45, 13);
             this.label11.TabIndex = 5;
@@ -186,7 +227,7 @@
             // 
             // serviceGrp
             // 
-            this.serviceGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.serviceGrp.BackColor = System.Drawing.SystemColors.Control;
             this.serviceGrp.Controls.Add(this.serviceAnimalsToCome);
             this.serviceGrp.Controls.Add(this.label26);
             this.serviceGrp.Controls.Add(this.servicePaxFld);
@@ -197,9 +238,9 @@
             this.serviceGrp.Controls.Add(this.serviceBox);
             this.serviceGrp.Controls.Add(this.displayPnl);
             this.serviceGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.serviceGrp.Location = new System.Drawing.Point(6, 512);
+            this.serviceGrp.Location = new System.Drawing.Point(6, 457);
             this.serviceGrp.Name = "serviceGrp";
-            this.serviceGrp.Size = new System.Drawing.Size(923, 159);
+            this.serviceGrp.Size = new System.Drawing.Size(923, 150);
             this.serviceGrp.TabIndex = 4;
             this.serviceGrp.TabStop = false;
             this.serviceGrp.Text = "Service";
@@ -372,7 +413,7 @@
             // 
             // addressMapBtn
             // 
-            this.addressMapBtn.Location = new System.Drawing.Point(827, 38);
+            this.addressMapBtn.Location = new System.Drawing.Point(827, 37);
             this.addressMapBtn.Name = "addressMapBtn";
             this.addressMapBtn.Size = new System.Drawing.Size(75, 23);
             this.addressMapBtn.TabIndex = 3;
@@ -381,14 +422,14 @@
             // 
             // addressVenuFld
             // 
-            this.addressVenuFld.Location = new System.Drawing.Point(655, 39);
+            this.addressVenuFld.Location = new System.Drawing.Point(655, 38);
             this.addressVenuFld.Name = "addressVenuFld";
             this.addressVenuFld.Size = new System.Drawing.Size(134, 20);
             this.addressVenuFld.TabIndex = 2;
             // 
             // addressGrp
             // 
-            this.addressGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.addressGrp.BackColor = System.Drawing.SystemColors.Control;
             this.addressGrp.Controls.Add(this.addressMapBtn);
             this.addressGrp.Controls.Add(this.addressVenuFld);
             this.addressGrp.Controls.Add(this.label13);
@@ -397,9 +438,9 @@
             this.addressGrp.Controls.Add(this.addressRegionBox);
             this.addressGrp.Controls.Add(this.label12);
             this.addressGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.addressGrp.Location = new System.Drawing.Point(6, 417);
+            this.addressGrp.Location = new System.Drawing.Point(6, 381);
             this.addressGrp.Name = "addressGrp";
-            this.addressGrp.Size = new System.Drawing.Size(923, 86);
+            this.addressGrp.Size = new System.Drawing.Size(923, 69);
             this.addressGrp.TabIndex = 3;
             this.addressGrp.TabStop = false;
             this.addressGrp.Text = "Location";
@@ -407,7 +448,7 @@
             // addressRegionBox
             // 
             this.addressRegionBox.FormattingEnabled = true;
-            this.addressRegionBox.Location = new System.Drawing.Point(20, 38);
+            this.addressRegionBox.Location = new System.Drawing.Point(20, 37);
             this.addressRegionBox.Name = "addressRegionBox";
             this.addressRegionBox.Size = new System.Drawing.Size(134, 21);
             this.addressRegionBox.TabIndex = 0;
@@ -416,7 +457,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(17, 22);
+            this.label12.Location = new System.Drawing.Point(17, 21);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(45, 13);
             this.label12.TabIndex = 4;
@@ -494,7 +535,7 @@
             // 
             // dateGrp
             // 
-            this.dateGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.dateGrp.BackColor = System.Drawing.SystemColors.Control;
             this.dateGrp.Controls.Add(this.timePick);
             this.dateGrp.Controls.Add(this.timeSwitchChk);
             this.dateGrp.Controls.Add(this.startPick);
@@ -507,9 +548,9 @@
             this.dateGrp.Controls.Add(this.label15);
             this.dateGrp.Controls.Add(this.label17);
             this.dateGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.dateGrp.Location = new System.Drawing.Point(6, 231);
+            this.dateGrp.Location = new System.Drawing.Point(6, 214);
             this.dateGrp.Name = "dateGrp";
-            this.dateGrp.Size = new System.Drawing.Size(923, 177);
+            this.dateGrp.Size = new System.Drawing.Size(923, 160);
             this.dateGrp.TabIndex = 2;
             this.dateGrp.TabStop = false;
             this.dateGrp.Text = "Date and Time";
@@ -537,20 +578,6 @@
             this.timeSwitchChk.Text = "Switch to precise time input";
             this.timeSwitchChk.UseVisualStyleBackColor = true;
             this.timeSwitchChk.CheckedChanged += new System.EventHandler(this.timeSwitchChk_CheckedChanged);
-            // 
-            // startPick
-            // 
-            this.startPick.Location = new System.Drawing.Point(242, 40);
-            this.startPick.Name = "startPick";
-            this.startPick.Size = new System.Drawing.Size(84, 27);
-            this.startPick.TabIndex = 10;
-            // 
-            // endPick
-            // 
-            this.endPick.Location = new System.Drawing.Point(354, 40);
-            this.endPick.Name = "endPick";
-            this.endPick.Size = new System.Drawing.Size(84, 27);
-            this.endPick.TabIndex = 9;
             // 
             // label29
             // 
@@ -600,10 +627,10 @@
             // 
             // searchPnl
             // 
-            this.searchPnl.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.searchPnl.BackColor = System.Drawing.SystemColors.Control;
             this.searchPnl.Controls.Add(this.searcCloseBtn);
             this.searchPnl.Controls.Add(this.searchLst);
-            this.searchPnl.Location = new System.Drawing.Point(6, 223);
+            this.searchPnl.Location = new System.Drawing.Point(6, 206);
             this.searchPnl.Name = "searchPnl";
             this.searchPnl.Size = new System.Drawing.Size(923, 10);
             this.searchPnl.TabIndex = 1;
@@ -621,23 +648,23 @@
             // 
             // notesBookingFld
             // 
-            this.notesBookingFld.Location = new System.Drawing.Point(20, 35);
+            this.notesBookingFld.Location = new System.Drawing.Point(13, 37);
             this.notesBookingFld.Multiline = true;
             this.notesBookingFld.Name = "notesBookingFld";
-            this.notesBookingFld.Size = new System.Drawing.Size(424, 41);
+            this.notesBookingFld.Size = new System.Drawing.Size(236, 71);
             this.notesBookingFld.TabIndex = 0;
             // 
             // notesGrp
             // 
-            this.notesGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.notesGrp.BackColor = System.Drawing.SystemColors.Control;
             this.notesGrp.Controls.Add(this.label28);
             this.notesGrp.Controls.Add(this.notesPastFld);
             this.notesGrp.Controls.Add(this.label27);
             this.notesGrp.Controls.Add(this.notesBookingFld);
             this.notesGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.notesGrp.Location = new System.Drawing.Point(6, 845);
+            this.notesGrp.Location = new System.Drawing.Point(493, 804);
             this.notesGrp.Name = "notesGrp";
-            this.notesGrp.Size = new System.Drawing.Size(923, 82);
+            this.notesGrp.Size = new System.Drawing.Size(436, 118);
             this.notesGrp.TabIndex = 6;
             this.notesGrp.TabStop = false;
             this.notesGrp.Text = "Notes";
@@ -645,7 +672,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(484, 16);
+            this.label28.Location = new System.Drawing.Point(268, 21);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(57, 13);
             this.label28.TabIndex = 3;
@@ -653,16 +680,16 @@
             // 
             // notesPastFld
             // 
-            this.notesPastFld.Location = new System.Drawing.Point(487, 35);
+            this.notesPastFld.Location = new System.Drawing.Point(271, 37);
             this.notesPastFld.Multiline = true;
             this.notesPastFld.Name = "notesPastFld";
-            this.notesPastFld.Size = new System.Drawing.Size(424, 41);
+            this.notesPastFld.Size = new System.Drawing.Size(151, 70);
             this.notesPastFld.TabIndex = 1;
             // 
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(17, 16);
+            this.label27.Location = new System.Drawing.Point(10, 18);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(160, 13);
             this.label27.TabIndex = 2;
@@ -671,7 +698,7 @@
             // priceCalculatedFld
             // 
             this.priceCalculatedFld.AutoSize = true;
-            this.priceCalculatedFld.Location = new System.Drawing.Point(532, 41);
+            this.priceCalculatedFld.Location = new System.Drawing.Point(84, 24);
             this.priceCalculatedFld.Name = "priceCalculatedFld";
             this.priceCalculatedFld.Size = new System.Drawing.Size(19, 13);
             this.priceCalculatedFld.TabIndex = 5;
@@ -680,7 +707,7 @@
             // priceOverrideFld
             // 
             this.priceOverrideFld.Enabled = false;
-            this.priceOverrideFld.Location = new System.Drawing.Point(546, 67);
+            this.priceOverrideFld.Location = new System.Drawing.Point(98, 50);
             this.priceOverrideFld.Name = "priceOverrideFld";
             this.priceOverrideFld.Size = new System.Drawing.Size(47, 20);
             this.priceOverrideFld.TabIndex = 6;
@@ -689,7 +716,7 @@
             // priceOverrideChk
             // 
             this.priceOverrideChk.AutoSize = true;
-            this.priceOverrideChk.Location = new System.Drawing.Point(465, 69);
+            this.priceOverrideChk.Location = new System.Drawing.Point(17, 52);
             this.priceOverrideChk.Name = "priceOverrideChk";
             this.priceOverrideChk.Size = new System.Drawing.Size(66, 17);
             this.priceOverrideChk.TabIndex = 15;
@@ -700,7 +727,7 @@
             // priceCalculatedLbl
             // 
             this.priceCalculatedLbl.AutoSize = true;
-            this.priceCalculatedLbl.Location = new System.Drawing.Point(463, 41);
+            this.priceCalculatedLbl.Location = new System.Drawing.Point(15, 24);
             this.priceCalculatedLbl.Name = "priceCalculatedLbl";
             this.priceCalculatedLbl.Size = new System.Drawing.Size(60, 13);
             this.priceCalculatedLbl.TabIndex = 14;
@@ -727,17 +754,19 @@
             // 
             // priceAmtFld
             // 
-            this.priceAmtFld.Location = new System.Drawing.Point(279, 122);
+            this.priceAmtFld.Location = new System.Drawing.Point(279, 150);
             this.priceAmtFld.Name = "priceAmtFld";
             this.priceAmtFld.Size = new System.Drawing.Size(47, 20);
             this.priceAmtFld.TabIndex = 2;
+            this.priceAmtFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.priceAmtFld_KeyPress);
             // 
             // priceDescFld
             // 
-            this.priceDescFld.Location = new System.Drawing.Point(160, 122);
+            this.priceDescFld.Location = new System.Drawing.Point(21, 150);
             this.priceDescFld.Name = "priceDescFld";
-            this.priceDescFld.Size = new System.Drawing.Size(102, 20);
+            this.priceDescFld.Size = new System.Drawing.Size(242, 20);
             this.priceDescFld.TabIndex = 1;
+            this.priceDescFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.priceDescFld_KeyPress);
             // 
             // priceItemsLst
             // 
@@ -771,152 +800,46 @@
             // 
             // pricingGrp
             // 
-            this.pricingGrp.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.pricingGrp.Controls.Add(this.priceHistoryLst);
+            this.pricingGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.pricingGrp.Controls.Add(this.groupBox2);
+            this.pricingGrp.Controls.Add(this.groupBox1);
             this.pricingGrp.Controls.Add(this.pricingPayOnDayChk);
             this.pricingGrp.Controls.Add(this.priceProductBox);
-            this.pricingGrp.Controls.Add(this.label23);
-            this.pricingGrp.Controls.Add(this.priceMethodFld);
-            this.pricingGrp.Controls.Add(this.priceSubmitBtn);
-            this.pricingGrp.Controls.Add(this.label22);
-            this.pricingGrp.Controls.Add(this.priceSubmitFld);
-            this.pricingGrp.Controls.Add(this.label21);
-            this.pricingGrp.Controls.Add(this.label8);
-            this.pricingGrp.Controls.Add(this.priceBalanceFld);
-            this.pricingGrp.Controls.Add(this.pricePaidLbl);
-            this.pricingGrp.Controls.Add(this.label20);
-            this.pricingGrp.Controls.Add(this.priceDepositFld);
-            this.pricingGrp.Controls.Add(this.label19);
             this.pricingGrp.Controls.Add(this.priceQtyFld);
-            this.pricingGrp.Controls.Add(this.label1);
             this.pricingGrp.Controls.Add(this.priceAddBtn);
             this.pricingGrp.Controls.Add(this.priceAmtFld);
             this.pricingGrp.Controls.Add(this.priceDescFld);
-            this.pricingGrp.Controls.Add(this.priceOverrideFld);
             this.pricingGrp.Controls.Add(this.priceItemsLst);
-            this.pricingGrp.Controls.Add(this.priceCalculatedFld);
-            this.pricingGrp.Controls.Add(this.priceOverrideChk);
-            this.pricingGrp.Controls.Add(this.priceCalculatedLbl);
             this.pricingGrp.Controls.Add(this.label16);
-            this.pricingGrp.Controls.Add(this.label14);
-            this.pricingGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.pricingGrp.Location = new System.Drawing.Point(6, 679);
+            this.pricingGrp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.pricingGrp.Location = new System.Drawing.Point(6, 615);
             this.pricingGrp.Name = "pricingGrp";
-            this.pricingGrp.Size = new System.Drawing.Size(923, 158);
+            this.pricingGrp.Size = new System.Drawing.Size(923, 177);
             this.pricingGrp.TabIndex = 5;
             this.pricingGrp.TabStop = false;
             this.pricingGrp.Text = "Pricing";
             // 
-            // priceHistoryLst
+            // groupBox2
             // 
-            this.priceHistoryLst.FormattingEnabled = true;
-            this.priceHistoryLst.Location = new System.Drawing.Point(731, 108);
-            this.priceHistoryLst.Name = "priceHistoryLst";
-            this.priceHistoryLst.Size = new System.Drawing.Size(180, 43);
-            this.priceHistoryLst.TabIndex = 27;
-            // 
-            // pricingPayOnDayChk
-            // 
-            this.pricingPayOnDayChk.AutoSize = true;
-            this.pricingPayOnDayChk.Location = new System.Drawing.Point(465, 126);
-            this.pricingPayOnDayChk.Name = "pricingPayOnDayChk";
-            this.pricingPayOnDayChk.Size = new System.Drawing.Size(151, 17);
-            this.pricingPayOnDayChk.TabIndex = 8;
-            this.pricingPayOnDayChk.Text = "Payment on day of service";
-            this.pricingPayOnDayChk.UseVisualStyleBackColor = true;
-            // 
-            // priceProductBox
-            // 
-            this.priceProductBox.FormattingEnabled = true;
-            this.priceProductBox.Location = new System.Drawing.Point(20, 122);
-            this.priceProductBox.Name = "priceProductBox";
-            this.priceProductBox.Size = new System.Drawing.Size(134, 21);
-            this.priceProductBox.TabIndex = 0;
-            this.priceProductBox.SelectedIndexChanged += new System.EventHandler(this.priceProductBox_SelectedIndexChanged);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(644, 112);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(83, 13);
-            this.label23.TabIndex = 25;
-            this.label23.Text = "Payment History";
-            // 
-            // priceMethodFld
-            // 
-            this.priceMethodFld.FormattingEnabled = true;
-            this.priceMethodFld.Location = new System.Drawing.Point(787, 80);
-            this.priceMethodFld.Name = "priceMethodFld";
-            this.priceMethodFld.Size = new System.Drawing.Size(64, 21);
-            this.priceMethodFld.TabIndex = 10;
-            // 
-            // priceSubmitBtn
-            // 
-            this.priceSubmitBtn.Location = new System.Drawing.Point(860, 79);
-            this.priceSubmitBtn.Name = "priceSubmitBtn";
-            this.priceSubmitBtn.Size = new System.Drawing.Size(51, 23);
-            this.priceSubmitBtn.TabIndex = 11;
-            this.priceSubmitBtn.Text = "Submit";
-            this.priceSubmitBtn.UseVisualStyleBackColor = true;
-            this.priceSubmitBtn.Click += new System.EventHandler(this.priceSubmitBtn_Click);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(629, 84);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(81, 13);
-            this.label22.TabIndex = 23;
-            this.label22.Text = "Make Payment:";
-            // 
-            // priceSubmitFld
-            // 
-            this.priceSubmitFld.Location = new System.Drawing.Point(731, 81);
-            this.priceSubmitFld.Name = "priceSubmitFld";
-            this.priceSubmitFld.Size = new System.Drawing.Size(47, 20);
-            this.priceSubmitFld.TabIndex = 9;
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(679, 25);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(31, 13);
-            this.label21.TabIndex = 19;
-            this.label21.Text = "Paid:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(661, 52);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(49, 13);
-            this.label8.TabIndex = 21;
-            this.label8.Text = "Balance:";
-            // 
-            // priceBalanceFld
-            // 
-            this.priceBalanceFld.AutoSize = true;
-            this.priceBalanceFld.Location = new System.Drawing.Point(716, 52);
-            this.priceBalanceFld.Name = "priceBalanceFld";
-            this.priceBalanceFld.Size = new System.Drawing.Size(19, 13);
-            this.priceBalanceFld.TabIndex = 22;
-            this.priceBalanceFld.Text = "$0";
-            // 
-            // pricePaidLbl
-            // 
-            this.pricePaidLbl.AutoSize = true;
-            this.pricePaidLbl.Location = new System.Drawing.Point(716, 25);
-            this.pricePaidLbl.Name = "pricePaidLbl";
-            this.pricePaidLbl.Size = new System.Drawing.Size(19, 13);
-            this.pricePaidLbl.TabIndex = 20;
-            this.pricePaidLbl.Text = "$0";
+            this.groupBox2.BackColor = System.Drawing.SystemColors.Control;
+            this.groupBox2.Controls.Add(this.priceCalculatedLbl);
+            this.groupBox2.Controls.Add(this.priceOverrideChk);
+            this.groupBox2.Controls.Add(this.priceCalculatedFld);
+            this.groupBox2.Controls.Add(this.label20);
+            this.groupBox2.Controls.Add(this.priceOverrideFld);
+            this.groupBox2.Controls.Add(this.priceDepositFld);
+            this.groupBox2.Controls.Add(this.label19);
+            this.groupBox2.Location = new System.Drawing.Point(453, 13);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(163, 114);
+            this.groupBox2.TabIndex = 29;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Total";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(487, 100);
+            this.label20.Location = new System.Drawing.Point(39, 83);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(58, 13);
             this.label20.TabIndex = 17;
@@ -924,7 +847,7 @@
             // 
             // priceDepositFld
             // 
-            this.priceDepositFld.Location = new System.Drawing.Point(546, 97);
+            this.priceDepositFld.Location = new System.Drawing.Point(98, 80);
             this.priceDepositFld.Name = "priceDepositFld";
             this.priceDepositFld.Size = new System.Drawing.Size(47, 20);
             this.priceDepositFld.TabIndex = 7;
@@ -933,33 +856,184 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(532, 70);
+            this.label19.Location = new System.Drawing.Point(84, 53);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(13, 13);
             this.label19.TabIndex = 16;
             this.label19.Text = "$";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.pricePaidPic);
+            this.groupBox1.Controls.Add(this.priceHistoryLst);
+            this.groupBox1.Controls.Add(this.label14);
+            this.groupBox1.Controls.Add(this.pricePaidLbl);
+            this.groupBox1.Controls.Add(this.priceBalanceFld);
+            this.groupBox1.Controls.Add(this.label23);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.priceMethodBox);
+            this.groupBox1.Controls.Add(this.label21);
+            this.groupBox1.Controls.Add(this.priceSubmitBtn);
+            this.groupBox1.Controls.Add(this.priceSubmitFld);
+            this.groupBox1.Controls.Add(this.label22);
+            this.groupBox1.Controls.Add(this.priceIssuePic);
+            this.groupBox1.Location = new System.Drawing.Point(622, 13);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(291, 157);
+            this.groupBox1.TabIndex = 28;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Payments";
+            // 
+            // pricePaidPic
+            // 
+            this.pricePaidPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.greentick;
+            this.pricePaidPic.Location = new System.Drawing.Point(146, 27);
+            this.pricePaidPic.Name = "pricePaidPic";
+            this.pricePaidPic.Size = new System.Drawing.Size(39, 37);
+            this.pricePaidPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pricePaidPic.TabIndex = 28;
+            this.pricePaidPic.TabStop = false;
+            // 
+            // priceHistoryLst
+            // 
+            this.priceHistoryLst.FormattingEnabled = true;
+            this.priceHistoryLst.Location = new System.Drawing.Point(105, 107);
+            this.priceHistoryLst.Name = "priceHistoryLst";
+            this.priceHistoryLst.Size = new System.Drawing.Size(180, 43);
+            this.priceHistoryLst.TabIndex = 27;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(90, 83);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(13, 13);
+            this.label14.TabIndex = 24;
+            this.label14.Text = "$";
+            // 
+            // pricePaidLbl
+            // 
+            this.pricePaidLbl.AutoSize = true;
+            this.pricePaidLbl.Location = new System.Drawing.Point(90, 24);
+            this.pricePaidLbl.Name = "pricePaidLbl";
+            this.pricePaidLbl.Size = new System.Drawing.Size(19, 13);
+            this.pricePaidLbl.TabIndex = 20;
+            this.pricePaidLbl.Text = "$0";
+            // 
+            // priceBalanceFld
+            // 
+            this.priceBalanceFld.AutoSize = true;
+            this.priceBalanceFld.Location = new System.Drawing.Point(90, 51);
+            this.priceBalanceFld.Name = "priceBalanceFld";
+            this.priceBalanceFld.Size = new System.Drawing.Size(19, 13);
+            this.priceBalanceFld.TabIndex = 22;
+            this.priceBalanceFld.Text = "$0";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(18, 111);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(83, 13);
+            this.label23.TabIndex = 25;
+            this.label23.Text = "Payment History";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(35, 51);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(49, 13);
+            this.label8.TabIndex = 21;
+            this.label8.Text = "Balance:";
+            // 
+            // priceMethodBox
+            // 
+            this.priceMethodBox.FormattingEnabled = true;
+            this.priceMethodBox.Location = new System.Drawing.Point(161, 79);
+            this.priceMethodBox.Name = "priceMethodBox";
+            this.priceMethodBox.Size = new System.Drawing.Size(64, 21);
+            this.priceMethodBox.TabIndex = 10;
+            this.priceMethodBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.priceMethodBox_KeyUp);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(53, 24);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(31, 13);
+            this.label21.TabIndex = 19;
+            this.label21.Text = "Paid:";
+            // 
+            // priceSubmitBtn
+            // 
+            this.priceSubmitBtn.Location = new System.Drawing.Point(234, 78);
+            this.priceSubmitBtn.Name = "priceSubmitBtn";
+            this.priceSubmitBtn.Size = new System.Drawing.Size(51, 23);
+            this.priceSubmitBtn.TabIndex = 11;
+            this.priceSubmitBtn.Text = "Submit";
+            this.priceSubmitBtn.UseVisualStyleBackColor = true;
+            this.priceSubmitBtn.Click += new System.EventHandler(this.priceSubmitBtn_Click);
+            // 
+            // priceSubmitFld
+            // 
+            this.priceSubmitFld.Location = new System.Drawing.Point(105, 80);
+            this.priceSubmitFld.Name = "priceSubmitFld";
+            this.priceSubmitFld.Size = new System.Drawing.Size(47, 20);
+            this.priceSubmitFld.TabIndex = 9;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(3, 83);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(81, 13);
+            this.label22.TabIndex = 23;
+            this.label22.Text = "Make Payment:";
+            // 
+            // priceIssuePic
+            // 
+            this.priceIssuePic.Image = global::TBRBooker.FrontEnd.Properties.Resources.exclamation;
+            this.priceIssuePic.Location = new System.Drawing.Point(146, 27);
+            this.priceIssuePic.Name = "priceIssuePic";
+            this.priceIssuePic.Size = new System.Drawing.Size(39, 37);
+            this.priceIssuePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.priceIssuePic.TabIndex = 29;
+            this.priceIssuePic.TabStop = false;
+            // 
+            // pricingPayOnDayChk
+            // 
+            this.pricingPayOnDayChk.AutoSize = true;
+            this.pricingPayOnDayChk.Location = new System.Drawing.Point(458, 139);
+            this.pricingPayOnDayChk.Name = "pricingPayOnDayChk";
+            this.pricingPayOnDayChk.Size = new System.Drawing.Size(151, 17);
+            this.pricingPayOnDayChk.TabIndex = 8;
+            this.pricingPayOnDayChk.Text = "Payment on day of service";
+            this.pricingPayOnDayChk.UseVisualStyleBackColor = true;
+            // 
+            // priceProductBox
+            // 
+            this.priceProductBox.DropDownWidth = 200;
+            this.priceProductBox.FormattingEnabled = true;
+            this.priceProductBox.Location = new System.Drawing.Point(20, 124);
+            this.priceProductBox.Name = "priceProductBox";
+            this.priceProductBox.Size = new System.Drawing.Size(243, 21);
+            this.priceProductBox.TabIndex = 0;
+            this.priceProductBox.SelectedIndexChanged += new System.EventHandler(this.priceProductBox_SelectedIndexChanged);
+            this.priceProductBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.priceProductBox_KeyUp);
+            // 
             // priceQtyFld
             // 
-            this.priceQtyFld.Location = new System.Drawing.Point(335, 122);
+            this.priceQtyFld.Location = new System.Drawing.Point(334, 150);
             this.priceQtyFld.Name = "priceQtyFld";
             this.priceQtyFld.Size = new System.Drawing.Size(28, 20);
             this.priceQtyFld.TabIndex = 3;
             this.priceQtyFld.Text = "1";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(463, 23);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(36, 13);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "Total";
+            this.priceQtyFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.priceQtyFld_KeyPress);
             // 
             // priceAddBtn
             // 
-            this.priceAddBtn.Location = new System.Drawing.Point(371, 120);
+            this.priceAddBtn.Location = new System.Drawing.Point(371, 148);
             this.priceAddBtn.Name = "priceAddBtn";
             this.priceAddBtn.Size = new System.Drawing.Size(56, 23);
             this.priceAddBtn.TabIndex = 4;
@@ -970,26 +1044,17 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(268, 125);
+            this.label16.Location = new System.Drawing.Point(268, 153);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(13, 13);
             this.label16.TabIndex = 18;
             this.label16.Text = "$";
             // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(716, 84);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(13, 13);
-            this.label14.TabIndex = 24;
-            this.label14.Text = "$";
-            // 
             // priceInvoiceBtn
             // 
-            this.priceInvoiceBtn.Location = new System.Drawing.Point(219, 933);
+            this.priceInvoiceBtn.Location = new System.Drawing.Point(224, 933);
             this.priceInvoiceBtn.Name = "priceInvoiceBtn";
-            this.priceInvoiceBtn.Size = new System.Drawing.Size(106, 23);
+            this.priceInvoiceBtn.Size = new System.Drawing.Size(101, 23);
             this.priceInvoiceBtn.TabIndex = 7;
             this.priceInvoiceBtn.Text = "Generate Invoice";
             this.priceInvoiceBtn.UseVisualStyleBackColor = true;
@@ -998,11 +1063,13 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Controls.Add(this.moveRightBtn);
+            this.panel1.Controls.Add(this.moveLeftBtn);
             this.panel1.Controls.Add(this.statusLbl);
             this.panel1.Controls.Add(this.titleLbl);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(936, 84);
+            this.panel1.Size = new System.Drawing.Size(936, 67);
             this.panel1.TabIndex = 14;
             // 
             // statusLbl
@@ -1010,7 +1077,7 @@
             this.statusLbl.AutoSize = true;
             this.statusLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.statusLbl.Location = new System.Drawing.Point(595, 20);
+            this.statusLbl.Location = new System.Drawing.Point(539, 14);
             this.statusLbl.Name = "statusLbl";
             this.statusLbl.Size = new System.Drawing.Size(251, 42);
             this.statusLbl.TabIndex = 1;
@@ -1022,7 +1089,7 @@
             // 
             this.titleLbl.AutoSize = true;
             this.titleLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleLbl.Location = new System.Drawing.Point(12, 20);
+            this.titleLbl.Location = new System.Drawing.Point(67, 14);
             this.titleLbl.Name = "titleLbl";
             this.titleLbl.Size = new System.Drawing.Size(354, 42);
             this.titleLbl.TabIndex = 0;
@@ -1103,7 +1170,7 @@
             // 
             // contactCompanyBtn
             // 
-            this.contactCompanyBtn.Location = new System.Drawing.Point(692, 35);
+            this.contactCompanyBtn.Location = new System.Drawing.Point(692, 36);
             this.contactCompanyBtn.Name = "contactCompanyBtn";
             this.contactCompanyBtn.Size = new System.Drawing.Size(107, 23);
             this.contactCompanyBtn.TabIndex = 8;
@@ -1162,7 +1229,7 @@
             // 
             // contactGrp
             // 
-            this.contactGrp.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.contactGrp.BackColor = System.Drawing.SystemColors.Control;
             this.contactGrp.Controls.Add(this.contactLeadBox);
             this.contactGrp.Controls.Add(this.label7);
             this.contactGrp.Controls.Add(this.contactSearchChk);
@@ -1184,7 +1251,7 @@
             this.contactGrp.Controls.Add(this.contactFirstNameFld);
             this.contactGrp.Controls.Add(this.label2);
             this.contactGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.contactGrp.Location = new System.Drawing.Point(6, 90);
+            this.contactGrp.Location = new System.Drawing.Point(6, 73);
             this.contactGrp.Name = "contactGrp";
             this.contactGrp.Size = new System.Drawing.Size(923, 131);
             this.contactGrp.TabIndex = 0;
@@ -1274,11 +1341,309 @@
             this.completeBtn.UseVisualStyleBackColor = true;
             this.completeBtn.Click += new System.EventHandler(this.completeBtn_Click);
             // 
+            // fuPurposeFld
+            // 
+            this.fuPurposeFld.Enabled = false;
+            this.fuPurposeFld.Location = new System.Drawing.Point(88, 65);
+            this.fuPurposeFld.Name = "fuPurposeFld";
+            this.fuPurposeFld.Size = new System.Drawing.Size(352, 20);
+            this.fuPurposeFld.TabIndex = 11;
+            // 
+            // fuTabs
+            // 
+            this.fuTabs.Controls.Add(this.fuNextPage);
+            this.fuTabs.Controls.Add(this.fuCurrentPage);
+            this.fuTabs.Controls.Add(this.fuConfirmationPage);
+            this.fuTabs.Controls.Add(this.fuHistoryPage);
+            this.fuTabs.Location = new System.Drawing.Point(6, 804);
+            this.fuTabs.Name = "fuTabs";
+            this.fuTabs.SelectedIndex = 0;
+            this.fuTabs.Size = new System.Drawing.Size(468, 118);
+            this.fuTabs.TabIndex = 30;
+            // 
+            // fuNextPage
+            // 
+            this.fuNextPage.Controls.Add(this.fuSetBtn);
+            this.fuNextPage.Controls.Add(this.label32);
+            this.fuNextPage.Controls.Add(this.fuDatePick);
+            this.fuNextPage.Controls.Add(this.label1);
+            this.fuNextPage.Controls.Add(this.fuScheduleChk);
+            this.fuNextPage.Controls.Add(this.fuPurposeFld);
+            this.fuNextPage.Location = new System.Drawing.Point(4, 22);
+            this.fuNextPage.Name = "fuNextPage";
+            this.fuNextPage.Size = new System.Drawing.Size(460, 92);
+            this.fuNextPage.TabIndex = 2;
+            this.fuNextPage.Text = "Set Next Followup";
+            this.fuNextPage.UseVisualStyleBackColor = true;
+            // 
+            // fuSetBtn
+            // 
+            this.fuSetBtn.Enabled = false;
+            this.fuSetBtn.Location = new System.Drawing.Point(327, 13);
+            this.fuSetBtn.Name = "fuSetBtn";
+            this.fuSetBtn.Size = new System.Drawing.Size(76, 23);
+            this.fuSetBtn.TabIndex = 26;
+            this.fuSetBtn.Text = "Set";
+            this.fuSetBtn.UseVisualStyleBackColor = true;
+            this.fuSetBtn.Visible = false;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(32, 68);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(49, 13);
+            this.label32.TabIndex = 15;
+            this.label32.Text = "Purpose:";
+            // 
+            // fuDatePick
+            // 
+            this.fuDatePick.Enabled = false;
+            this.fuDatePick.Location = new System.Drawing.Point(88, 39);
+            this.fuDatePick.Name = "fuDatePick";
+            this.fuDatePick.Size = new System.Drawing.Size(200, 20);
+            this.fuDatePick.TabIndex = 13;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(11, 42);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Schedule for:";
+            // 
+            // fuScheduleChk
+            // 
+            this.fuScheduleChk.AutoSize = true;
+            this.fuScheduleChk.Location = new System.Drawing.Point(15, 13);
+            this.fuScheduleChk.Name = "fuScheduleChk";
+            this.fuScheduleChk.Size = new System.Drawing.Size(125, 17);
+            this.fuScheduleChk.TabIndex = 12;
+            this.fuScheduleChk.Text = "Schedule a Followup";
+            this.fuScheduleChk.UseVisualStyleBackColor = true;
+            this.fuScheduleChk.CheckedChanged += new System.EventHandler(this.fuScheduleChk_CheckedChanged);
+            // 
+            // fuCurrentPage
+            // 
+            this.fuCurrentPage.Controls.Add(this.label34);
+            this.fuCurrentPage.Controls.Add(this.fuCompleteFld);
+            this.fuCurrentPage.Controls.Add(this.fuDateLbl);
+            this.fuCurrentPage.Controls.Add(this.label31);
+            this.fuCurrentPage.Controls.Add(this.fuCompleteBtn);
+            this.fuCurrentPage.Controls.Add(this.fuPurposeLbl);
+            this.fuCurrentPage.Location = new System.Drawing.Point(4, 22);
+            this.fuCurrentPage.Name = "fuCurrentPage";
+            this.fuCurrentPage.Padding = new System.Windows.Forms.Padding(3);
+            this.fuCurrentPage.Size = new System.Drawing.Size(460, 92);
+            this.fuCurrentPage.TabIndex = 0;
+            this.fuCurrentPage.Text = "Complete Current Followup";
+            this.fuCurrentPage.UseVisualStyleBackColor = true;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(6, 42);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(88, 13);
+            this.label34.TabIndex = 18;
+            this.label34.Text = "Completion Note:";
+            // 
+            // fuCompleteFld
+            // 
+            this.fuCompleteFld.Location = new System.Drawing.Point(97, 39);
+            this.fuCompleteFld.Name = "fuCompleteFld";
+            this.fuCompleteFld.Size = new System.Drawing.Size(343, 20);
+            this.fuCompleteFld.TabIndex = 17;
+            this.fuCompleteFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fuCompleteFld_KeyPress);
+            // 
+            // fuDateLbl
+            // 
+            this.fuDateLbl.AutoSize = true;
+            this.fuDateLbl.Location = new System.Drawing.Point(94, 65);
+            this.fuDateLbl.Name = "fuDateLbl";
+            this.fuDateLbl.Size = new System.Drawing.Size(81, 13);
+            this.fuDateLbl.TabIndex = 16;
+            this.fuDateLbl.Text = "22nd May 2018";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(18, 65);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(76, 13);
+            this.label31.TabIndex = 15;
+            this.label31.Text = "Scheduled on:";
+            // 
+            // fuCompleteBtn
+            // 
+            this.fuCompleteBtn.Location = new System.Drawing.Point(364, 63);
+            this.fuCompleteBtn.Name = "fuCompleteBtn";
+            this.fuCompleteBtn.Size = new System.Drawing.Size(76, 23);
+            this.fuCompleteBtn.TabIndex = 14;
+            this.fuCompleteBtn.Text = "Complete";
+            this.fuCompleteBtn.UseVisualStyleBackColor = true;
+            this.fuCompleteBtn.Click += new System.EventHandler(this.fuCompleteBtn_Click);
+            // 
+            // fuPurposeLbl
+            // 
+            this.fuPurposeLbl.AutoSize = true;
+            this.fuPurposeLbl.Location = new System.Drawing.Point(11, 14);
+            this.fuPurposeLbl.Name = "fuPurposeLbl";
+            this.fuPurposeLbl.Size = new System.Drawing.Size(170, 13);
+            this.fuPurposeLbl.TabIndex = 13;
+            this.fuPurposeLbl.Text = "Followup Instruction like \'call back\'";
+            // 
+            // fuConfirmationPage
+            // 
+            this.fuConfirmationPage.Controls.Add(this.fuConfirmationPick);
+            this.fuConfirmationPage.Controls.Add(this.label30);
+            this.fuConfirmationPage.Controls.Add(this.fuConfirmationNoteFld);
+            this.fuConfirmationPage.Controls.Add(this.label35);
+            this.fuConfirmationPage.Controls.Add(this.fuConfirmationCompleteBtn);
+            this.fuConfirmationPage.Location = new System.Drawing.Point(4, 22);
+            this.fuConfirmationPage.Name = "fuConfirmationPage";
+            this.fuConfirmationPage.Size = new System.Drawing.Size(460, 92);
+            this.fuConfirmationPage.TabIndex = 3;
+            this.fuConfirmationPage.Text = "Confirmation Call";
+            this.fuConfirmationPage.UseVisualStyleBackColor = true;
+            // 
+            // fuConfirmationPick
+            // 
+            this.fuConfirmationPick.Enabled = false;
+            this.fuConfirmationPick.Location = new System.Drawing.Point(97, 12);
+            this.fuConfirmationPick.Name = "fuConfirmationPick";
+            this.fuConfirmationPick.Size = new System.Drawing.Size(259, 20);
+            this.fuConfirmationPick.TabIndex = 26;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(6, 42);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(88, 13);
+            this.label30.TabIndex = 24;
+            this.label30.Text = "Completion Note:";
+            // 
+            // fuConfirmationNoteFld
+            // 
+            this.fuConfirmationNoteFld.Location = new System.Drawing.Point(97, 39);
+            this.fuConfirmationNoteFld.Name = "fuConfirmationNoteFld";
+            this.fuConfirmationNoteFld.Size = new System.Drawing.Size(343, 20);
+            this.fuConfirmationNoteFld.TabIndex = 23;
+            this.fuConfirmationNoteFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fuConfirmationNoteFld_KeyPress);
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(14, 15);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(76, 13);
+            this.label35.TabIndex = 21;
+            this.label35.Text = "Scheduled on:";
+            // 
+            // fuConfirmationCompleteBtn
+            // 
+            this.fuConfirmationCompleteBtn.Location = new System.Drawing.Point(364, 63);
+            this.fuConfirmationCompleteBtn.Name = "fuConfirmationCompleteBtn";
+            this.fuConfirmationCompleteBtn.Size = new System.Drawing.Size(76, 23);
+            this.fuConfirmationCompleteBtn.TabIndex = 20;
+            this.fuConfirmationCompleteBtn.Text = "Complete";
+            this.fuConfirmationCompleteBtn.UseVisualStyleBackColor = true;
+            this.fuConfirmationCompleteBtn.Click += new System.EventHandler(this.fuConfirmationCompleteBtn_Click);
+            // 
+            // fuHistoryPage
+            // 
+            this.fuHistoryPage.Controls.Add(this.fuHistoryLst);
+            this.fuHistoryPage.Location = new System.Drawing.Point(4, 22);
+            this.fuHistoryPage.Name = "fuHistoryPage";
+            this.fuHistoryPage.Padding = new System.Windows.Forms.Padding(3);
+            this.fuHistoryPage.Size = new System.Drawing.Size(460, 92);
+            this.fuHistoryPage.TabIndex = 1;
+            this.fuHistoryPage.Text = "History";
+            this.fuHistoryPage.UseVisualStyleBackColor = true;
+            // 
+            // fuHistoryLst
+            // 
+            this.fuHistoryLst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.fuScheduledCol,
+            this.fuPurposeCol,
+            this.fuCompletedCol,
+            this.fuNoteCol});
+            this.fuHistoryLst.FullRowSelect = true;
+            this.fuHistoryLst.Location = new System.Drawing.Point(9, 6);
+            this.fuHistoryLst.MultiSelect = false;
+            this.fuHistoryLst.Name = "fuHistoryLst";
+            this.fuHistoryLst.Size = new System.Drawing.Size(445, 78);
+            this.fuHistoryLst.TabIndex = 0;
+            this.fuHistoryLst.UseCompatibleStateImageBehavior = false;
+            this.fuHistoryLst.View = System.Windows.Forms.View.Details;
+            this.fuHistoryLst.ItemActivate += new System.EventHandler(this.fuHistoryLst_ItemActivate);
+            // 
+            // fuScheduledCol
+            // 
+            this.fuScheduledCol.Text = "Scheduled";
+            this.fuScheduledCol.Width = 70;
+            // 
+            // fuPurposeCol
+            // 
+            this.fuPurposeCol.Text = "Purpose";
+            this.fuPurposeCol.Width = 150;
+            // 
+            // fuCompletedCol
+            // 
+            this.fuCompletedCol.Text = "Completed";
+            this.fuCompletedCol.Width = 70;
+            // 
+            // fuNoteCol
+            // 
+            this.fuNoteCol.Text = "Completion Note";
+            this.fuNoteCol.Width = 150;
+            // 
+            // startPick
+            // 
+            this.startPick.Location = new System.Drawing.Point(242, 40);
+            this.startPick.Name = "startPick";
+            this.startPick.Size = new System.Drawing.Size(84, 27);
+            this.startPick.TabIndex = 10;
+            // 
+            // endPick
+            // 
+            this.endPick.Location = new System.Drawing.Point(354, 40);
+            this.endPick.Name = "endPick";
+            this.endPick.Size = new System.Drawing.Size(84, 27);
+            this.endPick.TabIndex = 9;
+            // 
+            // moveLeftBtn
+            // 
+            this.moveLeftBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
+            this.moveLeftBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.moveLeftBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.moveLeftBtn.Location = new System.Drawing.Point(6, 4);
+            this.moveLeftBtn.Name = "moveLeftBtn";
+            this.moveLeftBtn.Size = new System.Drawing.Size(60, 60);
+            this.moveLeftBtn.TabIndex = 2;
+            this.moveLeftBtn.UseVisualStyleBackColor = true;
+            this.moveLeftBtn.Click += new System.EventHandler(this.moveLeftBtn_Click);
+            // 
+            // moveRightBtn
+            // 
+            this.moveRightBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
+            this.moveRightBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.moveRightBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.moveRightBtn.Location = new System.Drawing.Point(869, 3);
+            this.moveRightBtn.Name = "moveRightBtn";
+            this.moveRightBtn.Size = new System.Drawing.Size(60, 60);
+            this.moveRightBtn.TabIndex = 3;
+            this.moveRightBtn.UseVisualStyleBackColor = true;
+            this.moveRightBtn.Click += new System.EventHandler(this.moveRightBtn_Click);
+            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
+            this.Controls.Add(this.fuTabs);
             this.Controls.Add(this.completeBtn);
             this.Controls.Add(this.savedFld);
             this.Controls.Add(this.printBtn);
@@ -1287,13 +1652,13 @@
             this.Controls.Add(this.addressGrp);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.closeBtn);
+            this.Controls.Add(this.priceInvoiceBtn);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.bookBtn);
             this.Controls.Add(this.dateGrp);
             this.Controls.Add(this.notesGrp);
             this.Controls.Add(this.pricingGrp);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.priceInvoiceBtn);
             this.Controls.Add(this.contactGrp);
             this.Name = "BookingPnl";
             this.Size = new System.Drawing.Size(936, 963);
@@ -1316,11 +1681,25 @@
             this.pricingMnu.ResumeLayout(false);
             this.pricingGrp.ResumeLayout(false);
             this.pricingGrp.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pricePaidPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.priceIssuePic)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.contactGrp.ResumeLayout(false);
             this.contactGrp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.contactEmblemPic)).EndInit();
+            this.fuTabs.ResumeLayout(false);
+            this.fuNextPage.ResumeLayout(false);
+            this.fuNextPage.PerformLayout();
+            this.fuCurrentPage.ResumeLayout(false);
+            this.fuCurrentPage.PerformLayout();
+            this.fuConfirmationPage.ResumeLayout(false);
+            this.fuConfirmationPage.PerformLayout();
+            this.fuHistoryPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1396,7 +1775,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox contactFirstNameFld;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button printBtn;
         private System.Windows.Forms.Label pricePaidLbl;
         private System.Windows.Forms.Label label20;
@@ -1413,7 +1791,7 @@
         private System.Windows.Forms.Label priceBalanceFld;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.ComboBox priceMethodFld;
+        private System.Windows.Forms.ComboBox priceMethodBox;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TextBox durationFld;
         private System.Windows.Forms.Label durationDescFld;
@@ -1441,5 +1819,38 @@
         private TimePicker endPick;
         private System.Windows.Forms.CheckBox timeSwitchChk;
         private System.Windows.Forms.DateTimePicker timePick;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.PictureBox pricePaidPic;
+        private System.Windows.Forms.PictureBox priceIssuePic;
+        private System.Windows.Forms.TabControl fuTabs;
+        private System.Windows.Forms.TabPage fuCurrentPage;
+        private System.Windows.Forms.Label fuPurposeLbl;
+        private System.Windows.Forms.TabPage fuNextPage;
+        private System.Windows.Forms.DateTimePicker fuDatePick;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox fuScheduleChk;
+        private System.Windows.Forms.TextBox fuPurposeFld;
+        private System.Windows.Forms.TabPage fuHistoryPage;
+        private System.Windows.Forms.Button fuCompleteBtn;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.TextBox fuCompleteFld;
+        private System.Windows.Forms.Label fuDateLbl;
+        private System.Windows.Forms.ListView fuHistoryLst;
+        private System.Windows.Forms.ColumnHeader fuScheduledCol;
+        private System.Windows.Forms.ColumnHeader fuPurposeCol;
+        private System.Windows.Forms.ColumnHeader fuCompletedCol;
+        private System.Windows.Forms.ColumnHeader fuNoteCol;
+        private System.Windows.Forms.TabPage fuConfirmationPage;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.TextBox fuConfirmationNoteFld;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Button fuConfirmationCompleteBtn;
+        private System.Windows.Forms.Button fuSetBtn;
+        private System.Windows.Forms.DateTimePicker fuConfirmationPick;
+        private System.Windows.Forms.Button moveLeftBtn;
+        private System.Windows.Forms.Button moveRightBtn;
     }
 }

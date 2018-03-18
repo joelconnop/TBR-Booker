@@ -22,6 +22,9 @@ namespace TBRBooker.FrontEnd
         private Customer _customer;
         private CorporateAccount _corporateAccount;
         private Service _service;
+        private Followup _currentFu;
+        private Followup _nextFu;
+        private Followup _confirmationCall;
         private bool _isLoading;
         private BookingStates _newStatus;
         public Timeline Timeline;
@@ -31,13 +34,21 @@ namespace TBRBooker.FrontEnd
         private int _duration;
         private List<ValidatingTextbox> _validators;
 
-        
+        // HIGHLIGHTS IDEA
+        // pink for important fields that are not filled in
+        // yellow for user highlights, click an icon of a texta to go in and out of highlighting mode,
+        // or use context menu. Change the mouse icon even if it is just Cursor = Cursors.Hand
+        // any control can be highlighted, saved to list of their names in Booking
+        // allow for controls to be renamed (ignore instead of exception)
+        // is it possible to drag and drop an area to highlight,
+        // rather than remembering to put click events on all
+
         public Booking GetBooking()
         {
             return _booking;
         }
 
-        public BookingPnl(Booking booking, BookingsFrm owner)
+        public BookingPnl(Booking booking, BookingsFrm owner, bool isOnLeftTab)
         {
             InitializeComponent();
 
@@ -54,6 +65,8 @@ namespace TBRBooker.FrontEnd
             {
                 _customer = booking.Customer;
             }
+
+            ConfigureMoveButtons(isOnLeftTab);
         }
 
 
@@ -96,18 +109,17 @@ namespace TBRBooker.FrontEnd
 
             Timeline = new Timeline(_booking, _owner, this);
             dateGrp.Controls.Add(Timeline);
-            Timeline.Location = new Point(13, 82);
+            Timeline.Location = new Point(13, 65);
 
             //address
-            addressRegionBox.DataSource = Enum.GetValues(typeof(LocationRegions));
-            addressRegionBox.SelectedIndex = (int)_booking.LocationRegion;
+            ComboBoxItem.InitComboBox(addressRegionBox, typeof(LocationRegions), _booking.LocationRegion);
             addressFld.Text = _booking.Address;
             addressVenuFld.Text = _booking.VenueName;
 
             //service 
             _service = _booking.Service;
-            serviceBox.DataSource = Enum.GetValues(typeof(ServiceTypes));
-            serviceBox.SelectedIndex = (int)(_service?.ServiceType ?? ServiceTypes.NotSet);
+            ComboBoxItem.InitComboBox(serviceBox, typeof(ServiceTypes),
+                _service?.ServiceType ?? ServiceTypes.NotSet);
             if (_service.ServiceType == ServiceTypes.ReptileParty)
             {
                 var party = _service.Party;
@@ -154,20 +166,45 @@ namespace TBRBooker.FrontEnd
             //    priceOverrideFld.Text = _service.TotalPrice.ToString();
             //}
 
-            var skus = new List<ProductIds>();
+            var ignoreSkus = new List<Enum>();
             foreach (ProductIds sku in Enum.GetValues(typeof(ProductIds)))
             {
-                if (!PriceItemsBL.IsAService(sku))
-                    skus.Add(sku);
+                if (PriceItemsBL.IsAService(sku))
+                    ignoreSkus.Add(sku);
             }
-            priceProductBox.DataSource = skus.ToArray<ProductIds>();
+            ComboBoxItem.InitComboBox(priceProductBox, typeof(ProductIds), ProductIds.NotSet, ignoreSkus);
 
-            //payments
-            pricePaidLbl.Text = _booking.AmountPaid.ToString("C");
+            //payments (must be done after price items added)
+            UpdatePaymentFields();
             priceInvoiceBtn.Enabled = !_booking.IsInvoiced;
             pricingPayOnDayChk.Checked = _booking.IsPayOnDay;
-            priceMethodFld.DataSource = Enum.GetValues(typeof(PaymentMethods));
+            ComboBoxItem.InitComboBox(priceMethodBox, typeof(PaymentMethods), PaymentMethods.NotSet);
             _booking.PaymentHistory.ForEach(x => priceHistoryLst.Items.Add(x.ToString()));
+
+            //followups
+            if (_booking.IsNewBooking)
+            {
+                //kick off the first followup
+                _nextFu = DashboardBL.CreateFirstEnquiryFollowup(_booking.BookingDate);
+            }
+            else
+            {
+                var bookingFu = _booking.GetCurrentFollowup();
+                if (bookingFu != null)
+                    _currentFu = (Followup)bookingFu.Clone();
+                if (_booking.ConfirmationCall != null)
+                {
+                    _confirmationCall = (Followup)_booking.ConfirmationCall.Clone();
+                    //added these two lines in a bit of a rush, because uncertainty about assigning these
+                    //values when through ConfigureFollowupControls if CCall tab is already showing,
+                    //because that method gets called for dealing with the current followup
+                    //more investigation needed
+                    fuConfirmationPick.Value = _confirmationCall.FollowupDate;
+                    fuConfirmationNoteFld.Text = _confirmationCall.CompleteNote;
+                }
+            }
+            BuildFollowupHistory(false);
+            ConfigureFollowupControls();
 
             notesBookingFld.Text = _booking.BookingNotes;
 
@@ -195,7 +232,7 @@ namespace TBRBooker.FrontEnd
 
             _validators.Add(new ValidatingTextbox(this, priceDescFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
             _validators.Add(new ValidatingTextbox(this, priceAmtFld, ValidatingTextbox.TextBoxValidationType.DollarAmountAny));
-            _validators.Add(new ValidatingTextbox(this, priceQtyFld, ValidatingTextbox.TextBoxValidationType.IntegerPositive));
+            _validators.Add(new ValidatingTextbox(this, priceQtyFld, ValidatingTextbox.TextBoxValidationType.IntegerZeroPlus));
             _validators.Add(new ValidatingTextbox(this, priceOverrideFld, ValidatingTextbox.TextBoxValidationType.DollarAmountAny));
             _validators.Add(new ValidatingTextbox(this, priceDepositFld, ValidatingTextbox.TextBoxValidationType.DollarAmountAny));
             _validators.Add(new ValidatingTextbox(this, priceSubmitFld, ValidatingTextbox.TextBoxValidationType.DollarAmountAny));
@@ -243,7 +280,8 @@ namespace TBRBooker.FrontEnd
         private void LoadCustomer()
         {
             //Contact
-            contactLeadBox.DataSource = Enum.GetValues(typeof(LeadSources));
+            ComboBoxItem.InitComboBox(contactLeadBox, typeof(LeadSources), _customer?.LeadSource ?? LeadSources.NotSet);
+
             if (_customer != null)
             {
                 var customer = _customer;
@@ -254,7 +292,6 @@ namespace TBRBooker.FrontEnd
                 contactEmailFld.Text = customer.EmailAddress;
                 contactNicknameFld.Text = _booking.BookingName;
                 contactCompanyFld.Text = customer.CompanyName;
-                contactLeadBox.SelectedItem = customer.LeadSource;
                 notesPastFld.Text = _customer.PastNotes;
             }
         }
@@ -426,6 +463,12 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        private void timeSwitchChk_CheckedChanged(object sender, EventArgs e)
+        {
+            startPick.Visible = !timeSwitchChk.Checked;
+            timePick.Visible = timeSwitchChk.Checked;
+        }
+
         private void durationFld_Leave(object sender, EventArgs e)
         {
             try
@@ -476,8 +519,17 @@ namespace TBRBooker.FrontEnd
                 if (Timeline != null)
                 {
                     Timeline.BookingDate = datePick.Value;
-                    Timeline.Redraw();
+                    Timeline.UpdateOtherBookings();
                 }
+
+                UpdateConfirmationCall();
+
+                if (_currentFu != null && _currentFu.Purpose.Equals(DashboardBL.EnquiryFollowupText))
+                {
+                    FinishFollowup(_currentFu, "Booked");
+                    ConfigureFollowupControls();
+                }
+
             }
             catch (Exception ex)
             {
@@ -728,16 +780,56 @@ namespace TBRBooker.FrontEnd
             MessageBox.Show("Is it worth having a way to forcibly change the status?");
         }
 
+        private void priceProductBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)    // (char)Keys.Return && AttemptToSelectPriceProduct())
+                TryAddCustomPriceItem();
+        }
+
+        private void priceDescFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                TryAddCustomPriceItem();
+        }
+
+        private void priceAmtFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                TryAddCustomPriceItem();
+        }
+
+        private void priceQtyFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                TryAddCustomPriceItem();
+        }
+
         private void priceAddBtn_Click(object sender, EventArgs e)
+        {
+            TryAddCustomPriceItem();
+        }
+
+        private void TryAddCustomPriceItem()
         {
             try
             {
-                if (priceProductBox.SelectedItem == null || string.IsNullOrEmpty(priceDescFld.Text)
-                    || string.IsNullOrEmpty(priceQtyFld.Text))
+                var selectedItem = ComboBoxItem.GetSelected<ProductIds>(priceProductBox);
+                if (selectedItem == ProductIds.NotSet
+                    || string.IsNullOrEmpty(priceDescFld.Text) || string.IsNullOrEmpty(priceQtyFld.Text))
+                {
                     MessageBox.Show(this, "You must fill in all fields for the Price Item.",
-                    "Add/Update Price Item", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                        "Add/Update Price Item", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return;
+                }
+                else if (priceQtyFld.Text.Equals("0"))
+                {
+                    MessageBox.Show(this, "Quantity cannot be zero.",
+                        "Add/Update Price Item", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    priceQtyFld.Focus();
+                    return;
+                }
 
-                AddPriceItem(new PriceItem((ProductIds)priceProductBox.SelectedItem,
+                AddPriceItem(new PriceItem(selectedItem,
                     decimal.Parse(priceAmtFld.Text), int.Parse(priceQtyFld.Text)));
 
                 _isLoading = true;
@@ -755,658 +847,6 @@ namespace TBRBooker.FrontEnd
         {
             //MessageBox.Show("Don't think we should have this because then the items on invoice won't add up to total. Instead, override price of individual items.");
             priceOverrideFld.Enabled = priceOverrideChk.Checked;
-        }
-
-        private void priceInvoiceBtn_Click(object sender, EventArgs e)
-        {
-            //just load QB URL for now
-            //set invoiced to true and save
-            MessageBox.Show("Later phase. For now, create manually in Quickbooks.");
-        }
-
-        private void priceSubmitBtn_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show(this, "Submitting a payment will save everything on the form and (eventually) send to Quickbooks on the spot. Continue?",
-               "Add Payment", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
-                != DialogResult.OK)
-                return;
-
-            try
-            {
-                decimal paymentAmount;
-                if (string.IsNullOrEmpty(priceSubmitFld.Text) 
-                    || !decimal.TryParse(priceSubmitFld.Text, out paymentAmount)
-                    || paymentAmount == 0 || (PaymentMethods)priceMethodFld.SelectedItem == PaymentMethods.NotSet)
-                {
-                    MessageBox.Show(this, "You missed a payment field (or two)",
-                        "Add Payment", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                    return;
-                }
-
-                //quickbooks stuff!
-                //use wait cursor
-                if (paymentAmount < 0)
-                {
-
-                }
-                var payment = new Payment(DateTime.Now, paymentAmount,
-                    (PaymentMethods)priceMethodFld.SelectedItem);
-                _booking.PaymentHistory.Add(payment);
-
-                Save();   //this is only way that payment gets saved into history, and will need to do once quickbooks done anyway
-                pricePaidLbl.Text = _booking.AmountPaid.ToString("C");
-                priceHistoryLst.Items.Add(payment.ToString());
-
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to save submit payment", ex);
-            }
-        }
-
-        private void saveBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Save();
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to save Booking", ex);
-            }
-        }
-
-        public string UnsavedChanges()
-        {
-            string unsavedChanges = "";
-
-            if (_booking.IsNewBooking)
-            {
-                return "New Enquiry " + _booking.Id;
-            }
-
-            if (_newStatus != _booking.Status)
-                unsavedChanges += "status, ";
-            if (!contactFirstNameFld.Text.Equals(_booking.Customer.FirstName))
-                unsavedChanges += "first name, ";
-            if (!contactLastNameFld.Text.Equals(_booking.Customer.LastName))
-                unsavedChanges += "last name, ";
-            if (!contactNicknameFld.Text.Equals(_booking.BookingName) && !contactNicknameFld.Text.Equals(string.Empty))
-                unsavedChanges += "booking nickname, ";
-            if (!contactPrimaryNumFld.Text.Equals(_booking.Customer.PrimaryNumber))
-                unsavedChanges += "contact number, ";
-            if (!contactSecondaryNumFld.Text.Equals(_booking.Customer.SecondaryNumber))
-                unsavedChanges += "secondary number, ";
-            if (!contactEmailFld.Text.Equals(_booking.Customer.EmailAddress))
-                unsavedChanges += "e-mail, ";
-            if ((LeadSources)contactLeadBox.SelectedItem != _booking.Customer.LeadSource)
-                unsavedChanges += "lead source, ";
-
-            if (!datePick.Value.ToShortDateString().Equals(_booking.BookingDate.ToShortDateString()))
-                unsavedChanges += "booking date, ";
-            if (startPick.GetSelected().Value != _booking.BookingTime)
-                unsavedChanges += "booking time, ";
-            if (_duration != _booking.Duration)
-                unsavedChanges += "duration, ";
-
-            if ((LocationRegions)addressRegionBox.SelectedItem != _booking.LocationRegion)
-                unsavedChanges += "region, ";
-            if (!addressFld.Text.Equals(_booking.Address))
-                unsavedChanges += "e-mail, ";
-            if (!addressVenuFld.Text.Equals(_booking.VenueName))
-                unsavedChanges += "venue, ";
-
-            if (//_booking.Service != null && at the least it should be NotSet, for an existing booking
-                (ServiceTypes)serviceBox.SelectedItem != _booking.Service.ServiceType)
-            {
-                unsavedChanges += "service type, ";
-            }
-            else if (_booking.Service.ServiceType == ServiceTypes.ReptileParty)
-            {
-                var party = _booking.Service.Party;
-                if (SelectedPartyPackage() != party.Package)
-                    unsavedChanges += "party package, ";
-                if (!partyBirthdayNameFld.Text.Equals(party.BirthdayName))
-                    unsavedChanges += "birthday name, ";
-                if (!partyAgeFld.Text.Equals(party.BirthdayAge.ToString())
-                    && !(string.IsNullOrEmpty(partyAgeFld.Text) && party.BirthdayAge == 0))
-                    unsavedChanges += "birthday age, ";
-            }
-
-            if (!servicePaxFld.Text.Equals(_booking.Service.Pax.ToString())
-                && !(string.IsNullOrEmpty(servicePaxFld.Text) && _booking.Service.Pax == 0))
-                unsavedChanges += "pax, ";
-            if (!serviceAnimalsToCome.Text.Equals(_booking.Service.SpecificAnimalsToCome))
-                unsavedChanges += "animals to come, ";
-            if (serviceAddCrocChk.Checked != _booking.Service.AddCrocodile)
-                unsavedChanges += "add croc, ";
-
-
-            int pricingItemCnt = priceItemsLst.Items.Count;
-            if (pricingItemCnt != _booking.Service.PriceItems.Count)
-                unsavedChanges += "number pricing items, ";
-            else
-            {
-                for (int i = 0; i < pricingItemCnt; i++)
-                {
-                    var itm1 = (PriceItem)priceItemsLst.Items[i].Tag;
-                    var itm2 = _booking.Service.PriceItems[i];
-                    if (!itm1.Equals(itm2))
-                        unsavedChanges += itm1.Description + ", ";
-                }
-            }
-            
-            if (priceOverrideChk.Checked && Convert.ToDecimal(priceOverrideFld.Text)
-                != _booking.Service.TotalPrice)
-                unsavedChanges += "overidden total price, ";
-
-            if (pricingPayOnDayChk.Checked != _booking.IsPayOnDay)
-                unsavedChanges += "pay on day, ";
-
-            if (!notesBookingFld.Text.Equals(_booking.BookingNotes))
-                unsavedChanges += "booking notes, ";
-            if (!notesPastFld.Text.Equals(_booking.Customer.PastNotes))
-                unsavedChanges += "past notes, ";
-
-            return unsavedChanges.Trim().Trim(',');
-        }
-
-        public bool Save()
-        {
-            Cursor = Cursors.WaitCursor;
-
-            try
-            {
-                _booking.Status = _newStatus;
-
-                if (_customer == null)
-                    _customer = new Customer();
-
-                _customer.FirstName = contactFirstNameFld.Text;
-                _customer.LastName = contactLastNameFld.Text;
-                _customer.PrimaryNumber = contactPrimaryNumFld.Text;
-                _customer.SecondaryNumber = contactSecondaryNumFld.Text;
-                _customer.CompanyName = contactCompanyFld.Text;
-                _customer.CompanyId = _corporateAccount?.Id ?? null;
-                _customer.EmailAddress = contactEmailFld.Text;
-                _customer.LeadSource = (LeadSources)contactLeadBox.SelectedItem;
-
-                //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
-                _booking.BookingNickname = contactNicknameFld.Text;
-                _booking.BookingDate = datePick.Value;
-                _booking.BookingTime = startPick.GetSelected().Value;
-                _booking.Duration = _duration;
-
-                _booking.LocationRegion = (LocationRegions)addressRegionBox.SelectedValue;
-                _booking.Address = addressFld.Text;
-                _booking.VenueName = addressVenuFld.Text;
-
-                _booking.Service = _service;
-                var serviceType = (ServiceTypes)serviceBox.SelectedItem;
-                _service = new Service()
-                {
-                    ServiceType = serviceType,
-                };
-                if (serviceType == ServiceTypes.ReptileParty)
-                {
-                    int age = 0;
-                    int.TryParse(partyAgeFld.Text, out age);
-                    _service.Party = new Party()
-                    {
-                        Package = SelectedPartyPackage(),
-                        BirthdayName = partyBirthdayNameFld.Text,
-                        BirthdayAge = age
-                    };
-                }
-
-                int pax = 0;
-                int.TryParse(servicePaxFld.Text, out pax);
-                _service.Pax = pax;
-                _service.AddCrocodile = serviceAddCrocChk.Checked;
-                _service.SpecificAnimalsToCome = serviceAnimalsToCome.Text;
-
-                _service.PriceItems = new List<PriceItem>();
-                foreach (ListViewItem lvi in priceItemsLst.Items)
-                {
-                    _service.PriceItems.Add((PriceItem)lvi.Tag);
-                }
-                _booking.IsPayOnDay = pricingPayOnDayChk.Checked;
-                //if (priceOverrideChk.Checked && !string.IsNullOrEmpty(priceOverrideFld.Text))
-                //{
-                //    _service.TotalPrice = decimal.Parse(priceOverrideFld.Text);
-                //}
-                //else
-                //{
-                //    _service.TotalPrice = decimal.Parse(priceCalculatedFld.Text.Trim('$'));
-                //}
-
-                _booking.BookingNotes = notesBookingFld.Text;
-                _customer.PastNotes = notesPastFld.Text;
-
-                //don't need to save payment history as it is saved when payment added
-
-                _booking.Service = _service;
-                _booking.Customer = _customer;
-                _booking.Account = _corporateAccount;
-
-                var errors = _booking.ValidationErrors();
-                if (!string.IsNullOrEmpty(errors))
-                {
-                    Cursor = Cursors.Default;
-                    MessageBox.Show(this, errors, "Save Booking",
-                        MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                    return false;
-                }
-
-                BookingBL.SaveBookingEtc(_booking);
-                _owner.OnBookingSave();
-                Cursor = Cursors.Default;
-
-                savedFld.Visible = true;
-                savedTmr.Enabled = true;
-                savedTmr.Start();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Cursor = Cursors.Default;
-                ErrorHandler.HandleError(this, "Failed to save Booking", ex);
-                return false;
-            }
-        }
-
-        private void closeBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var unsavedChanges = UnsavedChanges();
-                if (string.IsNullOrEmpty(unsavedChanges) ||
-                    MessageBox.Show(this,
-                    "Are you sure you want to close the form? There are unsaved changes that will be lost: "
-                     + unsavedChanges,
-                    "Unsaved Changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
-                    == DialogResult.OK)
-                {
-                    _owner.CloseBooking(_booking.Id);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to check for unsaved changes", ex);
-                _owner.CloseBooking(_booking.Id);
-            }
-
-        }
-
-        private void cancelBtn_Click(object sender, EventArgs e)
-        {
-            bool isConfirmed = false;
-
-            switch (_newStatus)
-            {
-                case BookingStates.LostEnquiry:
-                    if (MessageBox.Show("Are you sure you want to re-open this enquiry?",
-                        "Re-open Enquiry", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                        == DialogResult.Yes)
-                    {
-                        _newStatus = BookingStates.OpenEnquiry;
-                        bookBtn.Enabled = true;
-                        completeBtn.Enabled = false;
-                        isConfirmed = true;
-                    }
-                    break;
-                case BookingStates.Cancelled:
-                case BookingStates.CancelledWithoutPayment:
-                    if (MessageBox.Show("Are you sure you want to restore this booking?",
-                        "Restore Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                        == DialogResult.Yes)
-                    {
-                        //ideally should check for overdue payment etc but that shouldn't happen
-                        _newStatus = BookingStates.Booked;
-                        isConfirmed = true;
-                        completeBtn.Enabled = true;
-                        bookBtn.Enabled = false;
-                    }
-                    break;
-                case BookingStates.OpenEnquiry:
-                    if (MessageBox.Show("Are you sure you want to dismiss this enquiry?",
-                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                        == DialogResult.Yes)
-                    {
-                        //ideally should check for overdue payment etc but that shouldn't happen
-                        _newStatus = BookingStates.LostEnquiry;
-                        isConfirmed = true;
-                    }
-                    break;
-                case BookingStates.Booked:
-                    if (MessageBox.Show("Are you sure you want to cancel this booking?",
-                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                        == DialogResult.Yes)
-                    {
-                        //ideally should check for overdue payment etc but that shouldn't happen
-                        _newStatus = BookingStates.Cancelled;
-                        isConfirmed = true;
-                        completeBtn.Enabled = false;
-                    }
-                    break;
-                case BookingStates.Completed:
-                case BookingStates.PaymentDue:
-                    if (MessageBox.Show("Are you sure you want to cancel this booking? WARNING: Booking has already been marked as completed!",
-                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
-                        == DialogResult.Yes)
-                    {
-                        //ideally should check for overdue payment etc but that shouldn't happen
-                        _newStatus = BookingStates.Cancelled;
-                        isConfirmed = true;
-                        completeBtn.Enabled = false;
-                        bookBtn.Enabled = true;
-                    }
-                    break;
-                default:
-                    ErrorHandler.HandleError(this, "Cannot cancel/restore",
-                        new Exception("Unrecognised status: " + _newStatus), true);
-                    break;
-            }
-
-            if (isConfirmed)
-            {
-                Save();
-                LoadTitlebar();
-            }
-
-        }
-
-        private void bookBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var backupStatus = _newStatus;
-                _newStatus = BookingStates.Booked;
-                if (Save())
-                {
-                    bookBtn.Enabled = false;
-                    completeBtn.Enabled = true;
-                    cancelBtn.Enabled = true;
-                    LoadTitlebar();
-                }
-                else
-                {
-                    _newStatus = backupStatus;
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to Book it", ex);
-            }
-        }
-
-        private void printBtn_Click(object sender, EventArgs e)
-        {
-            if (_booking.IsNewBooking)
-            {
-                MessageBox.Show(this, "You need to save the new booking before printing a form",
-                    "Print Booking Form", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                return;
-            }
-
-            try
-            {
-                var unsavedChanges = UnsavedChanges();
-                if (!string.IsNullOrEmpty(unsavedChanges))
-                {
-                    switch (MessageBox.Show(this,
-                        "Would you like to save the following changes so that they will be included on the Booking Form? "
-                        + unsavedChanges, "Print Booking Form",
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-                    {
-                        case DialogResult.Yes:
-                            Save();
-                            break;
-                        case DialogResult.No:
-                            //just continue
-                            break;
-                        default:
-                            return;
-                    }
-                }
-
-                //just open in chrome, let user decide whether to print now or just view
-                System.Diagnostics.Process.Start(BookingBL.GenerateBookingFormFilename(_booking));
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Cannot Print Booking Form", ex, true);
-            }
-            
-
-        }
-
-        private void addressRegionFld_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            TryAddBasePriceItem();
-        }
-
-
-        private void serviceBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            partyPnl.Visible = false;
-            displayPnl.Visible = false;
-            switch ((ServiceTypes)serviceBox.SelectedItem)
-            {
-                case ServiceTypes.ReptileParty:
-                    partyPnl.Visible = true;
-                    break;
-                case ServiceTypes.Display:
-                    displayPnl.Visible = true;
-                    TryAddBasePriceItem();
-                    break;
-                default:
-                    TryAddBasePriceItem();
-                    break;
-            }
-            
-        }
-
-        private void partyStandardRdo_CheckedChanged(object sender, EventArgs e)
-        {
-            TryAddBasePriceItem();
-        }
-
-        private void partyPlusRdo_CheckedChanged(object sender, EventArgs e)
-        {
-            TryAddBasePriceItem();
-        }
-
-        private void partyPremiumRdo_CheckedChanged(object sender, EventArgs e)
-        {
-            TryAddBasePriceItem();
-        }
-
-        private void TryAddBasePriceItem()
-        {
-            try
-            {
-                if (_isLoading)
-                    return;
-
-                //remove the old service
-                ListViewItem serviceLvi = null;
-                foreach (ListViewItem lvi in priceItemsLst.Items)
-                {
-                    if (PriceItemsBL.IsAService(((PriceItem)lvi.Tag).ProductId))
-                    {
-                        serviceLvi = lvi;
-                        break;
-                    }
-                }
-                if (serviceLvi != null)
-                {
-                    priceItemsLst.Items.Remove(serviceLvi);
-                    UpdateTotal();
-                }
-
-                if ((LocationRegions)addressRegionBox.SelectedItem == LocationRegions.NotSet
-                    || (ServiceTypes)serviceBox.SelectedItem == ServiceTypes.NotSet
-                    || ((ServiceTypes)serviceBox.SelectedItem == ServiceTypes.ReptileParty
-                        && SelectedPartyPackage() == PartyPackages.NotSet))
-                    return;
-
-                var serviceType = (ServiceTypes)serviceBox.SelectedItem;
-                var item = PriceItemsBL.GetBaseItem((LocationRegions)addressRegionBox.SelectedItem,
-                    serviceType, SelectedPartyPackage());
-                AddPriceItem(item);
-
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to add base item", ex);
-            }
-        }
-
-        private void AddPriceItem(PriceItem item)
-        {
-            var lvi = new ListViewItem(
-                new[] { item.Description, item.UnitPrice.ToString(),
-                    item.Quantity.ToString(), item.Total.ToString() });
-            lvi.Tag = item;
-            priceItemsLst.Items.Add(lvi);
-            UpdateTotal();
-        }
-
-        private void UpdateTotal()
-        {
-            priceCalculatedFld.Text = CalculateTotal().ToString("C");
-        }
-
-        private decimal CalculateTotal()
-        {
-            decimal total = 0;
-            foreach (ListViewItem lvi in priceItemsLst.Items)
-            {
-                total += ((PriceItem)lvi.Tag).Total;
-            }
-            return total;
-        }
-
-        private PartyPackages SelectedPartyPackage()
-        {
-            if (partyStandardRdo.Checked)
-                return PartyPackages.Party;
-            else if (partyPlusRdo.Checked)
-                return PartyPackages.PartyPlus;
-            else if (partyPremiumRdo.Checked)
-                return PartyPackages.PremiumParty;
-            else
-                return PartyPackages.NotSet;
-        }
-
-        private void contactEmblemPic_Click(object sender, EventArgs e)
-        {
-            try
-            { 
-            MessageBox.Show("Planned feature: displays list of previous bookings in new dialog.");
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to show previous bookings", ex);
-            }
-        }
-
-        private void priceProductBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_isLoading)
-                    return;
-
-                var pi = PriceItemsBL.Get((ProductIds)priceProductBox.SelectedValue);
-                priceDescFld.Text = pi.Description;
-                priceAmtFld.Text = pi.UnitPrice.ToString("C");
-                priceQtyFld.Text = "1";
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to select price item", ex);
-            }
-        }
-
-        private void pricingMnu_delete_click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (priceItemsLst.SelectedIndices.Count == 0)
-                    return;
-
-                int deleteIdx = priceItemsLst.SelectedIndices[0];
-                priceItemsLst.SelectedIndices.Clear();
-                priceItemsLst.Items.RemoveAt(deleteIdx);
-                UpdateTotal();
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to delete price item", ex);
-            }
-        }
-
-        private void shortDemosChk_CheckedChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                AddOrRemovePriceProduct(ProductIds.ShortDemonstrations, shortDemosChk.Checked);
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to toggle Short Demonstrations", ex);
-            }
-        }
-
-        private void savedTmr_Tick(object sender, EventArgs e)
-        {
-            savedFld.Visible = false;
-            savedTmr.Stop();
-            savedTmr.Enabled = false;
-        }
-
-        private void serviceAddCrocChk_CheckedChanged(object sender, EventArgs e)
-        {
-            if (_isLoading)
-                return;
-
-            try
-            {
-                AddOrRemovePriceProduct(ProductIds.AddCrocodile, serviceAddCrocChk.Checked);
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "Failed to toggle Add Croc", ex);
-            }
-        }
-
-        private void AddOrRemovePriceProduct(ProductIds product, bool isAdd)
-        {
-            if (isAdd)
-            {
-                AddPriceItem(PriceItemsBL.Get(product));
-            }
-            else
-            {
-                //remove
-                ListViewItem item = null;
-                foreach (ListViewItem lvi in priceItemsLst.Items)
-                {
-                    if (((PriceItem)lvi.Tag).ProductId == product)
-                    {
-                        item = lvi;
-                        break;
-                    }
-                }
-                if (item != null)
-                {
-                    priceItemsLst.Items.Remove(item);
-                    UpdateTotal();
-                }
-            }
         }
 
         private void priceOverrideFld_Leave(object sender, EventArgs e)
@@ -1485,6 +925,566 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        private void priceInvoiceBtn_Click(object sender, EventArgs e)
+        {
+            //just load QB URL for now
+            //set invoiced to true and save
+            //CREATING IN QUICKBOOKS MIGHT NOT BE BEST IDEA. Amount can need revising and this is a pain
+            //more thought needed on if/when invoice is created in quickbooks
+            //and consider immediate benefit of creating invoices in html
+            MessageBox.Show("Later phase. For now, create manually in Quickbooks.");
+        }
+
+        private void priceMethodBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+                SubmitPayment();
+        }
+
+        private void priceSubmitBtn_Click(object sender, EventArgs e)
+        {
+            SubmitPayment();
+        }
+
+        private void SubmitPayment()
+        {
+            if (!Booking.IsBooked(_newStatus, true))
+            {
+                MessageBox.Show(this, "You can only submit a payment once this becomes a 'Booking'",
+                        "Add Payment", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+            try
+            {
+                decimal paymentAmount;
+                var selectedMethod = ComboBoxItem.GetSelected<PaymentMethods>(priceMethodBox);
+                if (string.IsNullOrEmpty(priceSubmitFld.Text)
+                    || !decimal.TryParse(priceSubmitFld.Text, out paymentAmount)
+                    || paymentAmount == 0 || selectedMethod == PaymentMethods.NotSet)
+                {
+                    MessageBox.Show(this, "You missed a payment field (or two)",
+                        "Add Payment", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return;
+                }
+
+                if (MessageBox.Show(this, $"Confirm the details are correct:{Environment.NewLine}Booking: {_booking.Id} {contactNicknameFld.Text}{Environment.NewLine}Amount: {paymentAmount.ToString("C")}{Environment.NewLine}Method: {selectedMethod.ToString()}{Environment.NewLine}Resulting Balance: {(_booking.Balance - paymentAmount).ToString("C")}",
+                   "Add Payment", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                    != DialogResult.Yes)
+                    return;
+
+                //SEE Settings.CreditCardMultiplier
+
+                //quickbooks stuff!
+                //use wait cursor
+                if (paymentAmount < 0)
+                {
+
+                }
+                var payment = new Payment(DateTime.Now, paymentAmount, selectedMethod);
+                _booking.PaymentHistory.Add(payment);
+                Save();   //this is only way that payment gets saved into history, and will need to do once quickbooks done anyway
+                priceHistoryLst.Items.Add(payment.ToString());
+                UpdatePaymentFields();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to save submit payment", ex);
+            }
+        }
+
+        private void UpdatePaymentFields()
+        {
+            //the value of booking might have changed since last save, but payments made on the object is always correct
+            var total = CalculateTotal();
+            pricePaidLbl.Text = _booking.AmountPaid.ToString("C");
+            priceBalanceFld.Text = (total - _booking.AmountPaid).ToString("C");
+            pricePaidPic.Visible = total > 0 && total == _booking.AmountPaid && Booking.IsOpenStatus(_newStatus);
+            priceIssuePic.Visible = total < _booking.AmountPaid
+                || (_newStatus == BookingStates.Completed && total > _booking.AmountPaid);
+        }
+
+        private void saveBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to save Booking", ex);
+            }
+        }
+
+        public string UnsavedChanges()
+        {
+            string unsavedChanges = "";
+
+            if (_booking.IsNewBooking)
+            {
+                return "New Enquiry " + _booking.Id;
+            }
+
+            if (_newStatus != _booking.Status)
+                unsavedChanges += "status, ";
+            if (!contactFirstNameFld.Text.Equals(_booking.Customer.FirstName))
+                unsavedChanges += "first name, ";
+            if (!contactLastNameFld.Text.Equals(_booking.Customer.LastName))
+                unsavedChanges += "last name, ";
+            if (!contactNicknameFld.Text.Equals(_booking.BookingName) && !contactNicknameFld.Text.Equals(string.Empty))
+                unsavedChanges += "booking nickname, ";
+            if (!contactPrimaryNumFld.Text.Equals(_booking.Customer.PrimaryNumber))
+                unsavedChanges += "contact number, ";
+            if (!contactSecondaryNumFld.Text.Equals(_booking.Customer.SecondaryNumber))
+                unsavedChanges += "secondary number, ";
+            if (!contactEmailFld.Text.Equals(_booking.Customer.EmailAddress))
+                unsavedChanges += "e-mail, ";
+            if (ComboBoxItem.GetSelected<LeadSources>(contactLeadBox) != _booking.Customer.LeadSource)
+                unsavedChanges += "lead source, ";
+
+            if (!datePick.Value.ToShortDateString().Equals(_booking.BookingDate.ToShortDateString()))
+                unsavedChanges += "booking date, ";
+            if (startPick.GetSelected().Value != _booking.BookingTime)
+                unsavedChanges += "booking time, ";
+            if (_duration != _booking.Duration)
+                unsavedChanges += "duration, ";
+
+            if (ComboBoxItem.GetSelected<LocationRegions>(addressRegionBox) != _booking.LocationRegion)
+                unsavedChanges += "region, ";
+            if (!addressFld.Text.Equals(_booking.Address))
+                unsavedChanges += "e-mail, ";
+            if (!addressVenuFld.Text.Equals(_booking.VenueName))
+                unsavedChanges += "venue, ";
+
+            if (//_booking.Service != null && at the least it should be NotSet, for an existing booking
+                ComboBoxItem.GetSelected<ServiceTypes>(serviceBox) != _service.ServiceType)
+            {
+                unsavedChanges += "service type, ";
+            }
+            else if (_service.ServiceType == ServiceTypes.ReptileParty)
+            {
+                var party = _service.Party;
+                if (SelectedPartyPackage() != party.Package)
+                    unsavedChanges += "party package, ";
+                if (!partyBirthdayNameFld.Text.Equals(party.BirthdayName))
+                    unsavedChanges += "birthday name, ";
+                if (!partyAgeFld.Text.Equals(party.BirthdayAge.ToString())
+                    && !(string.IsNullOrEmpty(partyAgeFld.Text) && party.BirthdayAge == 0))
+                    unsavedChanges += "birthday age, ";
+            }
+
+            if (!servicePaxFld.Text.Equals(_service.Pax.ToString())
+                && !(string.IsNullOrEmpty(servicePaxFld.Text) && _service.Pax == 0))
+                unsavedChanges += "pax, ";
+            if (!serviceAnimalsToCome.Text.Equals(_service.SpecificAnimalsToCome))
+                unsavedChanges += "animals to come, ";
+            if (serviceAddCrocChk.Checked != _service.AddCrocodile)
+                unsavedChanges += "add croc, ";
+
+
+            int pricingItemCnt = priceItemsLst.Items.Count;
+            if (pricingItemCnt != _service.PriceItems.Count)
+                unsavedChanges += "number pricing items, ";
+            else
+            {
+                for (int i = 0; i < pricingItemCnt; i++)
+                {
+                    var itm1 = (PriceItem)priceItemsLst.Items[i].Tag;
+                    var itm2 = _service.PriceItems[i];
+                    if (!itm1.Equals(itm2))
+                        unsavedChanges += itm1.Description + ", ";
+                }
+            }
+            
+            if (priceOverrideChk.Checked && Convert.ToDecimal(priceOverrideFld.Text)
+                != _service.TotalPrice)
+                unsavedChanges += "overidden total price, ";
+
+            if (pricingPayOnDayChk.Checked != _booking.IsPayOnDay)
+                unsavedChanges += "pay on day, ";
+
+            //followups
+            SyncFollowupControlsToObjects();
+            if (_nextFu != null)
+                unsavedChanges += "next followup, ";
+            if (_currentFu != null && !_currentFu.Equals(_booking.GetCurrentFollowup()))
+                unsavedChanges += "current followup, ";
+            if (_confirmationCall != null && !_confirmationCall.Equals(_booking.ConfirmationCall))
+                unsavedChanges += "confirmation call, ";
+
+            if (!notesBookingFld.Text.Equals(_booking.BookingNotes))
+                unsavedChanges += "booking notes, ";
+            if (!notesPastFld.Text.Equals(_booking.Customer.PastNotes))
+                unsavedChanges += "past notes, ";
+
+            return unsavedChanges.Trim().Trim(',');
+        }
+
+        private void SyncFollowupControlsToObjects()
+        {
+            if (_currentFu != null)
+            {
+                _currentFu.CompleteNote = fuCompleteFld.Text.Trim();
+            }
+
+            if (_nextFu != null)
+            {
+                _nextFu.FollowupDate = Utils.StartOfDay(fuDatePick.Value);
+                _nextFu.Purpose = fuPurposeFld.Text;
+            }
+
+            if (_confirmationCall != null)
+            {
+                _confirmationCall.FollowupDate = Utils.StartOfDay(fuConfirmationPick.Value);
+                _confirmationCall.CompleteNote = fuConfirmationNoteFld.Text.Trim();
+            }
+        }
+
+        public bool Save()
+        {
+            Cursor = Cursors.WaitCursor; 
+
+            try
+            {
+                //any form validations to be first
+                if (_nextFu != null ^ fuScheduleChk.Checked)
+                    //3 wrong cases, 2 right cases
+                    throw new Exception("Next followup mismatch with object instance and checkbox.");
+
+                _booking.Status = _newStatus;
+
+                if (_customer == null)
+                    _customer = new Customer();
+
+                _customer.FirstName = contactFirstNameFld.Text;
+                _customer.LastName = contactLastNameFld.Text;
+                _customer.PrimaryNumber = contactPrimaryNumFld.Text;
+                _customer.SecondaryNumber = contactSecondaryNumFld.Text;
+                _customer.CompanyName = contactCompanyFld.Text;
+                _customer.CompanyId = _corporateAccount?.Id ?? null;
+                _customer.EmailAddress = contactEmailFld.Text;
+                _customer.LeadSource = ComboBoxItem.GetSelected<LeadSources>(contactLeadBox);
+
+                //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
+                _booking.BookingNickname = contactNicknameFld.Text;
+                _booking.BookingDate = Utils.StartOfDay(datePick.Value);
+                _booking.BookingTime = startPick.GetSelected().Value;
+                _booking.Duration = _duration;
+
+                _booking.LocationRegion = ComboBoxItem.GetSelected<LocationRegions>(addressRegionBox);
+                _booking.Address = addressFld.Text;
+                _booking.VenueName = addressVenuFld.Text;
+
+                _booking.Service = _service;
+                var serviceType = ComboBoxItem.GetSelected<ServiceTypes>(serviceBox);
+                _service = new Service()
+                {
+                    ServiceType = serviceType,
+                };
+                if (serviceType == ServiceTypes.ReptileParty)
+                {
+                    int age = 0;
+                    int.TryParse(partyAgeFld.Text, out age);
+                    _service.Party = new Party()
+                    {
+                        Package = SelectedPartyPackage(),
+                        BirthdayName = partyBirthdayNameFld.Text,
+                        BirthdayAge = age
+                    };
+                }
+
+                int pax = 0;
+                int.TryParse(servicePaxFld.Text, out pax);
+                _service.Pax = pax;
+                _service.AddCrocodile = serviceAddCrocChk.Checked;
+                _service.SpecificAnimalsToCome = serviceAnimalsToCome.Text;
+
+                _service.PriceItems = new List<PriceItem>();
+                foreach (ListViewItem lvi in priceItemsLst.Items)
+                {
+                    _service.PriceItems.Add((PriceItem)lvi.Tag);
+                }
+                _booking.IsPayOnDay = pricingPayOnDayChk.Checked;
+                //if (priceOverrideChk.Checked && !string.IsNullOrEmpty(priceOverrideFld.Text))
+                //{
+                //    _service.TotalPrice = decimal.Parse(priceOverrideFld.Text);
+                //}
+                //else
+                //{
+                //    _service.TotalPrice = decimal.Parse(priceCalculatedFld.Text.Trim('$'));
+                //}
+
+                _booking.BookingNotes = notesBookingFld.Text;
+                _customer.PastNotes = notesPastFld.Text;
+
+                //don't need to save payment history as it is saved when payment added
+
+                _booking.Service = _service;
+                _booking.Customer = _customer;
+                _booking.Account = _corporateAccount;
+
+                var errors = _booking.ValidationErrors();
+                if (!string.IsNullOrEmpty(errors))
+                {
+                    Cursor = Cursors.Default;
+                    MessageBox.Show(this, errors, "Save Booking",
+                        MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return false;
+                }
+
+                //followups (need to be done last because if we have to get here twice due to validation, they will be added to Booking twice)
+                SyncFollowupControlsToObjects();
+
+                if (_currentFu != null)
+                {
+                    var fu = _booking.GetCurrentFollowup();
+                    if (fu != null)
+                    {
+                        if (!fu.Equals(_currentFu))
+                        {
+                            _booking.Followups.Remove(fu);
+                            _booking.Followups.Add(_currentFu);
+                        }
+                        //do nothing if FU hasn't changed
+                    }
+                    else
+                    {
+                        _booking.Followups.Add(_currentFu);
+                    }
+
+                    //unassign if it has just been completed
+                    if (!_currentFu.IsOutstanding())
+                        _currentFu = null;
+                }
+
+                if (_nextFu != null && fuScheduleChk.Checked)
+                {
+                    _booking.Followups.Add(_nextFu);
+                }
+
+                // (even if null, ie cancelled job)
+                _booking.ConfirmationCall = _confirmationCall;
+
+                BookingBL.SaveBookingEtc(_booking);
+
+                //once saved, the 'next' followup becomes the 'current' followup
+                if (_nextFu != null && fuScheduleChk.Checked)
+                {
+                    _currentFu = _nextFu;
+                    _nextFu = null;
+                    fuScheduleChk.Checked = false;
+                    ConfigureFollowupControls();
+                }
+
+                _owner.OnBookingSave();
+                Cursor = Cursors.Default;
+
+                savedFld.Visible = true;
+                savedTmr.Enabled = true;
+                savedTmr.Start();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                ErrorHandler.HandleError(this, "Failed to save Booking", ex);
+                return false;
+            }
+        }
+
+        private void closeBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var unsavedChanges = UnsavedChanges();
+                if (string.IsNullOrEmpty(unsavedChanges) ||
+                    MessageBox.Show(this,
+                    "Are you sure you want to close the form? There are unsaved changes that will be lost: "
+                     + unsavedChanges,
+                    "Unsaved Changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
+                    == DialogResult.OK)
+                {
+                    _owner.CloseBooking(_booking.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to check for unsaved changes", ex);
+                _owner.CloseBooking(_booking.Id);
+            }
+
+        }
+
+        private void cancelBtn_Click(object sender, EventArgs e)
+        {
+            bool isConfirmed = false;
+
+            switch (_newStatus)
+            {
+                case BookingStates.LostEnquiry:
+                    if (MessageBox.Show("Are you sure you want to re-open this enquiry?",
+                        "Re-open Enquiry", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                        == DialogResult.Yes)
+                    {
+                        _newStatus = BookingStates.OpenEnquiry;
+                        bookBtn.Enabled = true;
+                        completeBtn.Enabled = false;
+                        isConfirmed = true;
+                    }
+                    break;
+                case BookingStates.Cancelled:
+                case BookingStates.CancelledWithoutPayment:
+                    if (MessageBox.Show("Are you sure you want to restore this booking?",
+                        "Restore Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                        == DialogResult.Yes)
+                    {
+                        //ideally should check for overdue payment etc but that shouldn't happen
+                        _newStatus = BookingStates.Booked;
+                        isConfirmed = true;
+                        completeBtn.Enabled = true;
+                        bookBtn.Enabled = false;
+                        UpdateConfirmationCall();
+                    }
+                    break;
+                case BookingStates.OpenEnquiry:
+                    if (MessageBox.Show("Are you sure you want to dismiss this enquiry?",
+                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                        == DialogResult.Yes)
+                    {
+                        //ideally should check for overdue payment etc but that shouldn't happen
+                        _newStatus = BookingStates.LostEnquiry;
+                        isConfirmed = true;
+                    }
+                    break;
+                case BookingStates.Booked:
+                    if (MessageBox.Show("Are you sure you want to cancel this booking?",
+                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                        == DialogResult.Yes)
+                    {
+                        //ideally should check for overdue payment etc but that shouldn't happen
+                        _newStatus = BookingStates.Cancelled;
+                        isConfirmed = true;
+                        completeBtn.Enabled = false;
+                        FinishFollowup(_currentFu, "Booking cancelled", true);
+                        FinishFollowup(_confirmationCall, "Booking cancelled", true);
+                    }
+                    break;
+                case BookingStates.Completed:
+                case BookingStates.PaymentDue:
+                    if (MessageBox.Show("Are you sure you want to cancel this booking? WARNING: Booking has already been marked as completed!",
+                        "Dismiss Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
+                        == DialogResult.Yes)
+                    {
+                        //ideally should check for overdue payment etc but that shouldn't happen
+                        _newStatus = BookingStates.Cancelled;
+                        isConfirmed = true;
+                        completeBtn.Enabled = false;
+                        bookBtn.Enabled = true;
+                        FinishFollowup(_currentFu, "Booking cancelled", true);
+                        FinishFollowup(_confirmationCall, "Booking cancelled", true);
+                    }
+                    break;
+                default:
+                    ErrorHandler.HandleError(this, "Cannot cancel/restore",
+                        new Exception("Unrecognised status: " + _newStatus), true);
+                    break;
+            }
+
+            if (isConfirmed)
+            {
+                Save();
+                LoadTitlebar();
+            }
+
+        }
+
+        private void FinishFollowup(Followup fu, string completeNote, bool isIgnoreIfNoFu = false)
+        {
+            if (fu == null)
+            {
+                if (!isIgnoreIfNoFu)
+                    throw new Exception($"Tried to close the followup with note '{completeNote}', but no current followup was found");
+                return;
+            }
+            if (!fu.IsOutstanding())
+            {
+                return;
+            }
+
+            fu.CompletedDate = Utils.StartOfDay();
+            fu.CompleteNote = completeNote;
+
+            if (!fu.IsConfirmationCall)
+                BuildFollowupHistory(true);
+        }
+
+        private void BuildFollowupHistory(bool isAddCurrentFollowup)
+        {
+            fuHistoryLst.Items.Clear();
+
+            if (isAddCurrentFollowup)
+                fuHistoryLst.Items.Add(MakeLvi(_currentFu));
+
+            foreach (var fu in _booking.Followups.Where(x => !x.IsOutstanding())
+                .OrderByDescending(y => y.CompletedDate.Value))
+                fuHistoryLst.Items.Add(MakeLvi(fu));
+
+            ListViewItem MakeLvi(Followup fu)
+            {
+                var lvi = new ListViewItem(new string[] { fu.FollowupDate.ToString("d"),
+                fu.Purpose, fu.CompletedDate.Value.ToString("d"), fu.CompleteNote});
+                lvi.Tag = fu;
+                return lvi;
+            }
+        }
+
+        private void bookBtn_Click(object sender, EventArgs e)
+        {
+            //plan for Confirmation Calls
+            //when Book It pressed, we create the confirmation call FU with appropriate date
+            //as a SEPARATE followup on Booking, with IsConfirmationCall = true.
+            //Booking.FollowupDate() is the min of Booking.ConfirmationCall (when exists and not completed)
+            //and Booking.GetCurrentFollowup()
+            //reason it needs to be separate is so that user is able to set another FU with closer date
+            //(without needing to 'complete' the confirmation call)
+            //Confirmation call tab looks just like 'Complete Current Followup' with different button name
+            //and fixed text (have constant for 'Confirmation Call')
+            //(would fit to allow reschedule, but is there a legit use case? Could be confusing?)
+            //this tab only appears once a confirmation call exists, and remains visible but disabled once
+            //confirmation call is made. This needs to be done on ConfigureFollowupControls()
+            //we make Confirmation Call the current tab if theres no other outstanding FU, or conf call precedes it
+            //if user wants to push out the confirmation call, they can use a custom followup for that
+            //for dashboard, we need to read the entire Booking for anything with an outstanding followup
+            //we then have all the info we need to construct dashboard
+            //don't forget to refresh dashboard when calendar refreshed
+
+            try
+            {
+                var backupStatus = _newStatus;
+                _newStatus = BookingStates.Booked;
+
+                UpdateConfirmationCall();
+                
+                if (Save())
+                {
+                    bookBtn.Enabled = false;
+                    completeBtn.Enabled = true;
+                    cancelBtn.Enabled = true;
+                    LoadTitlebar();
+                }
+                else
+                {
+                    _newStatus = backupStatus;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to Book it", ex);
+            }
+        }
+
         private void completeBtn_Click(object sender, EventArgs e)
         {
             if (_newStatus != BookingStates.Booked && _newStatus != BookingStates.PaymentDue)
@@ -1493,7 +1493,7 @@ namespace TBRBooker.FrontEnd
                     MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
-            if (_booking.BookingDate > DateTime.Now)
+            if (_booking.BookingDate > Utils.StartOfDay())
             {
                 MessageBox.Show(this, "The job is not scheduled to have been completed yet.", "Close Booking",
                     MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -1509,6 +1509,10 @@ namespace TBRBooker.FrontEnd
             try
             {
                 _newStatus = BookingStates.Completed;
+                //leaving this for now - it might be desirable to schedule an after service fu in some cases
+                //FinishFollowup(_currentFu, "Booking is completed and paid", true);
+                FinishFollowup(_confirmationCall != null && _confirmationCall.IsOutstanding()
+                    ? _confirmationCall : null, "Expired", true);
                 if (Save())
                 {
                     completeBtn.Enabled = false;
@@ -1528,10 +1532,497 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void timeSwitchChk_CheckedChanged(object sender, EventArgs e)
+        private void printBtn_Click(object sender, EventArgs e)
         {
-            startPick.Visible = !timeSwitchChk.Checked;
-            timePick.Visible = timeSwitchChk.Checked;
+            if (_booking.IsNewBooking)
+            {
+                MessageBox.Show(this, "You need to save the new booking before printing a form",
+                    "Print Booking Form", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+            try
+            {
+                var unsavedChanges = UnsavedChanges();
+                if (!string.IsNullOrEmpty(unsavedChanges))
+                {
+                    switch (MessageBox.Show(this,
+                        "Would you like to save the following changes so that they will be included on the Booking Form? "
+                        + unsavedChanges, "Print Booking Form",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                    {
+                        case DialogResult.Yes:
+                            Save();
+                            break;
+                        case DialogResult.No:
+                            //just continue
+                            break;
+                        default:
+                            return;
+                    }
+                }
+
+                //just open in chrome, let user decide whether to print now or just view
+                System.Diagnostics.Process.Start(BookingBL.GenerateBookingHtmlFile(_booking, false));
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Cannot Print Booking Form", ex, true);
+            }
+            
+
+        }
+
+        private void addressRegionFld_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TryAddBasePriceItem();
+        }
+
+
+        private void serviceBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            partyPnl.Visible = false;
+            displayPnl.Visible = false;
+            switch (ComboBoxItem.GetSelected<ServiceTypes>(serviceBox))
+            {
+                case ServiceTypes.ReptileParty:
+                    partyPnl.Visible = true;
+                    break;
+                case ServiceTypes.Display:
+                    displayPnl.Visible = true;
+                    TryAddBasePriceItem();
+                    break;
+                default:
+                    TryAddBasePriceItem();
+                    break;
+            }
+            
+        }
+
+        private void partyStandardRdo_CheckedChanged(object sender, EventArgs e)
+        {
+            TryAddBasePriceItem();
+        }
+
+        private void partyPlusRdo_CheckedChanged(object sender, EventArgs e)
+        {
+            TryAddBasePriceItem();
+        }
+
+        private void partyPremiumRdo_CheckedChanged(object sender, EventArgs e)
+        {
+            TryAddBasePriceItem();
+        }
+
+        private void TryAddBasePriceItem()
+        {
+            try
+            {
+                if (_isLoading)
+                    return;
+
+                //remove the old service
+                ListViewItem serviceLvi = null;
+                foreach (ListViewItem lvi in priceItemsLst.Items)
+                {
+                    if (PriceItemsBL.IsAService(((PriceItem)lvi.Tag).ProductId))
+                    {
+                        serviceLvi = lvi;
+                        break;
+                    }
+                }
+                if (serviceLvi != null)
+                {
+                    priceItemsLst.Items.Remove(serviceLvi);
+                    UpdateTotal();
+                }
+
+                var selectedRegion = ComboBoxItem.GetSelected<LocationRegions>(addressRegionBox);
+                var selectedService = ComboBoxItem.GetSelected<ServiceTypes>(serviceBox);
+
+                if (selectedRegion == LocationRegions.NotSet
+                    || selectedService == ServiceTypes.NotSet
+                    || (selectedService == ServiceTypes.ReptileParty
+                    && SelectedPartyPackage() == PartyPackages.NotSet))
+                    return;
+
+                var item = PriceItemsBL.GetBaseItem(selectedRegion, selectedService, SelectedPartyPackage());
+                if (item != null)
+                    AddPriceItem(item);
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to add base item", ex);
+            }
+        }
+
+        private void AddPriceItem(PriceItem item)
+        {
+            var lvi = new ListViewItem(
+                new[] { item.Description, item.UnitPrice.ToString(),
+                    item.Quantity.ToString(), item.Total.ToString() });
+            lvi.Tag = item;
+            priceItemsLst.Items.Add(lvi);
+            UpdateTotal();
+        }
+
+        private void UpdateTotal()
+        {
+            priceCalculatedFld.Text = CalculateTotal().ToString("C");
+            UpdatePaymentFields();
+        }
+
+        private decimal CalculateTotal()
+        {
+            decimal total = 0;
+            foreach (ListViewItem lvi in priceItemsLst.Items)
+            {
+                total += ((PriceItem)lvi.Tag).Total;
+            }
+            return total;
+        }
+
+        private PartyPackages SelectedPartyPackage()
+        {
+            if (partyStandardRdo.Checked)
+                return PartyPackages.Party;
+            else if (partyPlusRdo.Checked)
+                return PartyPackages.PartyPlus;
+            else if (partyPremiumRdo.Checked)
+                return PartyPackages.PremiumParty;
+            else
+                return PartyPackages.NotSet;
+        }
+
+        private void contactEmblemPic_Click(object sender, EventArgs e)
+        {
+            try
+            { 
+            MessageBox.Show("Planned feature: displays list of previous bookings in new dialog.");
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to show previous bookings", ex);
+            }
+        }
+
+        private void priceProductBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AttemptToSelectPriceProduct();
+        }
+
+        private bool AttemptToSelectPriceProduct()
+        {
+            try
+            {
+                if (_isLoading)
+                    return false;
+
+                var pi = PriceItemsBL.Get(ComboBoxItem.GetSelected<ProductIds>(priceProductBox));
+                priceDescFld.Text = pi.Description;
+                priceAmtFld.Text = pi.UnitPrice.ToString("C");
+                priceQtyFld.Text = pi.Quantity.ToString();
+                return pi.Quantity > 0;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to select price item", ex);
+            }
+
+            return false;
+        }
+
+        private void pricingMnu_delete_click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (priceItemsLst.SelectedIndices.Count == 0)
+                    return;
+
+                int deleteIdx = priceItemsLst.SelectedIndices[0];
+                priceItemsLst.SelectedIndices.Clear();
+                priceItemsLst.Items.RemoveAt(deleteIdx);
+                UpdateTotal();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to delete price item", ex);
+            }
+        }
+
+        private void shortDemosChk_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!shortDemosChk.Focused)
+                return;
+
+            try
+            {
+                AddOrRemovePriceProduct(ProductIds.ShortDemonstrations, shortDemosChk.Checked);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to toggle Short Demonstrations", ex);
+            }
+        }
+
+        private void savedTmr_Tick(object sender, EventArgs e)
+        {
+            savedFld.Visible = false;
+            savedTmr.Stop();
+            savedTmr.Enabled = false;
+        }
+
+        private void serviceAddCrocChk_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!serviceAddCrocChk.Focused)
+                return;
+
+            try
+            {
+                AddOrRemovePriceProduct(ProductIds.AddCrocodile, serviceAddCrocChk.Checked);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to toggle Add Croc", ex);
+            }
+        }
+
+        private void AddOrRemovePriceProduct(ProductIds product, bool isAdd)
+        {
+            if (isAdd)
+            {
+                AddPriceItem(PriceItemsBL.Get(product));
+            }
+            else
+            {
+                //remove
+                ListViewItem item = null;
+                foreach (ListViewItem lvi in priceItemsLst.Items)
+                {
+                    if (((PriceItem)lvi.Tag).ProductId == product)
+                    {
+                        item = lvi;
+                        break;
+                    }
+                }
+                if (item != null)
+                {
+                    priceItemsLst.Items.Remove(item);
+                    UpdateTotal();
+                }
+            }
+        }
+
+        private void ConfigureFollowupControls()
+        {
+            if ((_currentFu == null || !_currentFu.IsOutstanding()))
+            {
+                //there is no current followup, or user has already completed it
+                if (_nextFu != null)
+                {
+                    fuScheduleChk.Checked = true;
+                    fuDatePick.Value = _nextFu.FollowupDate;
+                    fuPurposeFld.Text = _nextFu.Purpose;
+                }
+
+                if (fuTabs.TabPages.Contains(fuCurrentPage))
+                    fuTabs.TabPages.Remove(fuCurrentPage);
+                if (!fuTabs.TabPages.Contains(fuNextPage))
+                {
+                    fuTabs.TabPages.Add(fuNextPage);
+                    if (_confirmationCall == null || !_confirmationCall.IsOutstanding())
+                        fuTabs.SelectedTab = fuNextPage;
+                }
+            }
+
+            else
+            {
+                //there is a current followup to be completed
+                fuPurposeLbl.Text = _currentFu.Purpose;
+                fuDateLbl.Text = _currentFu.FollowupDate.ToShortDateString();
+                fuCompleteFld.Text = _currentFu.CompleteNote;
+
+                if (fuTabs.TabPages.Contains(fuNextPage))
+                    fuTabs.TabPages.Remove(fuNextPage);
+                if (!fuTabs.TabPages.Contains(fuCurrentPage))
+                {
+                    fuTabs.TabPages.Add(fuCurrentPage);
+                    fuTabs.SelectedTab = fuCurrentPage;
+                }
+            }
+
+            if (_confirmationCall != null)
+            {
+                if (!fuTabs.TabPages.Contains(fuConfirmationPage))
+                {
+                    fuConfirmationPick.Value = _confirmationCall.FollowupDate;
+                    fuConfirmationNoteFld.Text = _confirmationCall.CompleteNote;
+                    fuTabs.TabPages.Add(fuConfirmationPage);
+                }
+                if (_confirmationCall.IsOutstanding() && (_currentFu == null || 
+                    !_currentFu.IsOutstanding() || _confirmationCall.FollowupDate < _currentFu.FollowupDate))
+                {
+                    fuTabs.SelectedTab = fuConfirmationPage;
+                }
+                fuConfirmationCompleteBtn.Enabled = fuConfirmationPick.Enabled = _confirmationCall.IsOutstanding();
+            }
+            else if (fuTabs.TabPages.Contains(fuConfirmationPage))
+            {
+                fuTabs.TabPages.Remove(fuConfirmationPage);
+            }
+        }
+
+        private void fuSetBtn_Click(object sender, EventArgs e)
+        {
+            //currently does nothing
+
+            //TRY WITHOUT updating current followup, ie can only create a new one if none in progress.
+            //if we do decide to allow updating current fu (push out date), warn before overriding current
+            //ConfigureFollowupControls()
+        }
+
+        private void fuHistoryLst_ItemActivate(object sender, EventArgs e)
+        {
+            try
+            {
+                //display messagebox with all details of selected followup
+                var fu = (Followup)fuHistoryLst.SelectedItems[0].Tag;
+                MessageBox.Show(this, $"Followup Scheduled: {fu.FollowupDate.ToShortDateString()}" +
+                    $"{Environment.NewLine}For: {fu.Purpose}{Environment.NewLine}" +
+                    $"Completed on: {fu.CompletedDate.Value.ToString("G")}" +
+                    $"{Environment.NewLine}Completion Note: {fu.CompleteNote}",
+                    "Followup History", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "View Followup", ex, true);
+            }
+        }
+
+        private void fuCompleteBtn_Click(object sender, EventArgs e)
+        {
+            CompleteFollowupUI(_currentFu);
+        }
+
+        private void fuScheduleChk_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!fuScheduleChk.Focused)
+            {
+                return;
+            }
+
+            fuDatePick.Enabled = fuScheduleChk.Checked;
+            fuPurposeFld.Enabled = fuScheduleChk.Checked;
+            fuSetBtn.Enabled = fuScheduleChk.Checked;
+
+            //whether setting or unsetting, we want the fields reset
+            fuDatePick.Value = Utils.StartOfDay();
+            fuPurposeFld.Text = "";
+
+            if (fuScheduleChk.Checked && _nextFu == null)
+            {
+                //checked because user has just checked it to set a custom followup
+                _nextFu = new Followup();
+            }
+            else if (!fuScheduleChk.Checked)
+            {
+                // for some reason I thought it was bad to set this to null. Add comment if know why,
+                // but if not setting it to null then there's at least one problem on save (xor check)
+                //// don't want to set it to null, just look for checked status on save
+                _nextFu = null;
+            }
+        }
+
+        private void fuCompleteFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                CompleteFollowupUI(_currentFu);
+        }
+
+        private void CompleteFollowupUI(Followup fu)
+        {
+            try
+            {
+                FinishFollowup(fu, fu.IsConfirmationCall ? fuConfirmationNoteFld.Text.Trim() : fuCompleteFld.Text.Trim());
+                ConfigureFollowupControls();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Complete Followup", ex, true);
+            }
+        }
+
+
+        private void fuConfirmationNoteFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                CompleteFollowupUI(_confirmationCall);
+        }
+
+        private void fuConfirmationCompleteBtn_Click(object sender, EventArgs e)
+        {
+            CompleteFollowupUI(_confirmationCall);
+        }
+
+
+        private void UpdateConfirmationCall()
+        {
+            if (_newStatus != BookingStates.Booked)
+                return;
+
+            if (_confirmationCall == null || !_confirmationCall.IsOutstanding())
+            {
+                var newConfirmationCall = DashboardBL.CreateConfirmationCall(Utils.StartOfDay(datePick.Value));
+                if (_confirmationCall != null && _confirmationCall.FollowupDate != newConfirmationCall.FollowupDate)
+                    _confirmationCall.FollowupDate = _confirmationCall.FollowupDate;
+                else
+                    _confirmationCall = newConfirmationCall;
+            }
+            if (_confirmationCall.FollowupDate == Utils.StartOfDay())
+            {
+                MessageBox.Show(this,
+                    "There will be no confirmation call setup, because the service is today.",
+                    "Confirmation Call", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _confirmationCall = null;
+            }
+            else if (_confirmationCall.FollowupDate < Utils.StartOfDay())
+            {
+                MessageBox.Show(this,
+                    "There will be no confirmation call setup, because it appears the service has already happened.",
+                    "Confirmation Call", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _confirmationCall = null;
+            }
+            else if (_confirmationCall.FollowupDate.DayOfWeek != Settings.Inst().ConfirmationCallDay)
+            {
+                if (MessageBox.Show(this,
+                    $"The service is just around the corner, would you still like to create a confirmation call for {_confirmationCall.FollowupDate.ToShortDateString()}?",
+                    "Confirmation Call", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    _confirmationCall = null;
+            }
+
+            if (_confirmationCall != null)
+            {
+                fuConfirmationPick.Value = _confirmationCall.FollowupDate;
+                fuConfirmationNoteFld.Text = _confirmationCall.CompleteNote;
+            }
+        }
+
+        public void ConfigureMoveButtons(bool isLeftToRightMode)
+        {
+            moveLeftBtn.Visible = !isLeftToRightMode;
+            moveRightBtn.Visible = isLeftToRightMode;
+        }
+
+        private void moveLeftBtn_Click(object sender, EventArgs e)
+        {
+            _owner.SwitchTabGroup(_booking, false);
+        }
+
+        private void moveRightBtn_Click(object sender, EventArgs e)
+        {
+            _owner.SwitchTabGroup(_booking, true);
+            moveLeftBtn.Visible = true;
         }
     }
 }

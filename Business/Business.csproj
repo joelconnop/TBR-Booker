@@ -58,6 +58,7 @@
     <Compile Include="BookingBL.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomerBL.cs" />
+    <Compile Include="DashboardBL.cs" />
     <Compile Include="DBBox.cs" />
     <Compile Include="PriceItemsBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

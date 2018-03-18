@@ -31,3 +31,39 @@ E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.exe
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBR Booker.pdb
 E:\Programming\TBR Booker\FrontEnd\bin\Debug\ja\Base.resources.dll
 E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.TimePicker.resources
+E:\Programming\TBR Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.DashboardCategoryPnl.resources
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\TBR Booker.exe.config
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\TBR Booker.exe
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\TBR Booker.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Base.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Business.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Data.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Shouldly.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.DynamoDBv2.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.Core.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Newtonsoft.Json.dll
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Base.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Business.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Data.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.DynamoDBv2.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.DynamoDBv2.xml
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.Core.pdb
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.Core.xml
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Newtonsoft.Json.xml
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\ja\Base.resources.dll
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csprojResolveAssemblyReference.cache
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingFrm.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingPnl.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingsFrm.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.DashboardCategoryPnl.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.DayPanel.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingSlotPnl.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.MainFrm.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.Properties.Resources.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.Timeline.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.TimePicker.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.GenerateResource.cache
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.CoreCompileInputs.cache
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.CopyComplete
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.exe
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.pdb

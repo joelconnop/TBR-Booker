@@ -65,17 +65,17 @@ new PriceItem(ProductIds.RoamingReptilesBrisbane, 200, 1));
 new PriceItem(ProductIds.PythonAppearanceBrisbane, 150, 1));
 
             _productLookup.Add(ProductIds.AdditionalHours,
-new PriceItem(ProductIds.AdditionalHours, 50, 1));
+new PriceItem(ProductIds.AdditionalHours, 50, 0));
             _productLookup.Add(ProductIds.AddCrocodile,
                 new PriceItem(ProductIds.AddCrocodile, 50, 1));
             _productLookup.Add(ProductIds.AdditionalParticipants,
-                new PriceItem(ProductIds.AdditionalParticipants, 6, 1));
+                new PriceItem(ProductIds.AdditionalParticipants, 6, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPlus,
-    new PriceItem(ProductIds.AdditionalParticipantsPlus, 10, 1));
+    new PriceItem(ProductIds.AdditionalParticipantsPlus, 10, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPremium,
-new PriceItem(ProductIds.AdditionalParticipantsPremium, 10, 1));
+new PriceItem(ProductIds.AdditionalParticipantsPremium, 10, 0));
             _productLookup.Add(ProductIds.PartyBags,
-new PriceItem(ProductIds.PartyBags, 5, 1));
+new PriceItem(ProductIds.PartyBags, 5, 0));
             _productLookup.Add(ProductIds.ShortDemonstrations,
 new PriceItem(ProductIds.ShortDemonstrations, 100, 1));
             _productLookup.Add(ProductIds.InteractiveEncounter,
@@ -85,7 +85,7 @@ new PriceItem(ProductIds.Parking, 20, 1));
             _productLookup.Add(ProductIds.Discount,
 new PriceItem(ProductIds.Discount, -50, 1));
             _productLookup.Add(ProductIds.Other, new PriceItem(ProductIds.Other, 0, 1));
-
+            _productLookup.Add(ProductIds.NotSet, new PriceItem(ProductIds.NotSet, 0, 0, ""));
             return (PriceItem)_productLookup[productId].Clone();
         }
 
@@ -150,6 +150,8 @@ new PriceItem(ProductIds.Discount, -50, 1));
                 case ServiceTypes.PythonAppearance:
                     serviceX = 6;
                     break;
+                case ServiceTypes.Other:
+                    return null;
                 default:
                     throw new Exception($"Unknown Service '{service}'.");
 

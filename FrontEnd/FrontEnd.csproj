@@ -65,7 +65,14 @@
     <Compile Include="BookingsFrm.Designer.cs">
       <DependentUpon>BookingsFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ComboBoxItem.cs" />
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="DashboardCategoryPnl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DashboardCategoryPnl.Designer.cs">
+      <DependentUpon>DashboardCategoryPnl.cs</DependentUpon>
+    </Compile>
     <Compile Include="DayPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -108,6 +115,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BookingsFrm.resx">
       <DependentUpon>BookingsFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DashboardCategoryPnl.resx">
+      <DependentUpon>DashboardCategoryPnl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DayPanel.resx">
       <DependentUpon>DayPanel.cs</DependentUpon>
@@ -200,6 +210,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\greentick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exclamation.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -21,12 +21,13 @@ namespace TBRBooker.FrontEnd
         private DateTime _calendarStartDate;
         private BookingsFrm _bookingsFrm;
         private int _screenId;
+        private bool _isAllHistoryAvailable;
 
         public MainFrm()
         {
             InitializeComponent();
 
-            _calendarStartDate = PickCalendarStartDate(DateTime.Now);
+            _calendarStartDate = PickCalendarStartDate(Utils.StartOfDay());
             datePicker.Value = _calendarStartDate;
         }
 
@@ -51,6 +52,18 @@ namespace TBRBooker.FrontEnd
                 if (lastDay.Month != _calendarStartDate.Month)
                     dateRangeStr += $" - {lastDay.ToString("MMM yy")}";
                 monthsLbl.Text = dateRangeStr;
+
+                //dashboards
+                dashboardPnl.Controls.Clear();
+                int yOffset = 10;
+                foreach (var category in DashboardBL.GetDashboard())
+                {
+                    var categoryPnl = new DashboardCategoryPnl(this, category);
+                    categoryPnl.Location = new Point(3, yOffset);
+                    categoryPnl.RefreshList();
+                    dashboardPnl.Controls.Add(categoryPnl);
+                    yOffset += 10 + categoryPnl.Height;
+                }
             }
             catch (Exception ex)
             {
@@ -94,7 +107,7 @@ namespace TBRBooker.FrontEnd
                 {
                     var dayPnl = new DayPanel(day, 
                         items.Where(x => x.BookingDate.DayOfYear == day.DayOfYear).ToList(),
-                        true, this);
+                        true, this, isForceReadAll || _isAllHistoryAvailable);
                     daysPanel.Controls.Add(dayPnl);
                     dayPnl.Location = new Point(j * (dayPnl.Size.Height + 5) + 5, i * (dayPnl.Size.Width + 5) + 5);
                     _days[i, j] = dayPnl;
@@ -128,19 +141,19 @@ namespace TBRBooker.FrontEnd
 
         private void datePicker_ValueChanged(object sender, EventArgs e)
         {
-            _calendarStartDate = PickCalendarStartDate(datePicker.Value);
+            _calendarStartDate = Utils.StartOfDay(PickCalendarStartDate(datePicker.Value));
             UpdateCalendar();
         }
 
         private void prevBtn_Click(object sender, EventArgs e)
         {
-            _calendarStartDate = _calendarStartDate.AddDays(-7);
+            _calendarStartDate = Utils.StartOfDay(_calendarStartDate.AddDays(-7));
             UpdateCalendar();
         }
 
         private void nextBtn_Click(object sender, EventArgs e)
         {
-            _calendarStartDate = _calendarStartDate.AddDays(7);
+            _calendarStartDate = Utils.StartOfDay(_calendarStartDate.AddDays(7));
             UpdateCalendar();
         }
 
@@ -180,11 +193,21 @@ namespace TBRBooker.FrontEnd
         private void refreshBtn_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show(this, "Reloading the entire calendar is an expensive read operation to scan every " +
-                "booking since the beginning of time (normally we just want to see < 3 months expired, or still " +
+                "booking since the beginning of time (normally we just show you < 3 months expired, or still " +
                 "having outstanding payments).\r\nYou should only do this if you need to view old bookings." +
                 " Proceed anyway?", "Reload Calendar", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
                 == DialogResult.OK)
-                AddDayPanels(true);
+            {
+                try
+                {
+                    AddDayPanels(true);
+                    _isAllHistoryAvailable = true;
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+                }
+            }
         }
 
         private void InitBookingsFrm()

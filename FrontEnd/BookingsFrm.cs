@@ -18,6 +18,9 @@ namespace TBRBooker.FrontEnd
         public Dictionary<string, BookingPnl> _panels;
         public MainFrm _owner;
 
+        private const int FullWidth = 1920;
+        private const int HalfWidth = 970;
+
         public BookingsFrm(MainFrm owner)
         {
             InitializeComponent();
@@ -45,44 +48,113 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        public void SwitchTabGroup(Booking booking, bool isLeftToRight)
+        {
+            if (isLeftToRight)
+            {
+                if (!leftTabs.TabPages.ContainsKey(booking.Id))
+                    throw new Exception($"Failed to move {booking.Id} from left to right.");
+            }
+            else
+            {
+                if (!rightTabs.TabPages.ContainsKey(booking.Id))
+                    throw new Exception($"Failed to move {booking.Id} from right to left.");
+            }
+
+            // delete + add tab pages, preserving the same booking panel
+            var panel = _panels[booking.Id];
+            var from = isLeftToRight ? leftTabs : rightTabs;
+            
+            from.TabPages.RemoveByKey(booking.Id);
+            var to = isLeftToRight ? rightTabs : leftTabs;
+            to.TabPages.Add(booking.Id, booking.Id);
+            var page = to.TabPages[booking.Id];
+            page.Controls.Add(panel);
+            to.SelectedTab = page;
+
+            panel.ConfigureMoveButtons(!isLeftToRight);
+
+            AssessWidth();
+        }
+
+        private void AssessWidth()
+        {
+            if (rightTabs.TabPages.Count > 0 && Width < FullWidth)
+                Width = FullWidth;
+            else if (rightTabs.TabPages.Count == 0 && Width > HalfWidth)
+                Width = HalfWidth;
+        }
+
         public void ShowBooking(Booking booking, string navigateFromBookingId = "")
         {
             ShowOnAppropriateMonitor();
 
-            if (tabs1.TabPages.ContainsKey(booking.Id))
+            bool isLeft = string.IsNullOrEmpty(navigateFromBookingId);
+            if (leftTabs.TabPages.ContainsKey(booking.Id))
             {
-                tabs1.SelectedTab = tabs1.TabPages[booking.Id];
+                if (isLeft)
+                    leftTabs.SelectedTab = leftTabs.TabPages[booking.Id];
+                else
+                    SwitchTabGroup(booking, true);
             }
-            else if (tabs2.TabPages.ContainsKey(booking.Id))
+            else if (rightTabs.TabPages.ContainsKey(booking.Id))
             {
-                tabs2.SelectedTab = tabs2.TabPages[booking.Id];
+                if (!isLeft)
+                    rightTabs.SelectedTab = rightTabs.TabPages[booking.Id];
+                else
+                    SwitchTabGroup(booking, false);
             }
             else
             {
-                var tabs = tabs1;
-                if ((tabs1.TabCount > tabs2.TabCount
-                    && !tabs2.TabPages.ContainsKey(navigateFromBookingId))
-                    || tabs1.TabPages.ContainsKey(navigateFromBookingId))
-                    tabs = tabs2;
+                var tabs = isLeft ? leftTabs : rightTabs;
+                //if ((leftTabs.TabCount > rightTabs.TabCount
+                //    && !rightTabs.TabPages.ContainsKey(navigateFromBookingId))
+                //    || leftTabs.TabPages.ContainsKey(navigateFromBookingId))
+                //    tabs = rightTabs;
 
                 tabs.TabPages.Add(booking.Id, booking.Id);
                 var page = tabs.TabPages[booking.Id];
-                var panel = new BookingPnl(booking, this);
+                var panel = new BookingPnl(booking, this, isLeft);
                 page.Controls.Add(panel);
                 tabs.SelectedTab = page;
                 _panels.Add(booking.Id, panel);
             }
+
+            AssessWidth();
         }
 
         public void CloseBooking(string id)
         {
             try
             {
-                if (tabs1.TabPages.ContainsKey(id))
-                    tabs1.TabPages.RemoveByKey(id);
+                if (leftTabs.TabPages.ContainsKey(id))
+                    leftTabs.TabPages.RemoveByKey(id);
                 else
-                    tabs2.TabPages.RemoveByKey(id);
+                    rightTabs.TabPages.RemoveByKey(id);
                 _panels.Remove(id);
+
+                //if nothing is on left tab, move the selected right tab to left
+                if (leftTabs.TabPages.Count == 0 && rightTabs.TabPages.Count > 0)
+                {
+                    try
+                    {
+                        var bookingPnl = (BookingPnl)rightTabs.SelectedTab.Controls[0];
+                        SwitchTabGroup(bookingPnl.GetBooking(), false);
+                        bookingPnl.ConfigureMoveButtons(true);
+                    }
+                    catch
+                    {
+                        //don't really care if we couldn't do this
+                    }
+                }
+                else if (leftTabs.TabPages.Count == 0 && rightTabs.TabPages.Count == 0)
+                {
+                    Close();
+                }
+                else if (rightTabs.TabPages.Count == 0)
+                {
+                    AssessWidth();
+                }
             }
             catch (Exception ex)
             {
@@ -92,8 +164,8 @@ namespace TBRBooker.FrontEnd
 
         public void OnBookingSave()
         {
-            UpdateTimeLinesForTabs(tabs1);
-            UpdateTimeLinesForTabs(tabs2);
+            UpdateTimeLinesForTabs(leftTabs);
+            UpdateTimeLinesForTabs(rightTabs);
             _owner.UpdateCalendar();
         }
 
@@ -113,70 +185,72 @@ namespace TBRBooker.FrontEnd
             Close();
         }
 
+        private bool TryAndCloseClose()
+        {
+            try
+            {
+                string notSaved = "";
+                var toSave = new List<string>();
+                List<string> toClose = new List<string>();
+                foreach (var kvp in _panels)
+                {
+                    if (!string.IsNullOrEmpty(kvp.Value.UnsavedChanges()))
+                    {
+                        notSaved += $"{kvp.Key}, ";
+                        toSave.Add(kvp.Key);
+                    }
+                    else
+                        toClose.Add(kvp.Key);
+                }
+
+                if (toSave.Any())
+                {
+                    var result = MessageBox.Show(this, "Save changes to the following bookings? "
+                        + notSaved.Trim().Trim(','), "Closing Bookings",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    switch (result)
+                    {
+                        case DialogResult.Yes:
+                            toClose.ForEach(x => CloseBooking(x));
+                            foreach (var id in toSave)
+                            {
+                                if (!_panels[id].Save())
+                                {
+                                    return false;
+                                }
+                                CloseBooking(id);
+                            }
+                            return true;
+
+                        case DialogResult.No:
+                            return true; //(and continue to close)
+
+                        default:    //(cancel)
+                            toClose.ForEach(x => CloseBooking(x));  //at least close the ones that dont need saving
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this,
+                    $"Could not close bookings. You should save each one manually and restart the application", ex);
+                return false;
+            }
+        }
+
         private void BookingsFrm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!_isQuitting)
             {
-                try
+                if (!TryAndCloseClose())
                 {
-                    string notSaved = "";
-                    var toSave = new List<string>();
-                    List<string> toClose = new List<string>();
-                    foreach (var kvp in _panels)
-                    {
-                        if (!string.IsNullOrEmpty(kvp.Value.UnsavedChanges()))
-                        {
-                            notSaved += $"{kvp.Key}, ";
-                            toSave.Add(kvp.Key);
-                        }
-                        else
-                            toClose.Add(kvp.Key);
-                    }
-
-                    if (toSave.Any())
-                    {
-                        var result = MessageBox.Show(this, "Save changes to the following bookings? "
-                            + notSaved.Trim().Trim(','), "Closing Bookings",
-                            MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                        switch (result)
-                        {
-                            case DialogResult.Yes:
-                                toClose.ForEach(x => CloseBooking(x));
-                                foreach (var id in toSave)
-                                {
-                                    if (!_panels[id].Save())
-                                    {
-                                        e.Cancel = true;
-                                        return;
-                                    }
-                                    CloseBooking(id);
-                                }
-                                break;
-
-                            case DialogResult.No:
-                                return; //(and continue to close)
-
-                            default:    //(cancel)
-                                toClose.ForEach(x => CloseBooking(x));  //at least close the ones that dont need saving
-                                e.Cancel = true;
-                                break;
-                        }
-                    }
-
-                    //WindowState = FormWindowState.Minimized;
-                    //e.Cancel = true;
-                }
-                catch (Exception ex)
-                {
-                    ErrorHandler.HandleError(this, 
-                        $"Could not close bookings. You should save each one manually and restart the application", ex);
+                    e.Cancel = true;
                 }
             }
         }
 
-        private void BookingsFrm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

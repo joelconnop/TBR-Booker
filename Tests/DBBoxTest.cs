@@ -14,13 +14,13 @@ namespace Tests
     {
 
         [TestMethod]
-        public void IsInUnitTest()
+        public void IsRecognisingUnitTestsAsTestMode()
         {
             DBBox.InitDynamoDbClient();
-            DBBox.IsTestEnvironment.ShouldBe(true);
+            DBBox.IsTestEnvironment().ShouldBe(true);
         }
 
-
+        [Ignore]
         [TestMethod]
         public void GetCalendarItems()
         {
@@ -30,6 +30,7 @@ namespace Tests
             calendar.Where(x => x.BookingStatus == BookingStates.Booked).Count().ShouldBe(1);
         }
 
+        [Ignore]
         [TestMethod]
         public void AddCustomers()
         {
@@ -52,7 +53,7 @@ namespace Tests
             });
         }
 
-  
+        [Ignore]
         [TestMethod]
         public void GetCustomerDirectory()
         {

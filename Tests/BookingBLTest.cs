@@ -14,6 +14,7 @@ namespace Tests
     [TestClass]
     public class BookingBLTest
     {
+        [Ignore]
         [TestMethod]
         public void WriteBookings()
         {
@@ -99,6 +100,7 @@ namespace Tests
         //       bookings.Where(x => x.Status == BookingStatus.Booked).Count().ShouldBe(1);
         //   }
 
+        [Ignore]
         [TestMethod]
         public void UpdateBooking()
         {
