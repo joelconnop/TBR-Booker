@@ -67,3 +67,4 @@ C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.CoreCompileInputs.c
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.CopyComplete
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.exe
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.pdb
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.CorporateAccountFrm.resources

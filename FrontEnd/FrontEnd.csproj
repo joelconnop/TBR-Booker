@@ -70,6 +70,12 @@
     </Compile>
     <Compile Include="ComboBoxItem.cs" />
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="CorporateAccountFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CorporateAccountFrm.Designer.cs">
+      <DependentUpon>CorporateAccountFrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DashboardCategoryPnl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -118,6 +124,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BookingsFrm.resx">
       <DependentUpon>BookingsFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CorporateAccountFrm.resx">
+      <DependentUpon>CorporateAccountFrm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DashboardCategoryPnl.resx">
       <DependentUpon>DashboardCategoryPnl.cs</DependentUpon>

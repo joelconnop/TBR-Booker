@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
+using Newtonsoft.Json;
 
 namespace TBRBooker.Model.Entities
 {
@@ -28,13 +29,21 @@ namespace TBRBooker.Model.Entities
         /// </summary>
        // public List<(string BranchName, string BookingNickname)> Branches { get; set; }
 
-        public string CompanyName { get; set; }
+        public string TradingName { get; set; }
+        public string BusinessName { get; set; }
         public string Abn { get; set; }
-        public Address BillingAddress { get; set; }
+        public string BillingAddress { get; set; }
         public string BillingContact { get; set; }
         public string BillingEmail { get; set; }
         public string PhoneNumber { get; set; }
         public string OtherNumbers { get; set; }
+        public string SpecialArrangements { get; set; }
+        public string Notes { get; set; }
+
+        /// <summary>
+        /// Any new booking is automatically based off this booking
+        /// </summary>
+        public string DefaultBookingId { get; set; }
 
         /// <summary>
         /// Needed because so db can be queried to extract each booking, as opposed to full table scan
@@ -55,7 +64,7 @@ namespace TBRBooker.Model.Entities
 
         public string SmartName()
         {
-            string name = CompanyName;
+            string name = BusinessName;
             //if (!string.IsNullOrEmpty(BillingContact))
             //{
             //    name = BillingContact + SmartNameJoiner;

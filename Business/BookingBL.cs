@@ -45,8 +45,12 @@ namespace TBRBooker.Business
             DBBox.AddOrUpdate(booking.Customer);
             booking.CustomerId = booking.Customer.Id;
 
-            if (booking.Account != null)
-                DBBox.AddOrUpdate(booking.Account);
+            // saved independently
+            //if (booking.Account != null)
+            //{
+            //    DBBox.AddOrUpdate(booking.Account);
+            //    booking.AccountId = booking.Account.Id;
+            //}
 
             try
             {
@@ -54,11 +58,20 @@ namespace TBRBooker.Business
                     booking.BookingNickname = booking.BookingName;
                 booking.EditSequence++;
                 DBBox.AddOrUpdate(booking);
+
                 if (!booking.Customer.BookingIds.Contains(booking.Id))
                 {
                     booking.Customer.BookingIds.Add(booking.Id);
                     DBBox.AddOrUpdate(booking.Customer);
                 }
+
+                // this will be the case if account is selected rather than creating new
+                if (booking.Account != null && !booking.Account.BookingIds.Contains(booking.Id))
+                {
+                    booking.Account.BookingIds.Add(booking.Id);
+                    DBBox.AddOrUpdate(booking.Account);
+                }
+
                 GenerateBookingHtmlFile(booking, true);
                 booking.IsNewBooking = false;   //not a database field, just so calling functions know its in DB
 

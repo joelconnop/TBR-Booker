@@ -147,7 +147,7 @@ namespace TBRBooker.Model.Entities
             }
             else if (Account != null)
             {
-                return Account.CompanyName;
+                return Account.BusinessName;
             }
             else if (Customer != null)
             {

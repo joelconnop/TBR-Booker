@@ -77,5 +77,20 @@ namespace TBRBooker.FrontEnd
             return ((ComboBoxItem)cb.SelectedItem).GetValue<T>();
         }
 
+        public static bool ManuallySelectItem<T>(ComboBox cb, T item)
+        {
+            foreach (var i in cb.Items)
+            {
+                var cbi = i as ComboBoxItem;
+                if (cbi.GetValue<T>().Equals(item))
+                {
+                    cb.SelectedItem = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
     }
 }

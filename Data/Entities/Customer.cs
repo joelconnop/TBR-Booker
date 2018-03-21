@@ -132,6 +132,22 @@ namespace TBRBooker.Model.Entities
             return name;
         }
 
+        public string FullName()
+        {
+            string name = FirstName;
+
+            if (!string.IsNullOrEmpty(LastName))
+            {
+                if (!string.IsNullOrEmpty(FirstName))
+                {
+                    name += " ";
+                }
+                name += LastName;
+            }
+
+            return name;
+        }
+
         public string SmartPhone()
         {
             string phone = PrimaryNumber;

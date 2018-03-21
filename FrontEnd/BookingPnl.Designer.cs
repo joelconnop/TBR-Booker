@@ -66,6 +66,8 @@
             this.dateGrp = new System.Windows.Forms.GroupBox();
             this.timePick = new System.Windows.Forms.DateTimePicker();
             this.timeSwitchChk = new System.Windows.Forms.CheckBox();
+            this.startPick = new TBRBooker.FrontEnd.TimePicker();
+            this.endPick = new TBRBooker.FrontEnd.TimePicker();
             this.label29 = new System.Windows.Forms.Label();
             this.durationDescFld = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
@@ -117,6 +119,8 @@
             this.label16 = new System.Windows.Forms.Label();
             this.priceInvoiceBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.moveRightBtn = new System.Windows.Forms.Button();
+            this.moveLeftBtn = new System.Windows.Forms.Button();
             this.statusLbl = new System.Windows.Forms.Label();
             this.titleLbl = new System.Windows.Forms.Label();
             this.contactSearchChk = new System.Windows.Forms.CheckBox();
@@ -171,10 +175,6 @@
             this.fuPurposeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuCompletedCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.startPick = new TBRBooker.FrontEnd.TimePicker();
-            this.endPick = new TBRBooker.FrontEnd.TimePicker();
-            this.moveLeftBtn = new System.Windows.Forms.Button();
-            this.moveRightBtn = new System.Windows.Forms.Button();
             this.serviceGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
@@ -578,6 +578,20 @@
             this.timeSwitchChk.Text = "Switch to precise time input";
             this.timeSwitchChk.UseVisualStyleBackColor = true;
             this.timeSwitchChk.CheckedChanged += new System.EventHandler(this.timeSwitchChk_CheckedChanged);
+            // 
+            // startPick
+            // 
+            this.startPick.Location = new System.Drawing.Point(242, 40);
+            this.startPick.Name = "startPick";
+            this.startPick.Size = new System.Drawing.Size(84, 27);
+            this.startPick.TabIndex = 10;
+            // 
+            // endPick
+            // 
+            this.endPick.Location = new System.Drawing.Point(354, 40);
+            this.endPick.Name = "endPick";
+            this.endPick.Size = new System.Drawing.Size(84, 27);
+            this.endPick.TabIndex = 9;
             // 
             // label29
             // 
@@ -1072,6 +1086,30 @@
             this.panel1.Size = new System.Drawing.Size(936, 67);
             this.panel1.TabIndex = 14;
             // 
+            // moveRightBtn
+            // 
+            this.moveRightBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
+            this.moveRightBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.moveRightBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.moveRightBtn.Location = new System.Drawing.Point(869, 3);
+            this.moveRightBtn.Name = "moveRightBtn";
+            this.moveRightBtn.Size = new System.Drawing.Size(60, 60);
+            this.moveRightBtn.TabIndex = 3;
+            this.moveRightBtn.UseVisualStyleBackColor = true;
+            this.moveRightBtn.Click += new System.EventHandler(this.moveRightBtn_Click);
+            // 
+            // moveLeftBtn
+            // 
+            this.moveLeftBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
+            this.moveLeftBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.moveLeftBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.moveLeftBtn.Location = new System.Drawing.Point(6, 4);
+            this.moveLeftBtn.Name = "moveLeftBtn";
+            this.moveLeftBtn.Size = new System.Drawing.Size(60, 60);
+            this.moveLeftBtn.TabIndex = 2;
+            this.moveLeftBtn.UseVisualStyleBackColor = true;
+            this.moveLeftBtn.Click += new System.EventHandler(this.moveLeftBtn_Click);
+            // 
             // statusLbl
             // 
             this.statusLbl.AutoSize = true;
@@ -1176,6 +1214,7 @@
             this.contactCompanyBtn.TabIndex = 8;
             this.contactCompanyBtn.Text = "Corporate Account";
             this.contactCompanyBtn.UseVisualStyleBackColor = true;
+            this.contactCompanyBtn.Click += new System.EventHandler(this.contactCompanyBtn_Click);
             // 
             // contactCompanyFld
             // 
@@ -1599,44 +1638,6 @@
             // 
             this.fuNoteCol.Text = "Completion Note";
             this.fuNoteCol.Width = 150;
-            // 
-            // startPick
-            // 
-            this.startPick.Location = new System.Drawing.Point(242, 40);
-            this.startPick.Name = "startPick";
-            this.startPick.Size = new System.Drawing.Size(84, 27);
-            this.startPick.TabIndex = 10;
-            // 
-            // endPick
-            // 
-            this.endPick.Location = new System.Drawing.Point(354, 40);
-            this.endPick.Name = "endPick";
-            this.endPick.Size = new System.Drawing.Size(84, 27);
-            this.endPick.TabIndex = 9;
-            // 
-            // moveLeftBtn
-            // 
-            this.moveLeftBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.back;
-            this.moveLeftBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.moveLeftBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.moveLeftBtn.Location = new System.Drawing.Point(6, 4);
-            this.moveLeftBtn.Name = "moveLeftBtn";
-            this.moveLeftBtn.Size = new System.Drawing.Size(60, 60);
-            this.moveLeftBtn.TabIndex = 2;
-            this.moveLeftBtn.UseVisualStyleBackColor = true;
-            this.moveLeftBtn.Click += new System.EventHandler(this.moveLeftBtn_Click);
-            // 
-            // moveRightBtn
-            // 
-            this.moveRightBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.next;
-            this.moveRightBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.moveRightBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.moveRightBtn.Location = new System.Drawing.Point(869, 3);
-            this.moveRightBtn.Name = "moveRightBtn";
-            this.moveRightBtn.Size = new System.Drawing.Size(60, 60);
-            this.moveRightBtn.TabIndex = 3;
-            this.moveRightBtn.UseVisualStyleBackColor = true;
-            this.moveRightBtn.Click += new System.EventHandler(this.moveRightBtn_Click);
             // 
             // BookingPnl
             // 

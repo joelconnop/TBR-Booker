@@ -34,7 +34,8 @@ namespace TBRBooker.FrontEnd
             Filepath,
             Website,
             PhoneNumberAny,
-            LongDatabase
+            LongDatabase,
+            NumbersAndSpaces
         }
 
         private enum CharacterCase
@@ -177,6 +178,10 @@ namespace TBRBooker.FrontEnd
                     case TextBoxValidationType.LongDatabase:
                         validateText("", "\"';", true, true, true, true, CharacterCase.Any, 255);
                         break;
+
+                    case TextBoxValidationType.NumbersAndSpaces:
+                        validateText("", "", false, true, false, true, CharacterCase.Any, 100);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -194,10 +199,10 @@ namespace TBRBooker.FrontEnd
                 case TextBoxValidationType.DollarAmountPositive:
                     if (_tb.Text.Length > 1)
                     {
-                        decimal dval = 0;
-                        if (decimal.TryParse(_tb.Text, out dval))
+                        decimal dolVal = 0;
+                        if (decimal.TryParse(_tb.Text, out dolVal))
                         {
-                            return dval.ToString();
+                            return dolVal.ToString();
                         }
                         else
                         {
@@ -235,6 +240,13 @@ namespace TBRBooker.FrontEnd
                     {
                         return "0";
                     }
+
+                case TextBoxValidationType.NumbersAndSpaces:
+                    double dval;
+                    if (double.TryParse(_tb.Text.Replace(" ", ""), out dval))
+                        return _tb.Text.Trim();
+                    else
+                        return string.Empty;
 
                 case TextBoxValidationType.EmailAddress:
                     string pattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9][\\w\\.-]*@[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";

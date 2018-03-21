@@ -64,6 +64,7 @@ namespace TBRBooker.FrontEnd
             else
             {
                 _customer = booking.Customer;
+                _corporateAccount = booking.Account;
             }
 
             ConfigureMoveButtons(isOnLeftTab);
@@ -73,7 +74,13 @@ namespace TBRBooker.FrontEnd
         private void copyLastToNickBtn_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(contactLastNameFld.Text))
-                contactNicknameFld.Text = contactLastNameFld.Text.Trim();
+            {
+                string nickname = contactLastNameFld.Text.Trim();
+                if (!string.IsNullOrEmpty(contactFirstNameFld.Text.Trim()))
+                    nickname = contactFirstNameFld.Text.Trim().Substring(0, 1) + ". "
+                        + nickname;
+                contactNicknameFld.Text = nickname;
+            }
             else if (!string.IsNullOrEmpty(contactFirstNameFld.Text))
                 contactNicknameFld.Text = contactFirstNameFld.Text.Trim();
         }
@@ -120,38 +127,7 @@ namespace TBRBooker.FrontEnd
             _service = _booking.Service;
             ComboBoxItem.InitComboBox(serviceBox, typeof(ServiceTypes),
                 _service?.ServiceType ?? ServiceTypes.NotSet);
-            if (_service.ServiceType == ServiceTypes.ReptileParty)
-            {
-                var party = _service.Party;
-                var package = party.Package;
-                if (package == PartyPackages.NotSet)
-                {
-                    var partyPriceItem = _service.PriceItems.FirstOrDefault(
-                        x => PriceItemsBL.WhichPartyPackage(x.ProductId) != PartyPackages.NotSet);
-                    if (partyPriceItem != null)
-                        package = PriceItemsBL.WhichPartyPackage(partyPriceItem.ProductId);
-                }
-            
-                switch (package)
-                {
-                    case PartyPackages.Party:
-                        partyStandardRdo.Checked = true;
-                        break;
-                    case PartyPackages.PartyPlus:
-                        partyPlusRdo.Checked = true;
-                        break;
-                    case PartyPackages.PremiumParty:
-                        partyPremiumRdo.Checked = true;
-                        break;
-                }
-                partyBirthdayNameFld.Text = party.BirthdayName;
-                partyAgeFld.Text = party.BirthdayAge.ToString();
-            }
-            serviceAddCrocChk.Checked = _service.AddCrocodile;
-            servicePaxFld.Text = _service.Pax.ToString();
-            serviceAnimalsToCome.Text = _service.SpecificAnimalsToCome;
-            shortDemosChk.Checked = (_service.PriceItems
-                .Any(x => x.ProductId == ProductIds.ShortDemonstrations));
+            LoadService(_service);
             
 
             //pricing
@@ -300,7 +276,7 @@ namespace TBRBooker.FrontEnd
         {
             if (_corporateAccount != null)  // && _booking.IsOpen()) //<-- why?
             {
-                contactCompanyFld.Text = _corporateAccount.CompanyName;
+                contactCompanyFld.Text = _corporateAccount.BusinessName;
                 contactCompanyFld.Enabled = false;
             }
             else
@@ -360,6 +336,42 @@ namespace TBRBooker.FrontEnd
             }
 
             return pastBookings;
+        }
+
+        private void LoadService(Service service)
+        {
+            if (service.ServiceType == ServiceTypes.ReptileParty)
+            {
+                var party = service.Party;
+                var package = party.Package;
+                if (package == PartyPackages.NotSet)
+                {
+                    var partyPriceItem = service.PriceItems.FirstOrDefault(
+                        x => PriceItemsBL.WhichPartyPackage(x.ProductId) != PartyPackages.NotSet);
+                    if (partyPriceItem != null)
+                        package = PriceItemsBL.WhichPartyPackage(partyPriceItem.ProductId);
+                }
+
+                switch (package)
+                {
+                    case PartyPackages.Party:
+                        partyStandardRdo.Checked = true;
+                        break;
+                    case PartyPackages.PartyPlus:
+                        partyPlusRdo.Checked = true;
+                        break;
+                    case PartyPackages.PremiumParty:
+                        partyPremiumRdo.Checked = true;
+                        break;
+                }
+                partyBirthdayNameFld.Text = party.BirthdayName;
+                partyAgeFld.Text = party.BirthdayAge.ToString();
+            }
+            serviceAddCrocChk.Checked = service.AddCrocodile;
+            servicePaxFld.Text = service.Pax.ToString();
+            serviceAnimalsToCome.Text = service.SpecificAnimalsToCome;
+            shortDemosChk.Checked = (service.PriceItems
+                .Any(x => x.ProductId == ProductIds.ShortDemonstrations));
         }
 
         public void StartTimeChanged(TimePicker.TimePickerValue tpv)
@@ -705,19 +717,46 @@ namespace TBRBooker.FrontEnd
                     return;
                 }
 
+                Cursor = Cursors.WaitCursor;
+
                 _customer = DBBox.ReadItem<Customer>((string)searchLst.SelectedItems[0].Tag);
 
                 var pastBookings = GetPastBookings();
 
                 var accountId = pastBookings.OrderByDescending(x => x.BookingDate)
                     .FirstOrDefault(x => !string.IsNullOrEmpty(x.AccountId))?.AccountId ?? null;
+                string copyFromId = null;
                 if (!string.IsNullOrEmpty(accountId))
                 {
                     _corporateAccount = DBBox.ReadItem<CorporateAccount>(accountId);
+                    if (!string.IsNullOrEmpty(_corporateAccount.DefaultBookingId))
+                        copyFromId = _corporateAccount.DefaultBookingId;
                 }
                 else
                 {
                     _corporateAccount = null;
+                }
+
+                if (string.IsNullOrEmpty(copyFromId) && _customer.BookingIds.Any())
+                {
+                    copyFromId = _customer.BookingIds.Last();
+                }
+
+                if (!string.IsNullOrEmpty(copyFromId))
+                {
+                    Cursor = Cursors.Default;
+                    if (MessageBox.Show(this, "Would you like to copy the details from "
+                        + (_corporateAccount?.TradingName ?? _customer.FullName()) + "'s last booking #"
+                        + copyFromId + "?", "Returning Customer", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Cursor = Cursors.WaitCursor;
+                        CopyBookingDetails(BookingBL.GetBookingFull(copyFromId));
+                    }
+                    else
+                    {
+                        Cursor = Cursors.WaitCursor;
+                    }
                 }
 
                 LoadAccount();
@@ -730,11 +769,36 @@ namespace TBRBooker.FrontEnd
 
                 searchPnl.Visible = false;
                 contactSearchChk.Checked = false;
+
+                Cursor = Cursors.Default;
             }
             catch (Exception ex)
             {
+                Cursor = Cursors.Default;
                 ErrorHandler.HandleError(this, "Failed to select customer", ex);
             }
+        }
+
+        private void CopyBookingDetails(Booking other)
+        {
+            contactNicknameFld.Text = other.BookingName;
+
+            SetTime(other.BookingTime, other.Duration);
+            Timeline.Time = other.BookingTime;
+            Timeline.Duration = other.Duration;
+            Timeline.Redraw();
+
+            ComboBoxItem.ManuallySelectItem<LocationRegions>
+                (addressRegionBox, other.LocationRegion);
+            addressFld.Text = other.Address;
+            addressVenuFld.Text = other.VenueName;
+
+            ComboBoxItem.ManuallySelectItem<ServiceTypes>
+                (serviceBox, other.Service.ServiceType);
+            LoadService(other.Service);
+
+            priceItemsLst.Items.Clear();
+            other.Service.PriceItems.ForEach(x => AddPriceItem((PriceItem)x.Clone()));
         }
 
         private void SelectBooking()
@@ -1043,6 +1107,11 @@ namespace TBRBooker.FrontEnd
             if (ComboBoxItem.GetSelected<LeadSources>(contactLeadBox) != _booking.Customer.LeadSource)
                 unsavedChanges += "lead source, ";
 
+            if (_corporateAccount != null && _booking.Account == null)
+            {
+                unsavedChanges += "linking of corporate account, ";
+            }
+
             if (!datePick.Value.ToShortDateString().Equals(_booking.BookingDate.ToShortDateString()))
                 unsavedChanges += "booking date, ";
             if (startPick.GetSelected().Value != _booking.BookingTime)
@@ -1161,10 +1230,13 @@ namespace TBRBooker.FrontEnd
                 _customer.LastName = contactLastNameFld.Text;
                 _customer.PrimaryNumber = contactPrimaryNumFld.Text;
                 _customer.SecondaryNumber = contactSecondaryNumFld.Text;
-                _customer.CompanyName = contactCompanyFld.Text;
-                _customer.CompanyId = _corporateAccount?.Id ?? null;
+                _customer.CompanyName = contactCompanyFld.Text;               
                 _customer.EmailAddress = contactEmailFld.Text;
                 _customer.LeadSource = ComboBoxItem.GetSelected<LeadSources>(contactLeadBox);
+
+                _customer.CompanyId = _corporateAccount?.Id ?? "";
+                _booking.AccountId = _corporateAccount?.Id ?? "";
+                _booking.Account = _corporateAccount;
 
                 //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
                 _booking.BookingNickname = contactNicknameFld.Text;
@@ -2023,6 +2095,39 @@ namespace TBRBooker.FrontEnd
         {
             _owner.SwitchTabGroup(_booking, true);
             moveLeftBtn.Visible = true;
+        }
+
+        private void contactCompanyBtn_Click(object sender, EventArgs e)
+        {
+            if (_booking.IsNewBooking && _corporateAccount == null)
+            {
+                MessageBox.Show(this,
+                    "Please save the booking before setting up a Corporate Account screen.",
+                    "Corporate Account", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (_corporateAccount == null)
+            {
+                _corporateAccount = new CorporateAccount();
+                _corporateAccount.BookingIds.Add(_booking.Id);
+                _corporateAccount.DefaultBookingId = _booking.Id;
+            }
+
+            try
+            {
+                var frm = new CorporateAccountFrm(_booking, _owner, _corporateAccount);
+                if (frm.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (string.IsNullOrEmpty(contactCompanyFld.Text))
+                        contactCompanyFld.Text = _corporateAccount.SmartName();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Manage Corporate Account", ex, false);
+            }
+
         }
     }
 }
