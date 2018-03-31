@@ -73,7 +73,7 @@ new PriceItem(ProductIds.AdditionalHours, 50, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPlus,
     new PriceItem(ProductIds.AdditionalParticipantsPlus, 10, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPremium,
-new PriceItem(ProductIds.AdditionalParticipantsPremium, 10, 0));
+new PriceItem(ProductIds.AdditionalParticipantsPremium, 12, 0));
             _productLookup.Add(ProductIds.PartyBags,
 new PriceItem(ProductIds.PartyBags, 5, 0));
             _productLookup.Add(ProductIds.ShortDemonstrations,

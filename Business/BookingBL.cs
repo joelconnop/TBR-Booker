@@ -79,7 +79,7 @@ namespace TBRBooker.Business
             catch (Amazon.DynamoDBv2.Model.ConditionalCheckFailedException)
             {
                 //means the Id is already in use (could happen if system not used for a month)
-                var nextId = Convert.ToInt32(booking.Id) + 1;
+                var nextId = booking.BookingNum() + 1;
                 while (DBBox.ReadItem<Booking>(nextId.ToString()) != null)
                 {
                     nextId++;

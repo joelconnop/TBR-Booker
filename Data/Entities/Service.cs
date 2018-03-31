@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TBRBooker.Base;
 using TBRBooker.Model.Enums;
 
 namespace TBRBooker.Model.Entities
@@ -25,9 +26,10 @@ namespace TBRBooker.Model.Entities
 
         public override string ToString()
         {
-            if (Party != null)
-                return Party.ToString();
-            return ServiceType.ToString();
+            var str = Party != null ? Party.ToString() : EnumHelper.GetEnumDescription(ServiceType);
+            if (AddCrocodile)
+                str += " PLUS CROCODILE";
+            return str;
         }
 
         public string GetParticularsText()
@@ -53,7 +55,7 @@ namespace TBRBooker.Model.Entities
 
         public override string ToString()
         {
-            return "Reptile " + Package.ToString();
+            return "Reptile " + EnumHelper.GetEnumDescription(Package);
         }
 
         public string GetParticularsText()

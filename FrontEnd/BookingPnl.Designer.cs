@@ -50,6 +50,7 @@
             this.serviceBox = new System.Windows.Forms.ComboBox();
             this.displayPnl = new System.Windows.Forms.Panel();
             this.shortDemosChk = new System.Windows.Forms.CheckBox();
+            this.crocNoPic = new System.Windows.Forms.PictureBox();
             this.addressMapBtn = new System.Windows.Forms.Button();
             this.addressVenuFld = new System.Windows.Forms.TextBox();
             this.addressGrp = new System.Windows.Forms.GroupBox();
@@ -179,6 +180,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
             this.displayPnl.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocNoPic)).BeginInit();
             this.addressGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.dateGrp.SuspendLayout();
@@ -237,6 +239,7 @@
             this.serviceGrp.Controls.Add(this.partyPnl);
             this.serviceGrp.Controls.Add(this.serviceBox);
             this.serviceGrp.Controls.Add(this.displayPnl);
+            this.serviceGrp.Controls.Add(this.crocNoPic);
             this.serviceGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.serviceGrp.Location = new System.Drawing.Point(6, 457);
             this.serviceGrp.Name = "serviceGrp";
@@ -410,6 +413,17 @@
             this.shortDemosChk.Text = "Add Short Demonstrations";
             this.shortDemosChk.UseVisualStyleBackColor = true;
             this.shortDemosChk.CheckedChanged += new System.EventHandler(this.shortDemosChk_CheckedChanged);
+            // 
+            // crocNoPic
+            // 
+            this.crocNoPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.crocNoPic.Image = global::TBRBooker.FrontEnd.Properties.Resources.nocroc;
+            this.crocNoPic.Location = new System.Drawing.Point(765, 50);
+            this.crocNoPic.Name = "crocNoPic";
+            this.crocNoPic.Size = new System.Drawing.Size(150, 75);
+            this.crocNoPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.crocNoPic.TabIndex = 9;
+            this.crocNoPic.TabStop = false;
             // 
             // addressMapBtn
             // 
@@ -1671,6 +1685,7 @@
             this.partyPnl.PerformLayout();
             this.displayPnl.ResumeLayout(false);
             this.displayPnl.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crocNoPic)).EndInit();
             this.addressGrp.ResumeLayout(false);
             this.addressGrp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
@@ -1853,5 +1868,6 @@
         private System.Windows.Forms.DateTimePicker fuConfirmationPick;
         private System.Windows.Forms.Button moveLeftBtn;
         private System.Windows.Forms.Button moveRightBtn;
+        private System.Windows.Forms.PictureBox crocNoPic;
     }
 }

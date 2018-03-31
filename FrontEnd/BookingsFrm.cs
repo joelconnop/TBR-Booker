@@ -48,27 +48,27 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        public void SwitchTabGroup(Booking booking, bool isLeftToRight)
+        public void SwitchTabGroup(string bookingId, bool isLeftToRight)
         {
             if (isLeftToRight)
             {
-                if (!leftTabs.TabPages.ContainsKey(booking.Id))
-                    throw new Exception($"Failed to move {booking.Id} from left to right.");
+                if (!leftTabs.TabPages.ContainsKey(bookingId))
+                    throw new Exception($"Failed to move {bookingId} from left to right.");
             }
             else
             {
-                if (!rightTabs.TabPages.ContainsKey(booking.Id))
-                    throw new Exception($"Failed to move {booking.Id} from right to left.");
+                if (!rightTabs.TabPages.ContainsKey(bookingId))
+                    throw new Exception($"Failed to move {bookingId} from right to left.");
             }
 
             // delete + add tab pages, preserving the same booking panel
-            var panel = _panels[booking.Id];
+            var panel = _panels[bookingId];
             var from = isLeftToRight ? leftTabs : rightTabs;
             
-            from.TabPages.RemoveByKey(booking.Id);
+            from.TabPages.RemoveByKey(bookingId);
             var to = isLeftToRight ? rightTabs : leftTabs;
-            to.TabPages.Add(booking.Id, booking.Id);
-            var page = to.TabPages[booking.Id];
+            to.TabPages.Add(bookingId, bookingId);
+            var page = to.TabPages[bookingId];
             page.Controls.Add(panel);
             to.SelectedTab = page;
 
@@ -95,14 +95,14 @@ namespace TBRBooker.FrontEnd
                 if (isLeft)
                     leftTabs.SelectedTab = leftTabs.TabPages[booking.Id];
                 else
-                    SwitchTabGroup(booking, true);
+                    SwitchTabGroup(booking.Id, true);
             }
             else if (rightTabs.TabPages.ContainsKey(booking.Id))
             {
                 if (!isLeft)
                     rightTabs.SelectedTab = rightTabs.TabPages[booking.Id];
                 else
-                    SwitchTabGroup(booking, false);
+                    SwitchTabGroup(booking.Id, false);
             }
             else
             {
@@ -139,7 +139,7 @@ namespace TBRBooker.FrontEnd
                     try
                     {
                         var bookingPnl = (BookingPnl)rightTabs.SelectedTab.Controls[0];
-                        SwitchTabGroup(bookingPnl.GetBooking(), false);
+                        SwitchTabGroup(bookingPnl.GetBooking().Id, false);
                         bookingPnl.ConfigureMoveButtons(true);
                     }
                     catch

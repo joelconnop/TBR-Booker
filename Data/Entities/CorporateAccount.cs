@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
 
@@ -55,14 +56,18 @@ namespace TBRBooker.Model.Entities
             return true;
         }
 
-        //public override Dictionary<string, AttributeValue> WriteAttributes()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public override Document GetAddUpdateDoc()
+        {
+            var doc = base.GetAddUpdateDoc();
 
-        //public const string SmartNameJoiner = " from ";
+            doc["tradingName"] = TradingName;
 
-        public string SmartName()
+            return doc;
+        }
+
+            //public const string SmartNameJoiner = " from ";
+
+            public string SmartName()
         {
             string name = BusinessName;
             //if (!string.IsNullOrEmpty(BillingContact))

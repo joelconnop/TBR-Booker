@@ -266,6 +266,24 @@ namespace TBRBooker.Model.Entities
             }
         }
 
+        public static bool IsCancelled(BookingStates status)
+        {
+            switch (status)
+            {
+                case BookingStates.Booked:
+                case BookingStates.Completed:
+                case BookingStates.PaymentDue:
+                case BookingStates.OpenEnquiry:
+                    return false;
+                case BookingStates.LostEnquiry:
+                case BookingStates.Cancelled:
+                case BookingStates.CancelledWithoutPayment:
+                    return true;
+                default:
+                    throw new Exception($"Unknown if status {status} is a booking or enquiry.");
+            }
+        }
+
         public bool IsOpen()
         {
             //the program should also push user to cancelling/completing old deals/bookings (how about a spank per week for each unresolved booking status)
@@ -359,6 +377,25 @@ namespace TBRBooker.Model.Entities
                 this.BookingTime, Status, GetCurrentFollowup()?.FollowupDate.Date ?? null,
                 (ConfirmationCall != null && ConfirmationCall.IsOutstanding())
                 ? ConfirmationCall?.FollowupDate : null);
+        }
+
+        public bool IsFullyRead()
+        {
+            return (string.IsNullOrEmpty(CustomerId) || Customer != null)
+                && (string.IsNullOrEmpty(AccountId) || Account != null);
+        }
+
+        public int BookingNum()
+        {
+            int num;
+            if (Id == null)
+                throw new Exception("Booking Id should never be null!");
+
+            if (int.TryParse(Id, out num))
+                return num;
+            else
+                throw new Exception($"Booking Id {Id} is not a number!");
+
         }
     }
 }

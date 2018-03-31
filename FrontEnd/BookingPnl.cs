@@ -99,6 +99,11 @@ namespace TBRBooker.FrontEnd
 
         private void LoadEverything()
         {
+            if (!_booking.IsFullyRead())
+            {
+                BookingBL.PopulateBookingChildren(_booking);
+            }
+
             LoadAccount();  //load account first so customer can ovveride company field
 
             LoadCustomer();
@@ -127,7 +132,7 @@ namespace TBRBooker.FrontEnd
             _service = _booking.Service;
             ComboBoxItem.InitComboBox(serviceBox, typeof(ServiceTypes),
                 _service?.ServiceType ?? ServiceTypes.NotSet);
-            LoadService(_service);
+            LoadService(_service, false);
             
 
             //pricing
@@ -156,6 +161,9 @@ namespace TBRBooker.FrontEnd
             pricingPayOnDayChk.Checked = _booking.IsPayOnDay;
             ComboBoxItem.InitComboBox(priceMethodBox, typeof(PaymentMethods), PaymentMethods.NotSet);
             _booking.PaymentHistory.ForEach(x => priceHistoryLst.Items.Add(x.ToString()));
+
+            // crocodile allowed?
+            ConfigureCrocAvailable();
 
             //followups
             if (_booking.IsNewBooking)
@@ -281,7 +289,6 @@ namespace TBRBooker.FrontEnd
             }
             else
             {
-                contactCompanyFld.Text = "";
                 contactCompanyFld.Enabled = true;
             }
         }
@@ -297,7 +304,7 @@ namespace TBRBooker.FrontEnd
                 contactEmblemPic.Image = Properties.Resources.customer_overdue;
             else if (bookings >= 2)
                 contactEmblemPic.Image = Properties.Resources.customer_gold;
-            else if (pastBookings.Count(x => x.IsBooked()) == 1)
+            else if (bookings == 1)
                 contactEmblemPic.Image = Properties.Resources.customer_return;
             else if (didntBook > 0)
                 contactEmblemPic.Image = Properties.Resources.customer_rebook;
@@ -313,32 +320,31 @@ namespace TBRBooker.FrontEnd
         /// <returns></returns>
         private List<Booking> GetPastBookings()
         {
-            var pastBookings = new List<Booking>();
+            var otherBookings = new List<Booking>();
 
             if (_customer != null)
             {
-                _customer.BookingIds.ForEach(x => pastBookings.Add(DBBox.ReadItem<Booking>(x)));
+                _customer.BookingIds.ForEach(x => otherBookings.Add(DBBox.ReadItem<Booking>(x)));
             }
 
             if (_corporateAccount != null)
             {
-                _corporateAccount.BookingIds.ForEach(x => {
-                    if (!pastBookings.Any(y => y.Id == x))
-                        pastBookings.Add(DBBox.ReadItem<Booking>(x));
+                _corporateAccount.BookingIds.ForEach(x =>
+                {
+                    if (!otherBookings.Any(y => y.Id == x))
+                        otherBookings.Add(DBBox.ReadItem<Booking>(x));
                 });
             }
 
-            if (_booking != null)
-            {
-                var thisBooking = pastBookings.SingleOrDefault(x => x.Id == _booking.Id);
-                if (thisBooking != null)
-                    pastBookings.Remove(thisBooking);
-            }
-
-            return pastBookings;
+            // only want to consider bookings that are 'before' this one
+            // ('before' meaning either the Id or the booking date is before this one)
+            return otherBookings.Where(x => x.Id != _booking.Id
+                && (x.BookingNum() < _booking.BookingNum() ||
+                    x.BookingDate < _booking.BookingDate)).ToList();
         }
 
-        private void LoadService(Service service)
+
+        private void LoadService(Service service, bool isCrocDisallowedForCopiedBooking)
         {
             if (service.ServiceType == ServiceTypes.ReptileParty)
             {
@@ -367,11 +373,24 @@ namespace TBRBooker.FrontEnd
                 partyBirthdayNameFld.Text = party.BirthdayName;
                 partyAgeFld.Text = party.BirthdayAge.ToString();
             }
-            serviceAddCrocChk.Checked = service.AddCrocodile;
             servicePaxFld.Text = service.Pax.ToString();
             serviceAnimalsToCome.Text = service.SpecificAnimalsToCome;
             shortDemosChk.Checked = (service.PriceItems
                 .Any(x => x.ProductId == ProductIds.ShortDemonstrations));
+
+            if (service.AddCrocodile)
+            {
+                if (!isCrocDisallowedForCopiedBooking)
+                {
+                    serviceAddCrocChk.Checked = true;
+                }
+                else
+                {
+                    MessageBox.Show(this,
+                    "The last booking included the crocodile, but please note that he is meant to be unavailable on this date.",
+                    "Returning Customer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
         }
 
         public void StartTimeChanged(TimePicker.TimePickerValue tpv)
@@ -742,6 +761,9 @@ namespace TBRBooker.FrontEnd
                     copyFromId = _customer.BookingIds.Last();
                 }
 
+                LoadAccount();
+                LoadCustomer();
+                SetCustomerEmblem(pastBookings);
                 if (!string.IsNullOrEmpty(copyFromId))
                 {
                     Cursor = Cursors.Default;
@@ -758,10 +780,6 @@ namespace TBRBooker.FrontEnd
                         Cursor = Cursors.WaitCursor;
                     }
                 }
-
-                LoadAccount();
-                LoadCustomer();
-                SetCustomerEmblem(pastBookings);
 
                 //this flag is kind of dangerous as it determines different types to put on LVI tags. Planning to make booking search a separate window
                 //_isSearchModeForBookings = true;
@@ -782,11 +800,12 @@ namespace TBRBooker.FrontEnd
         private void CopyBookingDetails(Booking other)
         {
             contactNicknameFld.Text = other.BookingName;
-
             SetTime(other.BookingTime, other.Duration);
             Timeline.Time = other.BookingTime;
             Timeline.Duration = other.Duration;
             Timeline.Redraw();
+
+            priceItemsLst.BeginUpdate();
 
             ComboBoxItem.ManuallySelectItem<LocationRegions>
                 (addressRegionBox, other.LocationRegion);
@@ -795,10 +814,20 @@ namespace TBRBooker.FrontEnd
 
             ComboBoxItem.ManuallySelectItem<ServiceTypes>
                 (serviceBox, other.Service.ServiceType);
-            LoadService(other.Service);
+            LoadService(other.Service, crocNoPic.Visible);
 
+            // remove any items automatically added by the above
+            // (we want to preserve any special prices for this customer)
+            // unfortunately we can't distinguish between old customers on old pricing,
+            // and customers who had a special discount applied. This is why it is best
+            // to put discounts in as a discount item which can be reviewed
             priceItemsLst.Items.Clear();
-            other.Service.PriceItems.ForEach(x => AddPriceItem((PriceItem)x.Clone()));
+
+            other.Service.PriceItems.Where(y => crocPic.Visible || y.ProductId != ProductIds.AddCrocodile).ToList()
+                .ForEach(x => AddPriceItem((PriceItem)x.Clone()));
+
+            priceItemsLst.EndUpdate();
+
         }
 
         private void SelectBooking()
@@ -1032,7 +1061,7 @@ namespace TBRBooker.FrontEnd
                     return;
                 }
 
-                if (MessageBox.Show(this, $"Confirm the details are correct:{Environment.NewLine}Booking: {_booking.Id} {contactNicknameFld.Text}{Environment.NewLine}Amount: {paymentAmount.ToString("C")}{Environment.NewLine}Method: {selectedMethod.ToString()}{Environment.NewLine}Resulting Balance: {(_booking.Balance - paymentAmount).ToString("C")}",
+                if (MessageBox.Show(this, $"Confirm the details are correct:{Environment.NewLine}Booking: {_booking.Id} {contactNicknameFld.Text}{Environment.NewLine}Amount: {paymentAmount.ToString("C")}{Environment.NewLine}Method: {selectedMethod.ToString()}{Environment.NewLine}Resulting Balance: {(CalculateTotal() - _booking.AmountPaid - paymentAmount).ToString("C")}",
                    "Add Payment", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                     != DialogResult.Yes)
                     return;
@@ -1064,9 +1093,45 @@ namespace TBRBooker.FrontEnd
             var total = CalculateTotal();
             pricePaidLbl.Text = _booking.AmountPaid.ToString("C");
             priceBalanceFld.Text = (total - _booking.AmountPaid).ToString("C");
-            pricePaidPic.Visible = total > 0 && total == _booking.AmountPaid && Booking.IsOpenStatus(_newStatus);
-            priceIssuePic.Visible = total < _booking.AmountPaid
-                || (_newStatus == BookingStates.Completed && total > _booking.AmountPaid);
+            priceIssuePic.Visible = 
+                (_booking.AmountPaid < total && _newStatus == BookingStates.Completed) ||
+                (_booking.AmountPaid > total && _newStatus != BookingStates.Completed);
+            pricePaidPic.Visible = !priceIssuePic.Visible && total > 0 && _booking.AmountPaid >= total;   // not sure why only wanted to show this for open bookings? && Booking.IsOpenStatus(_newStatus);
+        }
+
+        private void ConfigureCrocAvailable()
+        {
+            if (_booking.Service.AddCrocodile)
+            {
+                crocPic.Visible = true;
+                crocNoPic.Visible = false;
+                return;
+            }
+
+            bool isUnavailable = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday }
+                .Contains(_booking.BookingDate.DayOfWeek);
+
+            if (!isUnavailable)
+            {
+                // it might be desirable to only look at bookings (not enquiries), but that would likely lead to
+                // croc being booked on consequitive days occasionally. I think its best to assume the croc is booked
+                // as soon as an enquiry is made for him, and this only changes if that enquiry is cancelled
+                var consequitiveDayBookings = DBBox.GetCalendarItems(false).Where(
+                    x => !Booking.IsCancelled(x.BookingStatus) &&
+                    x.BookingDate == Utils.StartOfDay(_booking.BookingDate.AddDays(-1))
+                    || x.BookingDate == Utils.StartOfDay(_booking.BookingDate.AddDays(1))).ToList();
+                foreach (var calItm in consequitiveDayBookings)
+                {
+                    if (DBBox.ReadItem<Booking>(calItm.BookingNum.ToString()).Service.AddCrocodile)
+                    {
+                        isUnavailable = true;
+                        break;
+                    }
+                }
+            }
+
+            crocPic.Visible = !isUnavailable;
+            crocNoPic.Visible = isUnavailable;
         }
 
         private void saveBtn_Click(object sender, EventArgs e)
@@ -2088,12 +2153,12 @@ namespace TBRBooker.FrontEnd
 
         private void moveLeftBtn_Click(object sender, EventArgs e)
         {
-            _owner.SwitchTabGroup(_booking, false);
+            _owner.SwitchTabGroup(_booking.Id, false);
         }
 
         private void moveRightBtn_Click(object sender, EventArgs e)
         {
-            _owner.SwitchTabGroup(_booking, true);
+            _owner.SwitchTabGroup(_booking.Id, true);
             moveLeftBtn.Visible = true;
         }
 
