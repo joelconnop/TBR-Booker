@@ -34,10 +34,14 @@ namespace TBRBooker.Business
             {
                 booking.Account = DBBox.ReadItem<CorporateAccount>(booking.AccountId);
             }
+
+            // this is to catch up legacy data
             if (booking.Followups == null)
             {
                 booking.Followups = new List<Followup>();
             }
+            if (booking.HighlightedControls == null)
+                booking.HighlightedControls = new List<string>();
         }
 
         public static void SaveBookingEtc(Booking booking)

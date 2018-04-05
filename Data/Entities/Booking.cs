@@ -139,6 +139,8 @@ namespace TBRBooker.Model.Entities
         [Required(ErrorMessage = "Booking Name")]
         public string BookingNickname { get; set; }
 
+        public List<string> HighlightedControls { get; set; }
+
         private string ChooseNameForBooking()
         {
             if (!string.IsNullOrEmpty(BookingNickname))

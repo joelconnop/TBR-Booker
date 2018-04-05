@@ -83,7 +83,8 @@ namespace TBRBooker.FrontEnd
                 {
                     ServiceType = Model.Enums.ServiceTypes.NotSet,
                     PriceItems = new List<PriceItem>(),
-                }
+                },
+                HighlightedControls = new List<string>()
             };
             _owner.ShowBooking(booking);
         }

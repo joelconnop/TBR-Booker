@@ -34,6 +34,12 @@ namespace TBRBooker.FrontEnd
         private int _duration;
         private List<ValidatingTextbox> _validators;
 
+        private bool? _highlightMode;
+        private List<string> _highlightedControls;
+        private List<(Control C, Rectangle R)> _disabledDuringHighlight;
+        private List<Control> _disabledHighlightContainers;
+        private Dictionary<string, Color> _originalBackcolours;
+
         // HIGHLIGHTS IDEA
         // pink for important fields that are not filled in
         // yellow for user highlights, click an icon of a texta to go in and out of highlighting mode,
@@ -52,10 +58,12 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            DoubleBuffered = true;
             _owner = owner;
             _booking = booking;
             _newStatus = booking.Status;
             _isLoading = true;
+            _highlightMode = null;
 
             if (booking.IsNewBooking)
             {
@@ -195,7 +203,21 @@ namespace TBRBooker.FrontEnd
             completeBtn.Enabled = new[] { BookingStates.Booked, BookingStates.PaymentDue }
             .Contains(_newStatus);
 
-            //validators
+            // highlight controls
+            _highlightedControls = new List<string>();
+            _originalBackcolours = new Dictionary<string, Color>();
+            foreach (var cname in _booking.HighlightedControls)
+            {
+                var matches = Controls.Find(cname, true);
+                if (matches != null && matches.Length > 0)
+                {
+                    _originalBackcolours.Add(cname, matches[0].BackColor);
+                    _highlightedControls.Add(cname);
+                    matches[0].BackColor = Color.Yellow;
+                }
+            }
+
+            // validators
             _validators = new List<ValidatingTextbox>();
             _validators.Add(new ValidatingTextbox(this, contactFirstNameFld, ValidatingTextbox.TextBoxValidationType.Name));
             _validators.Add(new ValidatingTextbox(this, contactLastNameFld, ValidatingTextbox.TextBoxValidationType.Name));
@@ -1252,6 +1274,10 @@ namespace TBRBooker.FrontEnd
             if (!notesPastFld.Text.Equals(_booking.Customer.PastNotes))
                 unsavedChanges += "past notes, ";
 
+            if (_highlightedControls.Count != _booking.HighlightedControls.Count
+                || !_highlightedControls.All(x => _booking.HighlightedControls.Contains(x)))
+                unsavedChanges += "highlighted fields, ";
+
             return unsavedChanges.Trim().Trim(',');
         }
 
@@ -1369,6 +1395,8 @@ namespace TBRBooker.FrontEnd
                         MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     return false;
                 }
+
+                _booking.HighlightedControls = new List<string>(_highlightedControls.ToArray());
 
                 //followups (need to be done last because if we have to get here twice due to validation, they will be added to Booking twice)
                 SyncFollowupControlsToObjects();
@@ -2194,5 +2222,188 @@ namespace TBRBooker.FrontEnd
             }
 
         }
+
+        private void toggleHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_highlightMode.HasValue)
+            {
+                ExitHighlightMode();
+            }
+            else
+            {
+                EnterHighlightMode(false);
+            }
+
+        }
+
+        private void removeHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnterHighlightMode(true);
+        }
+
+        private void EnterHighlightMode(bool isDehighlighting)
+        {
+            try
+            {
+                bool isNeedToDisableControls = !_highlightMode.HasValue;
+                _highlightMode = !isDehighlighting;
+                Cursor = Cursors.Cross;
+
+                if (isNeedToDisableControls)
+                {
+                    _disabledDuringHighlight = new List<(Control, Rectangle)>();
+                    _disabledHighlightContainers = new List<Control>();
+                    foreach (var masterControl in this.Controls)
+                    {
+                        MaybeDisableControl(masterControl as Control, Location);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, $"Entering {(isDehighlighting ? "de-" : "")} highlight mode", ex);
+            }
+        }
+
+        void MaybeDisableControl(Control c, Point parentLoc)
+        {
+            // check custom controls first because we don't want to disable their children individually
+            if (c is TimePicker || c is Timeline)
+            {
+                if (c.Enabled)
+                {
+                    c.Enabled = false;
+                    _disabledDuringHighlight.Add((c, new Rectangle(RelativeToMaster(), c.Size)));
+                }
+            }
+            else if (c.HasChildren)
+            {
+                if (c.Enabled && c.Visible)
+                {
+                    foreach (var innerC in c.Controls)
+                        MaybeDisableControl(innerC as Control, RelativeToMaster());
+                    c.Enabled = false;
+                    _disabledHighlightContainers.Add(c);
+                }
+            }
+            else if (c.Enabled && c.Visible && !(c is Button))
+            {
+                c.Enabled = false;
+                _disabledDuringHighlight.Add((c, new Rectangle(RelativeToMaster(), c.Size)));
+            }
+
+            Point RelativeToMaster()
+            {
+                return new Point(parentLoc.X + c.Location.X, parentLoc.Y + c.Location.Y);
+            }
+        }
+
+        private void ExitHighlightMode()
+        {
+            try
+            {
+                Cursor = Cursors.Default;
+                _highlightMode = null;
+                _disabledDuringHighlight.ForEach(x => x.C.Enabled = true);
+                _disabledHighlightContainers.ForEach(x => x.Enabled = true);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Exititing highlight mode", ex);
+            }
+        }
+
+        bool _mouseDown = false;
+        Point _mouseDownPoint = Point.Empty;
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (!_highlightMode.HasValue || _mouseDown || e.Button != MouseButtons.Left)
+                return;
+
+            _mouseDown = true;
+            selectionLbl.Location = new Point(e.Location.X - Cursor.Size.Width / 4, e.Location.Y - Cursor.Size.Height / 4);
+            selectionLbl.Visible = true;
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if (!_highlightMode.HasValue || !_mouseDown || e.Button != MouseButtons.Left)
+                return;
+
+            _mouseDown = false;
+
+            try
+            {
+                var startPoint = new Point(selectionLbl.Location.X + Cursor.Size.Width / 4,
+                    selectionLbl.Location.Y + Cursor.Size.Height / 4);
+                var point1 = new Point(
+                    Math.Min(startPoint.X, e.Location.X), Math.Min(startPoint.Y, e.Location.Y));
+                var point2 = new Point(
+                    Math.Max(startPoint.X, e.Location.X), Math.Max(startPoint.Y, e.Location.Y));
+                var selectionArea = new Rectangle(point1, 
+                    new Size(point2.X - point1.X, point2.Y - point1.Y));
+                selectionLbl.Visible = false;
+
+                foreach (var dis in _disabledDuringHighlight)
+                {
+                    if (selectionArea.IntersectsWith(dis.R))
+                    {
+                        if (_highlightMode.Value)
+                        {
+                            if (!_highlightedControls.Contains(dis.C.Name))
+                            {
+                                if (!_originalBackcolours.ContainsKey(dis.C.Name))
+                                    _originalBackcolours.Add(dis.C.Name, dis.C.BackColor);
+                                dis.C.BackColor = Color.Yellow;
+                                _highlightedControls.Add(dis.C.Name);
+                            }
+                        }
+                        else if (_highlightedControls.Contains(dis.C.Name))
+                        {
+                            _highlightedControls.Remove(dis.C.Name);
+                            dis.C.BackColor = _originalBackcolours[dis.C.Name];
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Highlighting controls", ex, true);
+            }
+
+        }
+
+        //protected override void OnMouseMove(MouseEventArgs e)
+        //{
+        //    base.OnMouseMove(e);
+
+        //    if (!_HighlightMode.HasValue)
+        //        return;
+
+        //    _mousePoint = e.Location;
+        //    Invalidate();
+        //}
+
+        //protected override void OnPaint(PaintEventArgs e)
+        //{
+        //    base.OnPaint(e);
+
+        //    if (_mouseDown)
+        //    {
+        //        Region r = new Region(this.ClientRectangle);
+        //        Rectangle window = new Rectangle(
+        //            Math.Min(_mouseDownPoint.X, _mousePoint.X),
+        //            Math.Min(_mouseDownPoint.Y, _mousePoint.Y),
+        //            Math.Abs(_mouseDownPoint.X - _mousePoint.X),
+        //            Math.Abs(_mouseDownPoint.Y - _mousePoint.Y));
+        //        r.Xor(window);
+        //        e.Graphics.FillRegion(Brushes.Red, r);
+        //    }
+        //}
     }
 }

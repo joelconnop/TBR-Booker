@@ -33,6 +33,9 @@
             this.addressFld = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.serviceGrp = new System.Windows.Forms.GroupBox();
+            this.generalContextMnu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toggleHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.serviceAnimalsToCome = new System.Windows.Forms.TextBox();
             this.label26 = new System.Windows.Forms.Label();
             this.servicePaxFld = new System.Windows.Forms.TextBox();
@@ -176,7 +179,9 @@
             this.fuPurposeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuCompletedCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.selectionLbl = new System.Windows.Forms.Label();
             this.serviceGrp.SuspendLayout();
+            this.generalContextMnu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
             this.partyPnl.SuspendLayout();
             this.displayPnl.SuspendLayout();
@@ -230,6 +235,7 @@
             // serviceGrp
             // 
             this.serviceGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.serviceGrp.ContextMenuStrip = this.generalContextMnu;
             this.serviceGrp.Controls.Add(this.serviceAnimalsToCome);
             this.serviceGrp.Controls.Add(this.label26);
             this.serviceGrp.Controls.Add(this.servicePaxFld);
@@ -247,6 +253,28 @@
             this.serviceGrp.TabIndex = 4;
             this.serviceGrp.TabStop = false;
             this.serviceGrp.Text = "Service";
+            // 
+            // generalContextMnu
+            // 
+            this.generalContextMnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleHighlightToolStripMenuItem,
+            this.removeHighlightToolStripMenuItem});
+            this.generalContextMnu.Name = "generalContextMnu";
+            this.generalContextMnu.Size = new System.Drawing.Size(172, 48);
+            // 
+            // toggleHighlightToolStripMenuItem
+            // 
+            this.toggleHighlightToolStripMenuItem.Name = "toggleHighlightToolStripMenuItem";
+            this.toggleHighlightToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.toggleHighlightToolStripMenuItem.Text = "Highlight On / Off";
+            this.toggleHighlightToolStripMenuItem.Click += new System.EventHandler(this.toggleHighlightToolStripMenuItem_Click);
+            // 
+            // removeHighlightToolStripMenuItem
+            // 
+            this.removeHighlightToolStripMenuItem.Name = "removeHighlightToolStripMenuItem";
+            this.removeHighlightToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.removeHighlightToolStripMenuItem.Text = "Remove Highlight";
+            this.removeHighlightToolStripMenuItem.Click += new System.EventHandler(this.removeHighlightToolStripMenuItem_Click);
             // 
             // serviceAnimalsToCome
             // 
@@ -444,6 +472,7 @@
             // addressGrp
             // 
             this.addressGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.addressGrp.ContextMenuStrip = this.generalContextMnu;
             this.addressGrp.Controls.Add(this.addressMapBtn);
             this.addressGrp.Controls.Add(this.addressVenuFld);
             this.addressGrp.Controls.Add(this.label13);
@@ -550,6 +579,7 @@
             // dateGrp
             // 
             this.dateGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.dateGrp.ContextMenuStrip = this.generalContextMnu;
             this.dateGrp.Controls.Add(this.timePick);
             this.dateGrp.Controls.Add(this.timeSwitchChk);
             this.dateGrp.Controls.Add(this.startPick);
@@ -685,6 +715,7 @@
             // notesGrp
             // 
             this.notesGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.notesGrp.ContextMenuStrip = this.generalContextMnu;
             this.notesGrp.Controls.Add(this.label28);
             this.notesGrp.Controls.Add(this.notesPastFld);
             this.notesGrp.Controls.Add(this.label27);
@@ -829,6 +860,7 @@
             // pricingGrp
             // 
             this.pricingGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.pricingGrp.ContextMenuStrip = this.generalContextMnu;
             this.pricingGrp.Controls.Add(this.groupBox2);
             this.pricingGrp.Controls.Add(this.groupBox1);
             this.pricingGrp.Controls.Add(this.pricingPayOnDayChk);
@@ -1283,6 +1315,7 @@
             // contactGrp
             // 
             this.contactGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.contactGrp.ContextMenuStrip = this.generalContextMnu;
             this.contactGrp.Controls.Add(this.contactLeadBox);
             this.contactGrp.Controls.Add(this.label7);
             this.contactGrp.Controls.Add(this.contactSearchChk);
@@ -1404,6 +1437,7 @@
             // 
             // fuTabs
             // 
+            this.fuTabs.ContextMenuStrip = this.generalContextMnu;
             this.fuTabs.Controls.Add(this.fuNextPage);
             this.fuTabs.Controls.Add(this.fuCurrentPage);
             this.fuTabs.Controls.Add(this.fuConfirmationPage);
@@ -1653,11 +1687,25 @@
             this.fuNoteCol.Text = "Completion Note";
             this.fuNoteCol.Width = 150;
             // 
+            // selectionLbl
+            // 
+            this.selectionLbl.AutoSize = true;
+            this.selectionLbl.BackColor = System.Drawing.SystemColors.Control;
+            this.selectionLbl.Font = new System.Drawing.Font("DINPro-Medium", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectionLbl.Location = new System.Drawing.Point(2, 68);
+            this.selectionLbl.Name = "selectionLbl";
+            this.selectionLbl.Size = new System.Drawing.Size(13, 14);
+            this.selectionLbl.TabIndex = 13;
+            this.selectionLbl.Text = "x";
+            this.selectionLbl.Visible = false;
+            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
+            this.ContextMenuStrip = this.generalContextMnu;
+            this.Controls.Add(this.selectionLbl);
             this.Controls.Add(this.fuTabs);
             this.Controls.Add(this.completeBtn);
             this.Controls.Add(this.savedFld);
@@ -1680,6 +1728,7 @@
             this.Load += new System.EventHandler(this.BookingPnl_Load);
             this.serviceGrp.ResumeLayout(false);
             this.serviceGrp.PerformLayout();
+            this.generalContextMnu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).EndInit();
             this.partyPnl.ResumeLayout(false);
             this.partyPnl.PerformLayout();
@@ -1869,5 +1918,9 @@
         private System.Windows.Forms.Button moveLeftBtn;
         private System.Windows.Forms.Button moveRightBtn;
         private System.Windows.Forms.PictureBox crocNoPic;
+        private System.Windows.Forms.ContextMenuStrip generalContextMnu;
+        private System.Windows.Forms.ToolStripMenuItem toggleHighlightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeHighlightToolStripMenuItem;
+        private System.Windows.Forms.Label selectionLbl;
     }
 }
