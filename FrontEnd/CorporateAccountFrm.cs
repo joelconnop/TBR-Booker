@@ -74,14 +74,14 @@ namespace TBRBooker.FrontEnd
 
             //validators
             _validators = new List<ValidatingTextbox>();
-            _validators.Add(new ValidatingTextbox(this, businessNameFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
-            _validators.Add(new ValidatingTextbox(this, tradingNameFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
-            _validators.Add(new ValidatingTextbox(this, abnFld, ValidatingTextbox.TextBoxValidationType.NumbersAndSpaces));
-            _validators.Add(new ValidatingTextbox(this, contactNameFld, ValidatingTextbox.TextBoxValidationType.Name));
-            _validators.Add(new ValidatingTextbox(this, contactPrimaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
-            _validators.Add(new ValidatingTextbox(this, contactSecondaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
+            //_validators.Add(new ValidatingTextbox(this, businessNameFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
+            //_validators.Add(new ValidatingTextbox(this, tradingNameFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
+            //_validators.Add(new ValidatingTextbox(this, abnFld, ValidatingTextbox.TextBoxValidationType.NumbersAndSpaces));
+            //_validators.Add(new ValidatingTextbox(this, contactNameFld, ValidatingTextbox.TextBoxValidationType.Name));
+            //_validators.Add(new ValidatingTextbox(this, contactPrimaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
+            //_validators.Add(new ValidatingTextbox(this, contactSecondaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
             _validators.Add(new ValidatingTextbox(this, contactEmailFld, ValidatingTextbox.TextBoxValidationType.EmailAddress));
-            _validators.Add(new ValidatingTextbox(this, addressFld, ValidatingTextbox.TextBoxValidationType.AddressBasic));
+           // _validators.Add(new ValidatingTextbox(this, addressFld, ValidatingTextbox.TextBoxValidationType.AddressBasic));
 
         }
 

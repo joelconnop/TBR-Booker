@@ -58,6 +58,7 @@
     <Compile Include="DashboardCategory.cs" />
     <Compile Include="DTO\DashboardItemDTO.cs" />
     <Compile Include="DTO\ExistingCustomerDTO.cs" />
+    <Compile Include="DTO\GoogleCalendarEventDTO.cs" />
     <Compile Include="Entities\Booking.cs" />
     <Compile Include="DTO\CalendarItemDTO.cs" />
     <Compile Include="Entities\CorporateAccount.cs" />

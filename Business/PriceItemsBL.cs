@@ -73,7 +73,7 @@ new PriceItem(ProductIds.AdditionalHours, 50, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPlus,
     new PriceItem(ProductIds.AdditionalParticipantsPlus, 10, 0));
             _productLookup.Add(ProductIds.AdditionalParticipantsPremium,
-new PriceItem(ProductIds.AdditionalParticipantsPremium, 12, 0));
+new PriceItem(ProductIds.AdditionalParticipantsPremium, 11, 0));
             _productLookup.Add(ProductIds.PartyBags,
 new PriceItem(ProductIds.PartyBags, 5, 0));
             _productLookup.Add(ProductIds.ShortDemonstrations,
@@ -84,6 +84,7 @@ new PriceItem(ProductIds.InteractiveEncounter, 50, 1));
 new PriceItem(ProductIds.Parking, 20, 1));
             _productLookup.Add(ProductIds.Discount,
 new PriceItem(ProductIds.Discount, -50, 1));
+            _productLookup.Add(ProductIds.BotanicGardens, new PriceItem(ProductIds.BotanicGardens, 150, 1));
             _productLookup.Add(ProductIds.Other, new PriceItem(ProductIds.Other, 0, 1));
             _productLookup.Add(ProductIds.NotSet, new PriceItem(ProductIds.NotSet, 0, 0, ""));
             return (PriceItem)_productLookup[productId].Clone();

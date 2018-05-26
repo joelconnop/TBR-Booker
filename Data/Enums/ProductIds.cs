@@ -41,6 +41,7 @@ namespace TBRBooker.Model.Enums
         InteractiveEncounter,
         Parking,
         Discount,
-        NotSet
+        NotSet,
+        BotanicGardens
     }
 }

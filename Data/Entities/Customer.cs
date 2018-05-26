@@ -113,16 +113,9 @@ namespace TBRBooker.Model.Entities
             if (string.IsNullOrEmpty(LastName))
                 name = FirstName;
             else if (!string.IsNullOrEmpty(FirstName))
-                name = FirstName.Substring(0, 1) + ".";
-
-            if (!string.IsNullOrEmpty(LastName))
-            {
-                if (!string.IsNullOrEmpty(FirstName))
-                {
-                    name += " ";
-                }
-                name += LastName;
-            }
+                name = FirstName + " " + LastName;
+            else
+                name = LastName;
 
             if (!string.IsNullOrEmpty(CompanyName))
             {

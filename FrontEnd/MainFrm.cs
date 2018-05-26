@@ -36,6 +36,7 @@ namespace TBRBooker.FrontEnd
             _screenId = Settings.Inst().MainScreenDefaultId;
             MoveFormToCurrentScreenId();
 
+            testingToolStripMenuItem.Visible = Settings.Inst().IsTestMode;
             //(below not needed - updates calendar when initial date value set)
             //UpdateCalendar();
         }
@@ -223,6 +224,16 @@ namespace TBRBooker.FrontEnd
         {
             InitBookingsFrm();
             _bookingsFrm.ShowBooking(booking);
+        }
+
+        private void googleCalendarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var result = TheGoogle.GetGoogleCalendar(
+                DateTime.Now, DateTime.Now.AddMonths(1));
+
+            var sb = new StringBuilder();
+            result.ForEach(x => sb.AppendLine(x.ToString()));
+            MessageBox.Show(sb.ToString());
         }
     }
 }

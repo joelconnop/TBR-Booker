@@ -55,10 +55,12 @@
     <Compile Include="BookingBLTest.cs" />
     <Compile Include="DashboardBLTest.cs" />
     <Compile Include="DBBoxTest.cs" />
+    <Compile Include="TheGoogleTest.cs" />
     <Compile Include="PriceItemsBLTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -183,9 +183,9 @@ namespace TBRBooker.Business
                 form = form.Replace("[payonday]", "<td>No</td>");
 
             if (booking.Service.AddCrocodile)
-                form = form.Replace("[crocodile]", "<label style='font-weight: bold'> Yes</label>");
+                form = form.Replace("[crocodile]", "<h4>Crocodile to come: YES</h4>");
             else
-                form = form.Replace("[crocodile]", "<label> No</label>");
+                form = form.Replace("[crocodile]", "<label>Crocodile to come: No</label>");
 
             string archivePrefix = isForArchive ? "Backups\\" : "";
             string archiveSuffix = isForArchive ? $"_v{booking.EditSequence}" : "";

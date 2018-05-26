@@ -57,3 +57,13 @@ C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.csproj.CoreCompileInputs.cache
 C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.csproj.CopyComplete
 C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.dll
 C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.pdb
+C:\Programming\TBR-Booker\Tests\bin\Debug\Tests.dll.config
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Auth.dll
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Calendar.v3.dll
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.dll
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Core.dll
+C:\Programming\TBR-Booker\Tests\bin\Debug\Business.dll.config
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Auth.xml
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Calendar.v3.xml
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.xml
+C:\Programming\TBR-Booker\Tests\bin\Debug\Google.Apis.Core.xml

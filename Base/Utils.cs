@@ -79,6 +79,13 @@ namespace TBRBooker.Base
             return diff;
         }
 
+        public static int MinuteDifference(DateTime d1, DateTime d2)
+        {
+            var ts = new TimeSpan(Math.Max(d1.Ticks, d2.Ticks)
+                - Math.Min(d1.Ticks, d2.Ticks));
+            return ts.Hours * 60 + ts.Minutes;
+        }
+
         public static int EndTime(int startTime, int duration)
         {
             var parsed = Utils.ParseTime(startTime);

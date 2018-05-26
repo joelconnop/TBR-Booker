@@ -52,6 +52,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.dashboardPnl = new System.Windows.Forms.Panel();
+            this.googleCalendarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -78,7 +79,7 @@
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(97, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -86,7 +87,8 @@
             // 
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.databaseToolStripMenuItem,
-            this.databaseReadToolStripMenuItem});
+            this.databaseReadToolStripMenuItem,
+            this.googleCalendarToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
             this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.testingToolStripMenuItem.Text = "Testing";
@@ -95,14 +97,14 @@
             // databaseToolStripMenuItem
             // 
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.databaseToolStripMenuItem.Text = "Database write";
             this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
             // 
             // databaseReadToolStripMenuItem
             // 
             this.databaseReadToolStripMenuItem.Name = "databaseReadToolStripMenuItem";
-            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.databaseReadToolStripMenuItem.Text = "Database read";
             this.databaseReadToolStripMenuItem.Click += new System.EventHandler(this.databaseReadToolStripMenuItem_Click);
             // 
@@ -292,6 +294,13 @@
             this.dashboardPnl.Size = new System.Drawing.Size(376, 861);
             this.dashboardPnl.TabIndex = 14;
             // 
+            // googleCalendarToolStripMenuItem
+            // 
+            this.googleCalendarToolStripMenuItem.Name = "googleCalendarToolStripMenuItem";
+            this.googleCalendarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.googleCalendarToolStripMenuItem.Text = "Google Calendar";
+            this.googleCalendarToolStripMenuItem.Click += new System.EventHandler(this.googleCalendarToolStripMenuItem_Click);
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -349,6 +358,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button refreshBtn;
         private System.Windows.Forms.Panel dashboardPnl;
+        private System.Windows.Forms.ToolStripMenuItem googleCalendarToolStripMenuItem;
     }
 }
 

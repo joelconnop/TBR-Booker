@@ -206,21 +206,21 @@ namespace TBRBooker.FrontEnd
 
             // validators
             _validators = new List<ValidatingTextbox>();
-            _validators.Add(new ValidatingTextbox(this, contactFirstNameFld, ValidatingTextbox.TextBoxValidationType.Name));
-            _validators.Add(new ValidatingTextbox(this, contactLastNameFld, ValidatingTextbox.TextBoxValidationType.Name));
-            _validators.Add(new ValidatingTextbox(this, contactNicknameFld, ValidatingTextbox.TextBoxValidationType.Name));
-            _validators.Add(new ValidatingTextbox(this, contactCompanyFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
-            _validators.Add(new ValidatingTextbox(this, contactPrimaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
-            _validators.Add(new ValidatingTextbox(this, contactSecondaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
+            //_validators.Add(new ValidatingTextbox(this, contactFirstNameFld, ValidatingTextbox.TextBoxValidationType.Name));
+            //_validators.Add(new ValidatingTextbox(this, contactLastNameFld, ValidatingTextbox.TextBoxValidationType.Name));
+            //_validators.Add(new ValidatingTextbox(this, contactNicknameFld, ValidatingTextbox.TextBoxValidationType.Name));
+            //_validators.Add(new ValidatingTextbox(this, contactCompanyFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
+            //_validators.Add(new ValidatingTextbox(this, contactPrimaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
+            //_validators.Add(new ValidatingTextbox(this, contactSecondaryNumFld, ValidatingTextbox.TextBoxValidationType.PhoneNumberAny));
             _validators.Add(new ValidatingTextbox(this, contactEmailFld, ValidatingTextbox.TextBoxValidationType.EmailAddress));
 
             _validators.Add(new ValidatingTextbox(this, durationFld, ValidatingTextbox.TextBoxValidationType.IntegerZeroPlus));
 
-            _validators.Add(new ValidatingTextbox(this, addressFld, ValidatingTextbox.TextBoxValidationType.AddressBasic));
-            _validators.Add(new ValidatingTextbox(this, addressVenuFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
+            //_validators.Add(new ValidatingTextbox(this, addressFld, ValidatingTextbox.TextBoxValidationType.AddressBasic));
+           // _validators.Add(new ValidatingTextbox(this, addressVenuFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
 
             _validators.Add(new ValidatingTextbox(this, servicePaxFld, ValidatingTextbox.TextBoxValidationType.IntegerZeroPlus));
-            _validators.Add(new ValidatingTextbox(this, partyBirthdayNameFld, ValidatingTextbox.TextBoxValidationType.Name));
+           // _validators.Add(new ValidatingTextbox(this, partyBirthdayNameFld, ValidatingTextbox.TextBoxValidationType.Name));
             _validators.Add(new ValidatingTextbox(this, partyAgeFld, ValidatingTextbox.TextBoxValidationType.IntegerZeroPlus));
 
             _validators.Add(new ValidatingTextbox(this, priceDescFld, ValidatingTextbox.TextBoxValidationType.LongDatabase));
@@ -569,12 +569,20 @@ namespace TBRBooker.FrontEnd
 
         private void copyLastToNickBtn_Click(object sender, EventArgs e)
         {
+            AutoSetNickname();
+        }
+
+        private void AutoSetNickname()
+        {
+            if (!string.IsNullOrEmpty(contactCompanyFld.Text))
+            {
+                contactNicknameFld.Text = contactCompanyFld.Text.Trim();
+            }
             if (!string.IsNullOrEmpty(contactLastNameFld.Text))
             {
                 string nickname = contactLastNameFld.Text.Trim();
                 if (!string.IsNullOrEmpty(contactFirstNameFld.Text.Trim()))
-                    nickname = contactFirstNameFld.Text.Trim().Substring(0, 1) + ". "
-                        + nickname;
+                    nickname = contactFirstNameFld.Text.Trim() + " " + nickname;
                 contactNicknameFld.Text = nickname;
             }
             else if (!string.IsNullOrEmpty(contactFirstNameFld.Text))
@@ -1065,7 +1073,10 @@ namespace TBRBooker.FrontEnd
                 _booking.AccountId = _corporateAccount?.Id ?? "";
                 _booking.Account = _corporateAccount;
 
-                //always set bookingNickname, even if empty (will copy from customer during save), and even if same as customer name
+                if (string.IsNullOrEmpty(contactNicknameFld.Text.Trim()))
+                {
+                    AutoSetNickname();
+                }
                 _booking.BookingNickname = contactNicknameFld.Text;
                 _booking.BookingDate = Utils.StartOfDay(datePick.Value);
                 _booking.BookingTime = startPick.GetSelected().Value;
@@ -1105,6 +1116,7 @@ namespace TBRBooker.FrontEnd
                     _service.PriceItems.Add((PriceItem)lvi.Tag);
                 }
                 _booking.IsPayOnDay = pricingPayOnDayChk.Checked;
+                _booking.IsInvoiced = !priceInvoiceBtn.Enabled;
                 //if (priceOverrideChk.Checked && !string.IsNullOrEmpty(priceOverrideFld.Text))
                 //{
                 //    _service.TotalPrice = decimal.Parse(priceOverrideFld.Text);
@@ -1644,7 +1656,8 @@ namespace TBRBooker.FrontEnd
                 }
 
                 AddPriceItem(new PriceItem(selectedItem,
-                    decimal.Parse(priceAmtFld.Text), int.Parse(priceQtyFld.Text)));
+                    decimal.Parse(priceAmtFld.Text), int.Parse(priceQtyFld.Text),
+                    priceDescFld.Text));
 
                 _isLoading = true;
                 priceProductBox.SelectedItem = null;
@@ -1746,7 +1759,12 @@ namespace TBRBooker.FrontEnd
             //CREATING IN QUICKBOOKS MIGHT NOT BE BEST IDEA. Amount can need revising and this is a pain
             //more thought needed on if/when invoice is created in quickbooks
             //and consider immediate benefit of creating invoices in html
-            MessageBox.Show("Later phase. For now, create manually in Quickbooks.");
+            //MessageBox.Show("Later phase. For now, create manually in Quickbooks.");
+            if (MessageBox.Show(this,
+                "For now all this will do is indicate on the booking form that you have invoiced this job. Proceed?",
+                "Payments", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+                == DialogResult.OK)
+                priceInvoiceBtn.Enabled = false;
         }
 
         private void priceMethodBox_KeyUp(object sender, KeyEventArgs e)
