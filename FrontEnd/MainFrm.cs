@@ -11,6 +11,7 @@ using TBRBooker.Business;
 using TBRBooker.Model.Enums;
 using TBRBooker.Model.Entities;
 using TBRBooker.Base;
+using TBRBooker.Model.DTO;
 
 namespace TBRBooker.FrontEnd
 {
@@ -22,13 +23,15 @@ namespace TBRBooker.FrontEnd
         private BookingsFrm _bookingsFrm;
         private int _screenId;
         private bool _isAllHistoryAvailable;
+        private bool _isFirstLoad;
 
         public MainFrm()
         {
             InitializeComponent();
 
-            _calendarStartDate = PickCalendarStartDate(Utils.StartOfDay());
+            _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
             datePicker.Value = _calendarStartDate;
+            _isFirstLoad = true;
         }
 
         private void MainFrm_Load(object sender, EventArgs e)
@@ -99,15 +102,23 @@ namespace TBRBooker.FrontEnd
             daysPanel.Controls.Clear();
             _days = new DayPanel[4,7];
 
-            var items = DBBox.GetCalendarItems(isForceReadAll);
+            var calItems = new List<CalendarItemDTO>();
+            calItems.AddRange(DBBox.GetCalendarItems(isForceReadAll));
 
+            // read list from google calendar takes a good moment, so read 12 months upfront
+            // then, going forward a week or a month does not require any reading.
+            // Going forward 18 months or backewards 3 months does.
+            calItems.AddRange(CalendarBL.GetGoogleEventsForMainCalendar(
+                isForceReadAll, _calendarStartDate, 
+                _calendarStartDate.AddDays(_isFirstLoad ? 365 : 30)));
+                        
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)
             {
                 for (int j = 0; j <= 6; j++)
                 {
-                    var dayPnl = new DayPanel(day, 
-                        items.Where(x => x.BookingDate.DayOfYear == day.DayOfYear).ToList(),
+                    var dayPnl = new DayPanel(day,
+                        calItems.Where(x => x.Date.DayOfYear == day.DayOfYear).ToList(),
                         true, this, isForceReadAll || _isAllHistoryAvailable);
                     daysPanel.Controls.Add(dayPnl);
                     dayPnl.Location = new Point(j * (dayPnl.Size.Height + 5) + 5, i * (dayPnl.Size.Width + 5) + 5);
@@ -115,6 +126,8 @@ namespace TBRBooker.FrontEnd
                     day = day.AddDays(1);
                 }
             }
+
+            _isFirstLoad = false;
         }
 
         private void databaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,19 +155,19 @@ namespace TBRBooker.FrontEnd
 
         private void datePicker_ValueChanged(object sender, EventArgs e)
         {
-            _calendarStartDate = Utils.StartOfDay(PickCalendarStartDate(datePicker.Value));
+            _calendarStartDate = DTUtils.StartOfDay(PickCalendarStartDate(datePicker.Value));
             UpdateCalendar();
         }
 
         private void prevBtn_Click(object sender, EventArgs e)
         {
-            _calendarStartDate = Utils.StartOfDay(_calendarStartDate.AddDays(-7));
+            _calendarStartDate = DTUtils.StartOfDay(_calendarStartDate.AddDays(-7));
             UpdateCalendar();
         }
 
         private void nextBtn_Click(object sender, EventArgs e)
         {
-            _calendarStartDate = Utils.StartOfDay(_calendarStartDate.AddDays(7));
+            _calendarStartDate = DTUtils.StartOfDay(_calendarStartDate.AddDays(7));
             UpdateCalendar();
         }
 
@@ -201,6 +214,7 @@ namespace TBRBooker.FrontEnd
             {
                 try
                 {
+                    _isFirstLoad = true;
                     AddDayPanels(true);
                     _isAllHistoryAvailable = true;
                 }
@@ -229,7 +243,7 @@ namespace TBRBooker.FrontEnd
         private void googleCalendarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var result = TheGoogle.GetGoogleCalendar(
-                DateTime.Now, DateTime.Now.AddMonths(1));
+                DateTime.Now, DateTime.Now.AddMonths(1), true);
 
             var sb = new StringBuilder();
             result.ForEach(x => sb.AppendLine(x.ToString()));

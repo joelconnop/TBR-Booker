@@ -35,11 +35,11 @@ namespace TBRBooker.FrontEnd
             itemsLst.BeginUpdate();
             itemsLst.Items.Clear();
 
-            var today = Utils.StartOfDay();
+            var today = DTUtils.StartOfDay();
             foreach (var item in _category.Items.OrderBy(x => x.FollowupDate))
             {
-                var lvi = new ListViewItem(new string[] {item.CalendarItem.BookingNum + " " + item.CalendarItem.BookingName,
-                    item.CalendarItem.BookingDate.ToString("d"), item.FollowupDate.ToString("d"),
+                var lvi = new ListViewItem(new string[] {item.CalendarItem.BookingNum + " " + item.CalendarItem.Name,
+                    item.CalendarItem.Date.ToString("d"), item.FollowupDate.ToString("d"),
                     item.FollowupDate < today ? "Y" : ""});
                 lvi.Tag = item;
                 itemsLst.Items.Add(lvi);

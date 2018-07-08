@@ -56,6 +56,9 @@ namespace TBRBooker.Business
             //    booking.AccountId = booking.Account.Id;
             //}
 
+            // update google calendar (sets the id result so need to do dynamodb save after)
+            booking.GoogleCalendarId = CalendarBL.AddOrUpdateBookingOnGoogle(booking);
+
             try
             {
                 if (string.IsNullOrEmpty(booking.BookingNickname))
@@ -165,7 +168,7 @@ namespace TBRBooker.Business
                 .Replace("[phone]", booking.Customer.SmartPhone())
                 .Replace("[email]", booking.Customer.EmailAddress)
                 .Replace("[date]", booking.BookingDate.ToString("D"))
-                .Replace("[time]", Utils.DisplayTime(booking.BookingTime))
+                .Replace("[time]", DTUtils.DisplayTime(booking.BookingTime))
                 .Replace("[address]", booking.Address)
                 .Replace("[service]", booking.Service.ToString())
                 .Replace("[particulars]", booking.Service.GetParticularsText())
@@ -194,10 +197,10 @@ namespace TBRBooker.Business
             return filename;
         }
 
-        public static CalendarItemDTO UpdateCalendarItemAndUnderlyingBooking(CalendarItemDTO item)
+        public static BookingCalendarItemDTO UpdateCalendarItemAndUnderlyingBooking(BookingCalendarItemDTO item)
         {
             bool isRemoveFromFutureCalendars = 
-                !Booking.IsBookingOpen(item.BookingStatus, item.BookingDate, item.FollowupDate.HasValue);
+                !Booking.IsBookingOpen(item.BookingStatus, item.Date, item.FollowupDate.HasValue);
             bool isJobRecentlyCompleted = item.BookingStatus == Model.Enums.BookingStates.Booked
                 && GetBookingDateAndTime(item) < DateTime.Now;
 
@@ -223,10 +226,10 @@ namespace TBRBooker.Business
 
         public static DateTime GetBookingDateAndTime(CalendarItemDTO item)
         {
-            var parsed = Utils.ParseTime(item.BookingTime);
+            var parsed = DTUtils.ParseTime(item.Time);
             var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
          //   var finishTs = ts.Add(new TimeSpan(0, item.Duration, 0));
-            var bookingDateStart = Utils.StartOfDay(item.BookingDate);  //should always be the start of day, but wasn't from day 1
+            var bookingDateStart = DTUtils.StartOfDay(item.Date);  //should always be the start of day, but wasn't from day 1
             return bookingDateStart.AddTicks(ts.Ticks);
         }
 

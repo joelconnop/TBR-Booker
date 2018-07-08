@@ -26,7 +26,7 @@ namespace TBRBooker.Business
                 });
             }
 
-            var today = Utils.StartOfDay();
+            var today = DTUtils.StartOfDay();
             foreach (var calItm in DBBox.GetCalendarItems(false))
             {
 
@@ -58,8 +58,8 @@ namespace TBRBooker.Business
                     .Items.Add(new DashboardItemDTO()
                     {
                         CalendarItem = calItm,
-                        FollowupDate = GetWeekdayIfPossible(calItm.BookingDate, calItm.BookingDate.AddDays(7)),
-                        IsOverdue = calItm.BookingDate.AddDays(Settings.Inst().DaysBeforeOverdue)
+                        FollowupDate = GetWeekdayIfPossible(calItm.Date, calItm.Date.AddDays(7)),
+                        IsOverdue = calItm.Date.AddDays(Settings.Inst().DaysBeforeOverdue)
                             <= today
                     });
                 }
@@ -70,9 +70,9 @@ namespace TBRBooker.Business
 
         public static Followup CreateFirstEnquiryFollowup(DateTime bookingDate)
         {
-            var preferredDate = Utils.StartOfDay().AddDays(1);
+            var preferredDate = DTUtils.StartOfDay().AddDays(1);
             preferredDate = GetWeekdayIfPossible(preferredDate, bookingDate);
-            if (preferredDate > bookingDate || preferredDate == Utils.StartOfDay())
+            if (preferredDate > bookingDate || preferredDate == DTUtils.StartOfDay())
                 return null;
 
             return new Followup()
@@ -90,8 +90,8 @@ namespace TBRBooker.Business
             // 1. The Wednesday prior to the booking
             // 2. Booking Date, if the booking is Today or already transpired
             // 3. The day before service, if its in the next few days
-            var preferredDate = Utils.StartOfDay(bookingDate);
-            var today = Utils.StartOfDay();
+            var preferredDate = DTUtils.StartOfDay(bookingDate);
+            var today = DTUtils.StartOfDay();
 
             //first, get away from booking date if its already a Wedneday
             if (preferredDate.DayOfWeek == Settings.Inst().ConfirmationCallDay
@@ -117,8 +117,8 @@ namespace TBRBooker.Business
 
         public static DateTime GetWeekdayIfPossible(DateTime preferred, DateTime tooLate)
         {
-            preferred = Utils.StartOfDay(preferred);
-            tooLate = Utils.StartOfDay(tooLate);
+            preferred = DTUtils.StartOfDay(preferred);
+            tooLate = DTUtils.StartOfDay(tooLate);
 
             if (preferred.DayOfWeek == DayOfWeek.Saturday)
             {
@@ -134,7 +134,7 @@ namespace TBRBooker.Business
                 if (preferred.DayOfWeek == DayOfWeek.Monday)
                     preferred = preferred.AddDays(-3);
                 if (preferred > DateTime.Now)
-                    return Utils.StartOfDay();
+                    return DTUtils.StartOfDay();
             }
             return preferred;
         }

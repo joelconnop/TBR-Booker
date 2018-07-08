@@ -8,7 +8,7 @@ namespace TBRBooker.Model.DTO
 {
     public class DashboardItemDTO
     {
-        public CalendarItemDTO CalendarItem;
+        public BookingCalendarItemDTO CalendarItem;
         public bool IsOverdue;
         public DateTime FollowupDate;
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TBRBooker.Base
 {
-    public class Utils
+    public class DTUtils
     {
 
         public static (int Hour, int Minute) ParseTime(int time)
@@ -88,9 +88,19 @@ namespace TBRBooker.Base
 
         public static int EndTime(int startTime, int duration)
         {
-            var parsed = Utils.ParseTime(startTime);
+            var parsed = DTUtils.ParseTime(startTime);
             var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
             return int.Parse(ts.Add(new TimeSpan(0, duration, 0)).ToString("hhmm"));
+        }
+
+        public static DateTime DateTimeFromInt(DateTime day, int time, int duration = 0)
+        {
+            if (duration > 0)
+                time = EndTime(time, duration);
+
+            var parsed = DTUtils.ParseTime(time);
+
+            return StartOfDay(day).AddHours(parsed.Hour).AddMinutes(parsed.Minute);
         }
 
         public static DateTime StartOfDay(DateTime? dayIfNotForToday = null)
@@ -98,5 +108,22 @@ namespace TBRBooker.Base
             DateTime date = dayIfNotForToday.HasValue ? dayIfNotForToday.Value : DateTime.Now;
             return new DateTime(date.Year, date.Month, date.Day);
         }
+
+        public static DateTime Min(DateTime dt1, DateTime dt2)
+        {
+            if (dt1.Ticks < dt2.Ticks)
+                return dt1;
+            else
+                return dt2;
+        }
+
+        public static DateTime Max(DateTime dt1, DateTime dt2)
+        {
+            if (dt1.Ticks > dt2.Ticks)
+                return dt1;
+            else
+                return dt2;
+        }
+
     }
 }

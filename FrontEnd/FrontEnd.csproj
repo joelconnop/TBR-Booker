@@ -86,6 +86,12 @@
     <Compile Include="BookingPnl.Designer.cs">
       <DependentUpon>BookingPnl.cs</DependentUpon>
     </Compile>
+    <Compile Include="GoogleEventFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GoogleEventFrm.Designer.cs">
+      <DependentUpon>GoogleEventFrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="BookingsFrm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +151,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BookingPnl.resx">
       <DependentUpon>BookingPnl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GoogleEventFrm.resx">
+      <DependentUpon>GoogleEventFrm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BookingsFrm.resx">
       <DependentUpon>BookingsFrm.cs</DependentUpon>

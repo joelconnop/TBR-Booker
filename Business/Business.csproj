@@ -95,6 +95,7 @@
   <ItemGroup>
     <Compile Include="BaseItemFactory.cs" />
     <Compile Include="BookingBL.cs" />
+    <Compile Include="CalendarBL.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomerBL.cs" />
     <Compile Include="DashboardBL.cs" />

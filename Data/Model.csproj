@@ -56,9 +56,10 @@
   <ItemGroup>
     <Compile Include="Address.cs" />
     <Compile Include="DashboardCategory.cs" />
+    <Compile Include="DTO\BookingCalendarItemDTO.cs" />
     <Compile Include="DTO\DashboardItemDTO.cs" />
     <Compile Include="DTO\ExistingCustomerDTO.cs" />
-    <Compile Include="DTO\GoogleCalendarEventDTO.cs" />
+    <Compile Include="DTO\GoogleCalendarItemDTO.cs" />
     <Compile Include="Entities\Booking.cs" />
     <Compile Include="DTO\CalendarItemDTO.cs" />
     <Compile Include="Entities\CorporateAccount.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Entities\Payment.cs" />
     <Compile Include="Entities\PriceItem.cs" />
     <Compile Include="Entities\Service.cs" />
+    <Compile Include="Enums\CalendarItemTypes.cs" />
     <Compile Include="Enums\LeadSources.cs" />
     <Compile Include="Enums\LocationRegions.cs" />
     <Compile Include="Enums\BookingStates.cs" />

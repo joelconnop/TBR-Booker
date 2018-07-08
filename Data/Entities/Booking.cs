@@ -78,7 +78,7 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public int Duration { get; set; }
 
-        public int EndTime => Utils.EndTime(BookingTime, Duration);
+        public int EndTime => DTUtils.EndTime(BookingTime, Duration);
 
 
         [JsonIgnore]
@@ -141,6 +141,8 @@ namespace TBRBooker.Model.Entities
 
         public List<string> HighlightedControls { get; set; }
 
+        public string GoogleCalendarId { get; set; }
+
         private string ChooseNameForBooking()
         {
             if (!string.IsNullOrEmpty(BookingNickname))
@@ -168,13 +170,13 @@ namespace TBRBooker.Model.Entities
             if (bookingTime == 0)
                 return "";
 
-            var parsed = Utils.ParseTime(bookingTime);
+            var parsed = DTUtils.ParseTime(bookingTime);
             return $"{(parsed.Hour >= 10 ? parsed.Hour.ToString() : "0" + parsed.Hour.ToString())}:{(parsed.Minute >= 10 ? parsed.Minute.ToString() : "0" + parsed.Minute.ToString())}";
         }
 
         public static TimeSpan GetBookingTime(int bookingTime)
         {
-            var parsed = Utils.ParseTime(bookingTime);
+            var parsed = DTUtils.ParseTime(bookingTime);
             return new TimeSpan(parsed.Hour, parsed.Minute, 0);
         }
 
@@ -373,9 +375,14 @@ namespace TBRBooker.Model.Entities
             return $"{Id} {BookingNickname} - {Status.ToString().ToUpper()} - {BookingDate.ToShortDateString()}";
         }
 
-        public CalendarItemDTO ToCalendarItem()
+        public string GoogleEventSummary()
         {
-            return new CalendarItemDTO(int.Parse(Id), this.BookingName, this.BookingDate,
+            return GoogleCalendarItemDTO.TBRBooking + Service.ToString() + "; " + Customer.SmartName() + "; " + Customer.SmartPhone();
+        }
+
+        public BookingCalendarItemDTO ToCalendarItem()
+        {
+            return new BookingCalendarItemDTO(int.Parse(Id), this.BookingName, this.BookingDate,
                 this.BookingTime, Status, GetCurrentFollowup()?.FollowupDate.Date ?? null,
                 (ConfirmationCall != null && ConfirmationCall.IsOutstanding())
                 ? ConfirmationCall?.FollowupDate : null);

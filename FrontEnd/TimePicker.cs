@@ -58,11 +58,11 @@ namespace TBRBooker.FrontEnd
                 if (i - (i / 100 * 100) >= 60)
                     continue;
 
-                var parsed = Utils.ParseTime(i);
+                var parsed = DTUtils.ParseTime(i);
 
                 if (parsed.Minute % interval == 0 || i == startingValue)
                 {
-                    var tpv = new TimePickerValue(i, Utils.DisplayTime(parsed));
+                    var tpv = new TimePickerValue(i, DTUtils.DisplayTime(parsed));
                     if (i == startingValue)
                         selected = tpv;
                     picker.Items.Add(tpv);

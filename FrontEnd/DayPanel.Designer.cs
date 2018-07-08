@@ -28,15 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.addEnquiryBtn = new System.Windows.Forms.Button();
             this.dateLbl = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createGoogleEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // addLeadBtn
+            // addEnquiryBtn
             // 
             this.addEnquiryBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.addEnquiryBtn.Location = new System.Drawing.Point(177, 175);
-            this.addEnquiryBtn.Name = "addLeadBtn";
+            this.addEnquiryBtn.Name = "addEnquiryBtn";
             this.addEnquiryBtn.Size = new System.Drawing.Size(30, 32);
             this.addEnquiryBtn.TabIndex = 5;
             this.addEnquiryBtn.Text = "+";
@@ -54,16 +58,32 @@
             this.dateLbl.TabIndex = 6;
             this.dateLbl.Text = "1";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createGoogleEventToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 26);
+            // 
+            // createGoogleEventToolStripMenuItem
+            // 
+            this.createGoogleEventToolStripMenuItem.Name = "createGoogleEventToolStripMenuItem";
+            this.createGoogleEventToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.createGoogleEventToolStripMenuItem.Text = "Create Google Event";
+            this.createGoogleEventToolStripMenuItem.Click += new System.EventHandler(this.createGoogleEventToolStripMenuItem_Click);
+            // 
             // DayPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.dateLbl);
             this.Controls.Add(this.addEnquiryBtn);
             this.Name = "DayPanel";
             this.Size = new System.Drawing.Size(210, 210);
             this.Load += new System.EventHandler(this.DayPanel_Load);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -72,5 +92,7 @@
         #endregion
         private System.Windows.Forms.Button addEnquiryBtn;
         private System.Windows.Forms.Label dateLbl;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem createGoogleEventToolStripMenuItem;
     }
 }

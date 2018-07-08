@@ -16,7 +16,7 @@ namespace Tests
         public void ConnectAndDisplay()
         {
             var result = TheGoogle.GetGoogleCalendar(
-                DateTime.Now, DateTime.Now.AddMonths(1));
+                DateTime.Now, DateTime.Now.AddMonths(1), true);
 
             result.ForEach(x => Console.WriteLine(x));
         }

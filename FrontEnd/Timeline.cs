@@ -12,6 +12,7 @@ using TBRBooker.Base;
 using TBRBooker.Business;
 using System.Drawing.Text;
 using System.Diagnostics;
+using TBRBooker.Model.DTO;
 
 namespace TBRBooker.FrontEnd
 {
@@ -24,6 +25,7 @@ namespace TBRBooker.FrontEnd
         private BookingPnl _owner;
         private string _bookingId;
         private List<Booking> _others;
+        private List<GoogleCalendarItemDTO> _events;
 
         private const int _inset = 5;
         private const int _insetGraphY = 20;
@@ -67,12 +69,28 @@ namespace TBRBooker.FrontEnd
         public void UpdateOtherBookings()
         {
             _others = new List<Booking>();
-            foreach (var summary in DBBox.GetCalendarItems(false)
-                .Where(x => x.BookingDate.ToShortDateString().Equals(BookingDate.ToShortDateString())
-                && !x.BookingNum.ToString().Equals(_bookingId)))
+
+            var bookingItems = DBBox.GetCalendarItems(false)
+                .Where(x => x.Date.ToShortDateString().Equals(BookingDate.ToShortDateString())
+                && !x.BookingNum.ToString().Equals(_bookingId))
+                .ToList();
+            foreach (var summary in bookingItems)
             {
                 _others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
             }
+
+            try
+            {
+                _events = new List<GoogleCalendarItemDTO>();
+                var rangeStart = DTUtils.StartOfDay(BookingDate);
+                _events.AddRange(TheGoogle.GetGoogleCalendar(
+                    rangeStart, rangeStart.AddHours(23.9), false));
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(_owner, "Read Google Events", ex, true);
+            }
+
             DoRedraw();
         }
 
@@ -117,7 +135,7 @@ namespace TBRBooker.FrontEnd
             double hourScale = (Box.Width - _inset * 2) / 10;
             int x = _inset;
 
-            var parsed = Utils.ParseTime(time);
+            var parsed = DTUtils.ParseTime(time);
 
             if (parsed.Hour < 9)
             {
@@ -164,7 +182,7 @@ namespace TBRBooker.FrontEnd
                 if (x == lastx && i != 900)
                     continue;   //ie out of hours can be the same number again    
 
-                var parsed = Utils.ParseTime(i);
+                var parsed = DTUtils.ParseTime(i);
 
                 g.FillRectangle(FindBookingsHereAndGetBrush(g, i, x),
                     new Rectangle(new Point(lastx, _insetGraphY), new Size(x - lastx, height)));
@@ -187,7 +205,7 @@ namespace TBRBooker.FrontEnd
                         new Point(x, Box.Height - _insetGraphY / 2));
                     if (parsed.Minute == 0)
                     {
-                        string hourMark = Utils.DisplayHour(parsed.Hour) + ":00";
+                        string hourMark = DTUtils.DisplayHour(parsed.Hour) + ":00";
                         var drawStr = g.MeasureString(hourMark, _font, 50);
                         g.DrawString(hourMark, _font, Brushes.Black,
                             new PointF(x - drawStr.Width / 2, _inset));
@@ -226,7 +244,11 @@ namespace TBRBooker.FrontEnd
             var isThisBooking = Duration > 0 && BookingBL.GetClashBookings(new List<Booking> {
                 new Booking() { BookingTime = Time, Duration = Duration } }, time, time).Count == 1;
 
-            if (isThisBooking && bookings.Count > 0)
+            var blockouts = _events.Where(x => (x.Time >= time && x.EndTime <= time)
+                || (time >= x.Time && time <= x.EndTime))
+                .ToList();
+
+            if (isThisBooking && (bookings.Count > 0 || blockouts.Count > 0))
             {
                 return bookings.Any(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
             }
@@ -236,11 +258,16 @@ namespace TBRBooker.FrontEnd
 
             if (bookings.Count > 0)
             {
-                if (bookings.Count > 1)
+                if (bookings.Count > 1 || blockouts.Count > 0)
                 {
                     return bookings.All(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
                 }
                 return bookings[0].IsBooked() ? new SolidBrush(Color.FromArgb(35, 168, 239)) : Brushes.DimGray;
+            }
+
+            if (blockouts.Count > 0)
+            {
+                return Brushes.Magenta;
             }
 
             return Brushes.White;

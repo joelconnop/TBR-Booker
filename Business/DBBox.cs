@@ -232,18 +232,16 @@ namespace TBRBooker.Business
             return item;
         }
 
-        private static List<CalendarItemDTO> Calendar { get; set; }
+        private static List<BookingCalendarItemDTO> Calendar { get; set; }
 
-        public static List<CalendarItemDTO> GetCalendarItems(bool isForceReadAll)
+        public static List<BookingCalendarItemDTO> GetCalendarItems(bool isForceReadAll)
         {
             if (Calendar != null && !isForceReadAll)
             {
                 return Calendar;
             }
 
-            Calendar = new List<CalendarItemDTO>();
-
-            var dbCalendar = new List<CalendarItemDTO>();
+            var dbCalendar = new List<BookingCalendarItemDTO>();
 
             AmazonDynamoDBClient client = GetDynamoDBClient();
             Table table = Table.LoadTable(client, CheckTablenameForTest(Booking.TABLE_NAME));
@@ -297,7 +295,7 @@ namespace TBRBooker.Business
                             confirmationDate = new DateTime(confirmationTicks);
                     }
 
-                    dbCalendar.Add(new CalendarItemDTO(int.Parse(doc["id"]), doc["bookingName"],
+                    dbCalendar.Add(new BookingCalendarItemDTO(int.Parse(doc["id"]), doc["bookingName"],
                         bookingTicks > 0 ? new DateTime(bookingTicks) : default(DateTime),
                         int.Parse(doc["bookingTime"]),
                         (BookingStates)Enum.Parse(typeof(BookingStates), doc["status"]),
@@ -306,20 +304,7 @@ namespace TBRBooker.Business
                 }
             } while (!search.IsDone);
 
-            //update calendar items that are out of date due to the passing of time
-            foreach (var item in dbCalendar)
-            {
-                if (isForceReadAll)
-                {
-                    Calendar.Add(item);
-                }
-                else
-                {
-                    var revisedItem = BookingBL.UpdateCalendarItemAndUnderlyingBooking(item);
-                    if (revisedItem != null)    //null means the item should no longer be shown on calendars
-                        Calendar.Add(revisedItem);
-                }
-            }
+            Calendar = CalendarBL.BuildCalendarFromDbRead(dbCalendar, isForceReadAll);
 
             return Calendar;
         }

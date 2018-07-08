@@ -21,6 +21,7 @@ namespace TBRBooker.FrontEnd
         private DateTime _day;
         private List<CalendarItemDTO> _items;
         private bool _showCancelled;
+        private List<Control> _slotControls;
 
         public DayPanel(DateTime day, List<CalendarItemDTO> items, bool showCancelled, MainFrm owner,
             bool isAllHistoryAvailable)
@@ -41,19 +42,27 @@ namespace TBRBooker.FrontEnd
 
             _owner = owner;
             _day = day;
-            _items = items.OrderBy(x => x.BookingTime).ToList();
+            _items = items.OrderBy(x => x.Time).ToList();
             _showCancelled = showCancelled;
 
             dateLbl.Text = day.Day.ToString();
 
-            
+            _slotControls = new List<Control>();
         }
 
         private void DayPanel_Load(object sender, EventArgs e)
         {
+            ReloadItems();
+        }
+
+        private void ReloadItems()
+        {
+            _slotControls.ForEach(x => Controls.Remove(x));
+
             for (int i = 0; i < _items.Count; i++)
             {
                 var slot = new BookingSlotPnl(_items[i], _owner);
+                _slotControls.Add(slot);
                 Controls.Add(slot);
                 slot.Location = new Point(0, i * (slot.Height + 2));
                 var divider = new Label()
@@ -64,6 +73,7 @@ namespace TBRBooker.FrontEnd
                     ForeColor = Color.FromArgb(35, 168, 239),
                     Size = new Size(this.Width - 2, 10)
                 };
+                _slotControls.Add(divider);
                 Controls.Add(divider);
                 divider.SendToBack();
             }
@@ -87,6 +97,26 @@ namespace TBRBooker.FrontEnd
                 HighlightedControls = new List<string>()
             };
             _owner.ShowBooking(booking);
+        }
+
+        private void createGoogleEventToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var frm = new GoogleEventFrm(_owner, DTUtils.StartOfDay(_day));
+                if (frm.ShowDialog(_owner) == DialogResult.OK)
+                {
+                    var calItem = frm.GetValue();
+                    TheGoogle.AddGoogleCalendarEvent(calItem);
+                    _items.Add(calItem);
+                    _items = _items.OrderBy(x => x.Time).ToList();
+                    ReloadItems();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(_owner, "creating google event", ex, true);
+            }
         }
     }
 }

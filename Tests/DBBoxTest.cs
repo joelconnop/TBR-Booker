@@ -26,7 +26,7 @@ namespace Tests
         {
             var calendar = DBBox.GetCalendarItems(false);
             calendar.Count.ShouldBe(3);
-            calendar.Where(x => x.BookingName.Equals("JobB")).Count().ShouldBe(1);
+            calendar.Where(x => x.Name.Equals("JobB")).Count().ShouldBe(1);
             calendar.Where(x => x.BookingStatus == BookingStates.Booked).Count().ShouldBe(1);
         }
 

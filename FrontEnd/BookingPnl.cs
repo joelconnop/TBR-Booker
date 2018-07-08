@@ -395,7 +395,7 @@ namespace TBRBooker.FrontEnd
             var newEndTime = 0;
             if (_duration > 0)
             {
-                newEndTime = Utils.EndTime(newStartTime, _duration);
+                newEndTime = DTUtils.EndTime(newStartTime, _duration);
             }
             endPick.SetValues(newStartTime, 1900, 15, newEndTime);
         }
@@ -410,7 +410,7 @@ namespace TBRBooker.FrontEnd
 
                 if (startPick.GetSelected().Value > 0)
                 {
-                    int newDuration = Utils.MinuteDifference(startPick.GetSelected().Value, tpv.Value);
+                    int newDuration = DTUtils.MinuteDifference(startPick.GetSelected().Value, tpv.Value);
                     if (newDuration != _duration)
                     {
                         _duration = newDuration;
@@ -453,7 +453,7 @@ namespace TBRBooker.FrontEnd
                 if (_isChangingTime || !timePick.Visible)
                     return;
 
-                var newStartTime = Utils.TimeInt(timePick.Value);
+                var newStartTime = DTUtils.TimeInt(timePick.Value);
                 startPick.SetValues(600, 1900, 15, newStartTime);
 
                 UpdateEndTime(newStartTime);
@@ -508,7 +508,7 @@ namespace TBRBooker.FrontEnd
         {
             if (newDuration > 0)
             {
-                durationDescFld.Text = "(" + Utils.DurationToDisplayStr(newDuration) + ")";
+                durationDescFld.Text = "(" + DTUtils.DurationToDisplayStr(newDuration) + ")";
             }
             else
             {
@@ -554,7 +554,7 @@ namespace TBRBooker.FrontEnd
             startPick.SetValues(600, 1900, 15, time);
 
             endPick.SetValues(time > 0 ? time : 600, 1900, 15, 
-                duration > 0 ? Utils.EndTime(time, duration) : 0);
+                duration > 0 ? DTUtils.EndTime(time, duration) : 0);
 
             _duration = duration;
             durationFld.Text = duration.ToString();
@@ -1078,7 +1078,7 @@ namespace TBRBooker.FrontEnd
                     AutoSetNickname();
                 }
                 _booking.BookingNickname = contactNicknameFld.Text;
-                _booking.BookingDate = Utils.StartOfDay(datePick.Value);
+                _booking.BookingDate = DTUtils.StartOfDay(datePick.Value);
                 _booking.BookingTime = startPick.GetSelected().Value;
                 _booking.Duration = _duration;
 
@@ -1479,7 +1479,7 @@ namespace TBRBooker.FrontEnd
                     MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
-            if (_booking.BookingDate > Utils.StartOfDay())
+            if (_booking.BookingDate > DTUtils.StartOfDay())
             {
                 MessageBox.Show(this, "The job is not scheduled to have been completed yet.", "Close Booking",
                     MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -1585,8 +1585,8 @@ namespace TBRBooker.FrontEnd
                 // as soon as an enquiry is made for him, and this only changes if that enquiry is cancelled
                 var consequitiveDayBookings = DBBox.GetCalendarItems(false).Where(
                     x => !Booking.IsCancelled(x.BookingStatus) &&
-                    x.BookingDate == Utils.StartOfDay(_booking.BookingDate.AddDays(-1))
-                    || x.BookingDate == Utils.StartOfDay(_booking.BookingDate.AddDays(1))).ToList();
+                    x.Date == DTUtils.StartOfDay(_booking.BookingDate.AddDays(-1))
+                    || x.Date == DTUtils.StartOfDay(_booking.BookingDate.AddDays(1))).ToList();
                 foreach (var calItm in consequitiveDayBookings)
                 {
                     if (DBBox.ReadItem<Booking>(calItm.BookingNum.ToString()).Service.AddCrocodile)
@@ -2128,7 +2128,7 @@ namespace TBRBooker.FrontEnd
             fuSetBtn.Enabled = fuScheduleChk.Checked;
 
             //whether setting or unsetting, we want the fields reset
-            fuDatePick.Value = Utils.StartOfDay();
+            fuDatePick.Value = DTUtils.StartOfDay();
             fuPurposeFld.Text = "";
 
             if (fuScheduleChk.Checked && _nextFu == null)
@@ -2184,20 +2184,20 @@ namespace TBRBooker.FrontEnd
 
             if (_confirmationCall == null || !_confirmationCall.IsOutstanding())
             {
-                var newConfirmationCall = DashboardBL.CreateConfirmationCall(Utils.StartOfDay(datePick.Value));
+                var newConfirmationCall = DashboardBL.CreateConfirmationCall(DTUtils.StartOfDay(datePick.Value));
                 if (_confirmationCall != null && _confirmationCall.FollowupDate != newConfirmationCall.FollowupDate)
                     _confirmationCall.FollowupDate = _confirmationCall.FollowupDate;
                 else
                     _confirmationCall = newConfirmationCall;
             }
-            if (_confirmationCall.FollowupDate == Utils.StartOfDay())
+            if (_confirmationCall.FollowupDate == DTUtils.StartOfDay())
             {
                 MessageBox.Show(this,
                     "There will be no confirmation call setup, because the service is today.",
                     "Confirmation Call", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _confirmationCall = null;
             }
-            else if (_confirmationCall.FollowupDate < Utils.StartOfDay())
+            else if (_confirmationCall.FollowupDate < DTUtils.StartOfDay())
             {
                 MessageBox.Show(this,
                     "There will be no confirmation call setup, because it appears the service has already happened.",
@@ -2233,7 +2233,7 @@ namespace TBRBooker.FrontEnd
                 return;
             }
 
-            fu.CompletedDate = Utils.StartOfDay();
+            fu.CompletedDate = DTUtils.StartOfDay();
             fu.CompleteNote = completeNote;
 
             if (!fu.IsConfirmationCall)
@@ -2269,13 +2269,13 @@ namespace TBRBooker.FrontEnd
 
             if (_nextFu != null)
             {
-                _nextFu.FollowupDate = Utils.StartOfDay(fuDatePick.Value);
+                _nextFu.FollowupDate = DTUtils.StartOfDay(fuDatePick.Value);
                 _nextFu.Purpose = fuPurposeFld.Text;
             }
 
             if (_confirmationCall != null)
             {
-                _confirmationCall.FollowupDate = Utils.StartOfDay(fuConfirmationPick.Value);
+                _confirmationCall.FollowupDate = DTUtils.StartOfDay(fuConfirmationPick.Value);
                 _confirmationCall.CompleteNote = fuConfirmationNoteFld.Text.Trim();
             }
         }
