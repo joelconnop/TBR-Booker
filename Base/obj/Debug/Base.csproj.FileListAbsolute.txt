@@ -10,3 +10,6 @@ C:\Programming\TBR-Booker\Base\obj\Debug\Base.csproj.CoreCompileInputs.cache
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.dll
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.pdb
 C:\Programming\TBR-Booker\Base\obj\Debug\Base.csprojResolveAssemblyReference.cache
+C:\Programming\TBR-Booker\Base\bin\Debug\Newtonsoft.Json.dll
+C:\Programming\TBR-Booker\Base\bin\Debug\Newtonsoft.Json.xml
+C:\Programming\TBR-Booker\Base\obj\Debug\Base.csproj.CopyComplete

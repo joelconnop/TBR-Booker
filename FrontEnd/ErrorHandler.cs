@@ -13,23 +13,7 @@ namespace TBRBooker.FrontEnd
     {
         public static void HandleError(IWin32Window owner, string action, Exception ex, bool isStable = false)
         {
-            var errorLog = new ErrorLog()
-            {
-                Action = action,
-                CreatedDate = DateTime.Now,
-                ExceptionMsg = ex.Message,
-                StackTrace = ex.StackTrace,
-            };
-
-            string dbError = "";
-            try
-            {
-                DBBox.AddOrUpdate(errorLog);
-            }
-            catch (Exception dbEx)
-            {
-                dbError = dbEx.Message;
-            }
+            var dbError = ErrorLogger.LogError(action, ex);
 
             var msg = isStable ? "" :
                 "An unexpected error has occurred, and the program could be unstable. You should make a note of what you were working on (hint: Print Screen) and restart the program."
@@ -40,7 +24,9 @@ namespace TBRBooker.FrontEnd
                 msg += Environment.NewLine + Environment.NewLine + "Additionally, this error failed to log because:"
                 + Environment.NewLine + dbError;
             }
-            MessageBox.Show(owner, msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            if (owner != null)
+                MessageBox.Show(owner, msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public static List<ErrorLog> GetPastErrors(string action)

@@ -35,6 +35,7 @@
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googleCalendarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.refreshBtn = new System.Windows.Forms.Button();
             this.showBookingsBtn = new System.Windows.Forms.Button();
@@ -52,7 +53,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.dashboardPnl = new System.Windows.Forms.Panel();
-            this.googleCalendarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -71,6 +72,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.settingsToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -97,16 +99,23 @@
             // databaseToolStripMenuItem
             // 
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.databaseToolStripMenuItem.Text = "Database write";
             this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
             // 
             // databaseReadToolStripMenuItem
             // 
             this.databaseReadToolStripMenuItem.Name = "databaseReadToolStripMenuItem";
-            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.databaseReadToolStripMenuItem.Text = "Database read";
             this.databaseReadToolStripMenuItem.Click += new System.EventHandler(this.databaseReadToolStripMenuItem_Click);
+            // 
+            // googleCalendarToolStripMenuItem
+            // 
+            this.googleCalendarToolStripMenuItem.Name = "googleCalendarToolStripMenuItem";
+            this.googleCalendarToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.googleCalendarToolStripMenuItem.Text = "Google Calendar";
+            this.googleCalendarToolStripMenuItem.Click += new System.EventHandler(this.googleCalendarToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -294,12 +303,12 @@
             this.dashboardPnl.Size = new System.Drawing.Size(376, 861);
             this.dashboardPnl.TabIndex = 14;
             // 
-            // googleCalendarToolStripMenuItem
+            // settingsToolStripMenuItem
             // 
-            this.googleCalendarToolStripMenuItem.Name = "googleCalendarToolStripMenuItem";
-            this.googleCalendarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.googleCalendarToolStripMenuItem.Text = "Google Calendar";
-            this.googleCalendarToolStripMenuItem.Click += new System.EventHandler(this.googleCalendarToolStripMenuItem_Click);
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -359,6 +368,7 @@
         private System.Windows.Forms.Button refreshBtn;
         private System.Windows.Forms.Panel dashboardPnl;
         private System.Windows.Forms.ToolStripMenuItem googleCalendarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     }
 }
 

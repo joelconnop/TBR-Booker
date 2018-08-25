@@ -12,6 +12,9 @@ using TBRBooker.Model.Enums;
 using TBRBooker.Model.Entities;
 using TBRBooker.Base;
 using TBRBooker.Model.DTO;
+using Microsoft.Win32;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace TBRBooker.FrontEnd
 {
@@ -29,10 +32,54 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            InitSettings();
+
             _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
             datePicker.Value = _calendarStartDate;
             _isFirstLoad = true;
+
+
         }
+
+        private void InitSettings()
+        {
+            string username;
+            string workingDir;
+
+            username = (string)Registry.GetValue(Settings.EnvironmentVarsRoot,
+                    Settings.UserKey, "");
+
+            if (Settings.IsForcedToTestMode())
+                workingDir = "C:\\Programming\\TBR Booker Instance";
+            else
+            {
+                workingDir = (string)Registry.GetValue(Settings.EnvironmentVarsRoot,
+                    Settings.WorkingDirKey, "");
+            }
+
+
+            if (string.IsNullOrEmpty(workingDir) || string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show("First time starting up TBR Booker. You will be taken to the Settings screen, please be sure to enter a username and confirm the Google Drive location.");
+
+                // open settings, then save enviornment variable
+                var settingsFrm = new SettingsManagementFrm(Settings.CreateDefaultInst(), false);
+                settingsFrm.ShowDialog(this);
+            }
+            else
+            {
+                var filename = workingDir + "\\config\\" + username + "_settings.json";
+                try
+                {
+                    Settings.SetInst(JsonConvert.DeserializeObject<Settings>(File.ReadAllText(filename)));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to read the settings file at " + workingDir + " because: " + ex.Message);
+                }
+            }
+        }
+    
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
@@ -248,6 +295,12 @@ namespace TBRBooker.FrontEnd
             var sb = new StringBuilder();
             result.ForEach(x => sb.AppendLine(x.ToString()));
             MessageBox.Show(sb.ToString());
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var frm = new SettingsManagementFrm(Settings.Inst(), true);
+            frm.ShowDialog(this);
         }
     }
 }

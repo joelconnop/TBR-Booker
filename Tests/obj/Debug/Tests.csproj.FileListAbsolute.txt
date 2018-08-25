@@ -40,7 +40,6 @@ C:\Programming\TBR-Booker\Tests\bin\Debug\Shouldly.dll
 C:\Programming\TBR-Booker\Tests\bin\Debug\AWSSDK.DynamoDBv2.dll
 C:\Programming\TBR-Booker\Tests\bin\Debug\AWSSDK.Core.dll
 C:\Programming\TBR-Booker\Tests\bin\Debug\Base.dll
-C:\Programming\TBR-Booker\Tests\bin\Debug\Newtonsoft.Json.dll
 C:\Programming\TBR-Booker\Tests\bin\Debug\Business.pdb
 C:\Programming\TBR-Booker\Tests\bin\Debug\Data.pdb
 C:\Programming\TBR-Booker\Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
@@ -50,7 +49,6 @@ C:\Programming\TBR-Booker\Tests\bin\Debug\AWSSDK.DynamoDBv2.xml
 C:\Programming\TBR-Booker\Tests\bin\Debug\AWSSDK.Core.pdb
 C:\Programming\TBR-Booker\Tests\bin\Debug\AWSSDK.Core.xml
 C:\Programming\TBR-Booker\Tests\bin\Debug\Base.pdb
-C:\Programming\TBR-Booker\Tests\bin\Debug\Newtonsoft.Json.xml
 C:\Programming\TBR-Booker\Tests\bin\Debug\ja\Base.resources.dll
 C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.csprojResolveAssemblyReference.cache
 C:\Programming\TBR-Booker\Tests\obj\Debug\Tests.csproj.CoreCompileInputs.cache

@@ -66,6 +66,9 @@ namespace TBRBooker.Business
 
         public static string AddOrUpdateBookingOnGoogle(Booking booking)
         {
+            if (Settings.Inst().IsTestMode)
+                return Guid.NewGuid().ToString();
+
             List<string> attendeesNotImplemented = null;
 
             bool isDeleteFromCalendar = !booking.IsBooked();
@@ -80,6 +83,7 @@ namespace TBRBooker.Business
                     catch (Exception ex)
                     {
                         // log it, but don't want to interrupt user or fail their operation because of this
+                        ErrorLogger.LogError($"Adding or Updating Booking {booking.Id} on Google Calendar", ex);
                     }
                 }
                 return null;

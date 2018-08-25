@@ -85,3 +85,8 @@ C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Google.Apis.Calendar.v3.xml
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Google.Apis.xml
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Google.Apis.Core.xml
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.GoogleEventFrm.resources
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\TBR Booker.exe.manifest
+C:\Programming\TBR-Booker\FrontEnd\bin\Debug\TBR Booker.application
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.SettingsManagementFrm.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.exe.manifest
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.application

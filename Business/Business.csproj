@@ -100,6 +100,7 @@
     <Compile Include="CustomerBL.cs" />
     <Compile Include="DashboardBL.cs" />
     <Compile Include="DBBox.cs" />
+    <Compile Include="ErrorLogger.cs" />
     <Compile Include="TheGoogle.cs" />
     <Compile Include="PriceItemsBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
