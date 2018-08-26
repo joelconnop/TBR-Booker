@@ -143,6 +143,9 @@ namespace TBRBooker.Model.Entities
 
         public string GoogleCalendarId { get; set; }
 
+        public string EnquiryCredit { get; set; }
+        public string SaleCredit { get; set; }
+
         private string ChooseNameForBooking()
         {
             if (!string.IsNullOrEmpty(BookingNickname))
@@ -302,6 +305,31 @@ namespace TBRBooker.Model.Entities
             //in MainFrm, the idea is: for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
             return IsOpenStatus(status) || 
                 bookingDate.AddMonths(Settings.Inst().MonthsForBookingHistory) > DateTime.Now;
+        }
+
+        public bool IsCompleted(DateTime? completedAsOf = null)
+        {
+            if (!completedAsOf.HasValue)
+                completedAsOf = DTUtils.StartOfDay();
+
+            if (!IsBooked())
+                return false;
+
+            return BookingDate <= completedAsOf;
+        }
+
+        public bool IsOverdue(DateTime? overdueAsOf = null)
+        {
+            if (!overdueAsOf.HasValue)
+                overdueAsOf = DTUtils.StartOfDay();
+
+            if (Status == BookingStates.PaymentDue)
+                return true;
+
+            if (!IsCompleted(overdueAsOf))
+                return false;
+
+            return !IsFullyPaid;
         }
 
         public static bool IsOpenStatus(BookingStates status)

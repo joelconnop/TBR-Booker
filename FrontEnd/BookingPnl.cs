@@ -1047,7 +1047,7 @@ namespace TBRBooker.FrontEnd
 
         public bool Save()
         {
-            Cursor = Cursors.WaitCursor; 
+            Cursor = Cursors.WaitCursor;
 
             try
             {
@@ -1178,6 +1178,13 @@ namespace TBRBooker.FrontEnd
 
                 // (even if null, ie cancelled job)
                 _booking.ConfirmationCall = _confirmationCall;
+
+                // credit somebody for this enquiry/booking
+                if (string.IsNullOrEmpty(_booking.EnquiryCredit))
+                    _booking.EnquiryCredit = Settings.Inst().Username;
+                if (string.IsNullOrEmpty(_booking.SaleCredit) &&
+                    _newStatus == BookingStates.Booked)
+                    _booking.SaleCredit = Settings.Inst().Username;
 
                 BookingBL.SaveBookingEtc(_booking);
 
@@ -1583,7 +1590,7 @@ namespace TBRBooker.FrontEnd
                 // it might be desirable to only look at bookings (not enquiries), but that would likely lead to
                 // croc being booked on consequitive days occasionally. I think its best to assume the croc is booked
                 // as soon as an enquiry is made for him, and this only changes if that enquiry is cancelled
-                var consequitiveDayBookings = DBBox.GetCalendarItems(false).Where(
+                var consequitiveDayBookings = DBBox.GetCalendarItems(false, false).Where(
                     x => !Booking.IsCancelled(x.BookingStatus) &&
                     x.Date == DTUtils.StartOfDay(_booking.BookingDate.AddDays(-1))
                     || x.Date == DTUtils.StartOfDay(_booking.BookingDate.AddDays(1))).ToList();

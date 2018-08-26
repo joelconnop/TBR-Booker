@@ -31,6 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.mainMnu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generalSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.last30DaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previousFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +60,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.dashboardPnl = new System.Windows.Forms.Panel();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allGeneralSummariesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -72,11 +79,67 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportsToolStripMenuItem,
             this.settingsToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // reportsToolStripMenuItem
+            // 
+            this.reportsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allGeneralSummariesToolStripMenuItem,
+            this.generalSummaryToolStripMenuItem});
+            this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
+            this.reportsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reportsToolStripMenuItem.Text = "Reports";
+            // 
+            // generalSummaryToolStripMenuItem
+            // 
+            this.generalSummaryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.last30DaysToolStripMenuItem,
+            this.currentFinancialYearToolStripMenuItem,
+            this.previousFinancialYearToolStripMenuItem,
+            this.allTimeToolStripMenuItem});
+            this.generalSummaryToolStripMenuItem.Name = "generalSummaryToolStripMenuItem";
+            this.generalSummaryToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.generalSummaryToolStripMenuItem.Text = "General Summary";
+            // 
+            // last30DaysToolStripMenuItem
+            // 
+            this.last30DaysToolStripMenuItem.Name = "last30DaysToolStripMenuItem";
+            this.last30DaysToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.last30DaysToolStripMenuItem.Text = "Last 30 Days";
+            this.last30DaysToolStripMenuItem.Click += new System.EventHandler(this.last30DaysToolStripMenuItem_Click);
+            // 
+            // currentFinancialYearToolStripMenuItem
+            // 
+            this.currentFinancialYearToolStripMenuItem.Name = "currentFinancialYearToolStripMenuItem";
+            this.currentFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.currentFinancialYearToolStripMenuItem.Text = "Current Financial Year";
+            this.currentFinancialYearToolStripMenuItem.Click += new System.EventHandler(this.currentFinancialYearToolStripMenuItem_Click);
+            // 
+            // previousFinancialYearToolStripMenuItem
+            // 
+            this.previousFinancialYearToolStripMenuItem.Name = "previousFinancialYearToolStripMenuItem";
+            this.previousFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.previousFinancialYearToolStripMenuItem.Text = "Previous Financial Year";
+            this.previousFinancialYearToolStripMenuItem.Click += new System.EventHandler(this.previousFinancialYearToolStripMenuItem_Click);
+            // 
+            // allTimeToolStripMenuItem
+            // 
+            this.allTimeToolStripMenuItem.Name = "allTimeToolStripMenuItem";
+            this.allTimeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.allTimeToolStripMenuItem.Text = "All Time";
+            this.allTimeToolStripMenuItem.Click += new System.EventHandler(this.allTimeToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
@@ -303,12 +366,14 @@
             this.dashboardPnl.Size = new System.Drawing.Size(376, 861);
             this.dashboardPnl.TabIndex = 14;
             // 
-            // settingsToolStripMenuItem
+            // allGeneralSummariesToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            this.allGeneralSummariesToolStripMenuItem.Name = "allGeneralSummariesToolStripMenuItem";
+            this.allGeneralSummariesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.allGeneralSummariesToolStripMenuItem.Text = "All General Summaries";
+            this.allGeneralSummariesToolStripMenuItem.ToolTipText = "Each report forces the same database read, so use this if you plan to view more t" +
+    "han one report";
+            this.allGeneralSummariesToolStripMenuItem.Click += new System.EventHandler(this.allGeneralSummariesToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -369,6 +434,13 @@
         private System.Windows.Forms.Panel dashboardPnl;
         private System.Windows.Forms.ToolStripMenuItem googleCalendarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reportsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generalSummaryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem last30DaysToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem currentFinancialYearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem previousFinancialYearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allGeneralSummariesToolStripMenuItem;
     }
 }
 

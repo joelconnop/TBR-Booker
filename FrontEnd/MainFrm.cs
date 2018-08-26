@@ -150,7 +150,7 @@ namespace TBRBooker.FrontEnd
             _days = new DayPanel[4,7];
 
             var calItems = new List<CalendarItemDTO>();
-            calItems.AddRange(DBBox.GetCalendarItems(isForceReadAll));
+            calItems.AddRange(DBBox.GetCalendarItems(isForceReadAll, false));
 
             // read list from google calendar takes a good moment, so read 12 months upfront
             // then, going forward a week or a month does not require any reading.
@@ -301,6 +301,35 @@ namespace TBRBooker.FrontEnd
         {
             var frm = new SettingsManagementFrm(Settings.Inst(), true);
             frm.ShowDialog(this);
+        }
+
+        private void last30DaysToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void currentFinancialYearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void previousFinancialYearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void allTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void allGeneralSummariesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (var filename in ReportBL.GetAllReports())
+            {
+                //just open in chrome, let user decide whether to print now or just view
+                System.Diagnostics.Process.Start(filename);
+            }
         }
     }
 }

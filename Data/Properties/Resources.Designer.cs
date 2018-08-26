@@ -85,5 +85,33 @@ namespace TBRBooker.Model.Properties {
                 return ResourceManager.GetString("BookingForm", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///    &lt;body&gt;
+        ///
+        ///        &lt;h1&gt;[name]&lt;/h1&gt;
+        ///        &lt;h2&gt;[start] - [end]&lt;/h2&gt;
+        ///		&lt;br&gt;
+        ///
+        ///		&lt;h3&gt;Sales&lt;/h3&gt;
+        ///        &lt;table&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Total Sales:&lt;/td&gt;&lt;td&gt;[totalSales]&lt;/td&gt;&lt;/tr&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Collected/Banked:&lt;/td&gt;&lt;td&gt;[collected]&lt;/td&gt;&lt;/tr&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Outstanding:&lt;/td&gt;&lt;td&gt;[outstanding]&lt;/td&gt;&lt;/tr&gt;
+        ///			&lt;tr&gt;&lt;td&gt;Overdue Payments:&lt;/td&gt;&lt;td&gt;[overdue]&lt;/td&gt;&lt;/tr&gt;
+        ///			&lt;tr&gt;&lt;td&gt;Bad Debt:&lt;/td&gt;&lt;td&gt;[baddebt]&lt;/td&gt;&lt;/tr&gt;
+        ///        &lt;/table&gt;
+        ///        &lt;br&gt;
+        ///
+        ///		&lt;h3&gt;Payments&lt;/h3&gt;
+        ///		 &lt;table&gt;
+        ///            [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string ReportForm {
+            get {
+                return ResourceManager.GetString("ReportForm", resourceCulture);
+            }
+        }
     }
 }

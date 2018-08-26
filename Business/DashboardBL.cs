@@ -27,7 +27,7 @@ namespace TBRBooker.Business
             }
 
             var today = DTUtils.StartOfDay();
-            foreach (var calItm in DBBox.GetCalendarItems(false))
+            foreach (var calItm in DBBox.GetCalendarItems(false, false))
             {
 
                 if (calItm.ConfirmationDate != null && calItm.ConfirmationDate <= today)

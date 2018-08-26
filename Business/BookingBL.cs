@@ -96,7 +96,7 @@ namespace TBRBooker.Business
             }
 
             //update the calendar
-            var calendar = DBBox.GetCalendarItems(false);
+            var calendar = DBBox.GetCalendarItems(false, false);
             var calendarItem = calendar.FirstOrDefault(x => x.BookingNum == int.Parse(booking.Id));
             if (calendarItem != null)
                 calendar.Remove(calendarItem);
@@ -139,7 +139,7 @@ namespace TBRBooker.Business
             int nextNum = int.Parse(year.ToString().Substring(2) + minorNum.ToString());
             //int nextYear = nextNum + minorNum;
 
-            var relevantCalendarItems = DBBox.GetCalendarItems(false)
+            var relevantCalendarItems = DBBox.GetCalendarItems(false, false)
                 .Where(x => x.BookingNum > nextNum)
                 .Select(y => y.BookingNum).ToList();
             if (relevantCalendarItems.Count == 0)

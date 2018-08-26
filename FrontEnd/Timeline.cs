@@ -70,7 +70,7 @@ namespace TBRBooker.FrontEnd
         {
             _others = new List<Booking>();
 
-            var bookingItems = DBBox.GetCalendarItems(false)
+            var bookingItems = DBBox.GetCalendarItems(false, false)
                 .Where(x => x.Date.ToShortDateString().Equals(BookingDate.ToShortDateString())
                 && !x.BookingNum.ToString().Equals(_bookingId))
                 .ToList();

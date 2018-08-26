@@ -60,6 +60,7 @@
     <Compile Include="DTO\DashboardItemDTO.cs" />
     <Compile Include="DTO\ExistingCustomerDTO.cs" />
     <Compile Include="DTO\GoogleCalendarItemDTO.cs" />
+    <Compile Include="DTO\ReportDTO.cs" />
     <Compile Include="Entities\Booking.cs" />
     <Compile Include="DTO\CalendarItemDTO.cs" />
     <Compile Include="Entities\CorporateAccount.cs" />
@@ -112,6 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ReportForm.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

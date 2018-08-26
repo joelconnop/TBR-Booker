@@ -234,7 +234,8 @@ namespace TBRBooker.Business
 
         private static List<BookingCalendarItemDTO> Calendar { get; set; }
 
-        public static List<BookingCalendarItemDTO> GetCalendarItems(bool isForceReadAll)
+        public static List<BookingCalendarItemDTO> GetCalendarItems(
+            bool isForceReadAll, bool leaveCachedCalendarAlone)
         {
             if (Calendar != null && !isForceReadAll)
             {
@@ -304,9 +305,12 @@ namespace TBRBooker.Business
                 }
             } while (!search.IsDone);
 
-            Calendar = CalendarBL.BuildCalendarFromDbRead(dbCalendar, isForceReadAll);
+            var calendar = CalendarBL.BuildCalendarFromDbRead(dbCalendar, isForceReadAll);
 
-            return Calendar;
+            if (!leaveCachedCalendarAlone)
+                Calendar = calendar;
+
+            return calendar;
         }
 
         private static List<ExistingCustomerDTO> CustomerDirectory { get; set; }
