@@ -137,7 +137,7 @@ namespace TBRBooker.Business
                     .Sum(y => y.Balance)),
                 filtered.Count,
                 booked.Count,
-                booked.Count(x => x.IsCompleted()),
+                booked.Count(x => x.BookingDateBeenAndGone()),
                 enquiries.Count(x => x.Status == BookingStates.OpenEnquiry),
                 enquiries.Count(x => x.Status == Model.Enums.BookingStates.Cancelled
                     || x.Status == Model.Enums.BookingStates.LostEnquiry),

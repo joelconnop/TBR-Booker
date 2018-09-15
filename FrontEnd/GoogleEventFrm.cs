@@ -25,6 +25,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             _owner = owner;
             _day = day;
             dateFld.Text = day.ToShortDateString();
@@ -47,13 +48,26 @@ namespace TBRBooker.FrontEnd
             _isChangingTime = false;
         }
 
-        public GoogleCalendarItemDTO GetValue()
+        public List<GoogleCalendarItemDTO> GetValue()
         {
-            List<string> attendeesNotImplemented = null;
-            return new GoogleCalendarItemDTO(_day, startPick.GetSelected().Value,
-                _duration, nameFld.Text, GoogleCalendarItemDTO.Blockout + descFld.Text, attendeesNotImplemented,
-                null, //CalendarBL.Blockout + Guid.NewGuid().ToString(), 
-                locationFld.Text);
+            var events = new List<GoogleCalendarItemDTO>();
+            int numDays = 1;
+            int.TryParse(numDaysFld.Text, out numDays);
+            numDays = Math.Min(numDays, 30);    // would be hard to undo a typo of an extra 0 or two!
+            var currentDay = _day;
+
+            while (numDays > 0)
+            {
+                List<string> attendeesNotImplemented = null;
+                events.Add(new GoogleCalendarItemDTO(currentDay, startPick.GetSelected().Value,
+                    _duration, nameFld.Text, GoogleCalendarItemDTO.Blockout + descFld.Text, attendeesNotImplemented,
+                    null, //CalendarBL.Blockout + Guid.NewGuid().ToString(), 
+                    locationFld.Text));
+                numDays--;
+                currentDay = currentDay.AddDays(1);
+            }
+
+            return events;
         }
 
         private void allDayChk_CheckedChanged(object sender, EventArgs e)

@@ -34,6 +34,7 @@ namespace TBRBooker.FrontEnd
 
             InitSettings();
 
+            Styles.SetColours(this);
             _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
             datePicker.Value = _calendarStartDate;
             _isFirstLoad = true;
@@ -46,13 +47,15 @@ namespace TBRBooker.FrontEnd
             string username;
             string workingDir;
 
-            username = (string)Registry.GetValue(Settings.EnvironmentVarsRoot,
-                    Settings.UserKey, "");
-
             if (Settings.IsForcedToTestMode())
+            {
+                username = "Test";
                 workingDir = "C:\\Programming\\TBR Booker Instance";
+            }
             else
             {
+                username = (string)Registry.GetValue(Settings.EnvironmentVarsRoot,
+        Settings.UserKey, "");
                 workingDir = (string)Registry.GetValue(Settings.EnvironmentVarsRoot,
                     Settings.WorkingDirKey, "");
             }
@@ -78,6 +81,8 @@ namespace TBRBooker.FrontEnd
                     throw new Exception("Failed to read the settings file at " + workingDir + " because: " + ex.Message);
                 }
             }
+
+            Styles.InitStyles(Settings.Inst().MainColour, Settings.Inst().ContrastColour);
         }
     
 

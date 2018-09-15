@@ -11,6 +11,7 @@ using System.Reflection;
 using TBRBooker.Model.Properties;
 using TBRBooker.Base;
 using TBRBooker.Model.DTO;
+using TBRBooker.Model.Enums;
 
 namespace TBRBooker.Business
 {
@@ -201,19 +202,45 @@ namespace TBRBooker.Business
         {
             bool isRemoveFromFutureCalendars = 
                 !Booking.IsBookingOpen(item.BookingStatus, item.Date, item.FollowupDate.HasValue);
-            bool isJobRecentlyCompleted = item.BookingStatus == Model.Enums.BookingStates.Booked
+            bool isJobRecentlyCompleted = item.BookingStatus == BookingStates.Booked
                 && GetBookingDateAndTime(item) < DateTime.Now;
 
-            if (isRemoveFromFutureCalendars || isJobRecentlyCompleted)
+            // clean up followups should theoretically not be needed, they should happen
+            // when a state transitions on form. Example, We want old open enquiries to get
+            // cancelled manually. If wanting to do automatics then consider are there
+            // any bugs on booking form?
+            //bool isRemoveFollowup = item.FollowupDate.HasValue
+            //    && item.Date < DateTime.Now.AddDays(-7);    // nothing to followup 
+            //    && new[] { BookingStates.Completed, BookingStates.PaymentDue, BookingStates.Cancelled, BookingStates.CancelledWithoutPayment }
+            //    .Contains(item.BookingStatus);  // looking for PaymentDue because chasing payment is an ad hoc followup which will still happen
+            //bool isRemoveConfirmation = item.ConfirmationDate.HasValue
+            //    && item.ConfirmationDate < DTUtils.StartOfDay()
+            //    && new[] { BookingStates.Completed, BookingStates.PaymentDue, BookingStates.Cancelled, BookingStates.CancelledWithoutPayment }
+            //    .Contains(item.BookingStatus);
+
+
+            if (isRemoveFromFutureCalendars || isJobRecentlyCompleted) // || isRemoveFollowup)
             {
                 //not reading the related objects, that can happen if user opens the booking
                 var booking = DBBox.ReadItem<Booking>(item.BookingNum.ToString());
+
                 if (isJobRecentlyCompleted)
                 {
                     //even if job appears to be fully paid, this needs to be reviewed post job completion
                     booking.Status = Model.Enums.BookingStates.PaymentDue;
                     item = booking.ToCalendarItem();
                 }
+
+                //if (isRemoveFollowup)
+                //{
+                //    var fu = booking.GetCurrentFollowup();
+                //    if (fu != null)
+                //    {
+                //        fu.CompletedDate = DateTime.Now;
+                //        fu.CompleteNote = "Expired followup was automatically completed";
+                //    }
+                //}
+
                 //for isRemoveFromFutureCalendars, just saving the entity again is enough to change its 'isOpen' flag
                 DBBox.AddOrUpdate(booking);
             }

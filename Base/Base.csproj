@@ -45,9 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTUtils.cs" />
     <Compile Include="EnumHelper.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

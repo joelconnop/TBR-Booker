@@ -37,12 +37,12 @@
             // 
             this.SettingsGrid.Location = new System.Drawing.Point(2, 2);
             this.SettingsGrid.Name = "SettingsGrid";
-            this.SettingsGrid.Size = new System.Drawing.Size(439, 436);
+            this.SettingsGrid.Size = new System.Drawing.Size(692, 436);
             this.SettingsGrid.TabIndex = 0;
             // 
             // saveBtn
             // 
-            this.saveBtn.Location = new System.Drawing.Point(366, 451);
+            this.saveBtn.Location = new System.Drawing.Point(619, 451);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(75, 23);
             this.saveBtn.TabIndex = 4;
@@ -52,7 +52,7 @@
             // 
             // closeBtn
             // 
-            this.closeBtn.Location = new System.Drawing.Point(285, 451);
+            this.closeBtn.Location = new System.Drawing.Point(538, 451);
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(75, 23);
             this.closeBtn.TabIndex = 3;
@@ -65,7 +65,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
-            this.ClientSize = new System.Drawing.Size(451, 486);
+            this.ClientSize = new System.Drawing.Size(699, 486);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.closeBtn);
             this.Controls.Add(this.SettingsGrid);

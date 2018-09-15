@@ -24,6 +24,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             _owner = owner;
             _category = category;
         }

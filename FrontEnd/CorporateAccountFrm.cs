@@ -27,6 +27,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             _bookingsFrm = bookingsFrm;
             _booking = booking;
             _account = account;

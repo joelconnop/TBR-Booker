@@ -36,6 +36,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.descFld = new System.Windows.Forms.TextBox();
             this.contactGrp = new System.Windows.Forms.GroupBox();
+            this.locationFld = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.dateFld = new System.Windows.Forms.Label();
             this.allDayChk = new System.Windows.Forms.CheckBox();
             this.endPick = new TBRBooker.FrontEnd.TimePicker();
             this.label29 = new System.Windows.Forms.Label();
@@ -44,9 +47,8 @@
             this.durationFld = new System.Windows.Forms.TextBox();
             this.startPick = new TBRBooker.FrontEnd.TimePicker();
             this.label15 = new System.Windows.Forms.Label();
-            this.dateFld = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.locationFld = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.numDaysFld = new System.Windows.Forms.TextBox();
             this.contactGrp.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,6 +107,8 @@
             // contactGrp
             // 
             this.contactGrp.BackColor = System.Drawing.SystemColors.Control;
+            this.contactGrp.Controls.Add(this.label4);
+            this.contactGrp.Controls.Add(this.numDaysFld);
             this.contactGrp.Controls.Add(this.locationFld);
             this.contactGrp.Controls.Add(this.label1);
             this.contactGrp.Controls.Add(this.dateFld);
@@ -127,6 +131,31 @@
             this.contactGrp.TabIndex = 0;
             this.contactGrp.TabStop = false;
             // 
+            // locationFld
+            // 
+            this.locationFld.Location = new System.Drawing.Point(20, 86);
+            this.locationFld.Name = "locationFld";
+            this.locationFld.Size = new System.Drawing.Size(308, 20);
+            this.locationFld.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 70);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(94, 13);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Location (optional)";
+            // 
+            // dateFld
+            // 
+            this.dateFld.AutoSize = true;
+            this.dateFld.Location = new System.Drawing.Point(20, 173);
+            this.dateFld.Name = "dateFld";
+            this.dateFld.Size = new System.Drawing.Size(30, 13);
+            this.dateFld.TabIndex = 14;
+            this.dateFld.Text = "Date";
+            // 
             // allDayChk
             // 
             this.allDayChk.AutoSize = true;
@@ -140,7 +169,7 @@
             // 
             // endPick
             // 
-            this.endPick.Location = new System.Drawing.Point(20, 312);
+            this.endPick.Location = new System.Drawing.Point(124, 254);
             this.endPick.Name = "endPick";
             this.endPick.Size = new System.Drawing.Size(84, 27);
             this.endPick.TabIndex = 5;
@@ -148,7 +177,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(19, 296);
+            this.label29.Location = new System.Drawing.Point(123, 238);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(52, 13);
             this.label29.TabIndex = 10;
@@ -157,7 +186,7 @@
             // durationDescFld
             // 
             this.durationDescFld.AutoSize = true;
-            this.durationDescFld.Location = new System.Drawing.Point(202, 318);
+            this.durationDescFld.Location = new System.Drawing.Point(103, 311);
             this.durationDescFld.Name = "durationDescFld";
             this.durationDescFld.Size = new System.Drawing.Size(96, 13);
             this.durationDescFld.TabIndex = 7;
@@ -166,7 +195,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(116, 296);
+            this.label24.Location = new System.Drawing.Point(17, 289);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(47, 13);
             this.label24.TabIndex = 9;
@@ -174,7 +203,7 @@
             // 
             // durationFld
             // 
-            this.durationFld.Location = new System.Drawing.Point(119, 315);
+            this.durationFld.Location = new System.Drawing.Point(20, 308);
             this.durationFld.Name = "durationFld";
             this.durationFld.Size = new System.Drawing.Size(77, 20);
             this.durationFld.TabIndex = 6;
@@ -195,30 +224,22 @@
             this.label15.TabIndex = 15;
             this.label15.Text = "Start Time";
             // 
-            // dateFld
+            // label4
             // 
-            this.dateFld.AutoSize = true;
-            this.dateFld.Location = new System.Drawing.Point(20, 173);
-            this.dateFld.Name = "dateFld";
-            this.dateFld.Size = new System.Drawing.Size(30, 13);
-            this.dateFld.TabIndex = 14;
-            this.dateFld.Text = "Date";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(234, 239);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Number of Days";
             // 
-            // label1
+            // numDaysFld
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 70);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Location (optional)";
-            // 
-            // locationFld
-            // 
-            this.locationFld.Location = new System.Drawing.Point(20, 86);
-            this.locationFld.Name = "locationFld";
-            this.locationFld.Size = new System.Drawing.Size(308, 20);
-            this.locationFld.TabIndex = 1;
+            this.numDaysFld.Location = new System.Drawing.Point(237, 258);
+            this.numDaysFld.Name = "numDaysFld";
+            this.numDaysFld.Size = new System.Drawing.Size(77, 20);
+            this.numDaysFld.TabIndex = 16;
+            this.numDaysFld.Text = "1";
             // 
             // GoogleEventFrm
             // 
@@ -260,5 +281,7 @@
         private System.Windows.Forms.Label dateFld;
         private System.Windows.Forms.TextBox locationFld;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox numDaysFld;
     }
 }

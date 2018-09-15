@@ -28,6 +28,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             if (!isAllHistoryAvailable
                 && day.AddMonths(Settings.Inst().MonthsForBookingHistory) < DateTime.Now)
             {
@@ -106,9 +107,12 @@ namespace TBRBooker.FrontEnd
                 var frm = new GoogleEventFrm(_owner, DTUtils.StartOfDay(_day));
                 if (frm.ShowDialog(_owner) == DialogResult.OK)
                 {
-                    var calItem = frm.GetValue();
-                    TheGoogle.AddGoogleCalendarEvent(calItem);
-                    _items.Add(calItem);
+                    var calItems = frm.GetValue();
+                    foreach (var calItm in calItems)
+                    {
+                        TheGoogle.AddGoogleCalendarEvent(calItm);
+                    }
+                    _items.Add(calItems[0]);
                     _items = _items.OrderBy(x => x.Time).ToList();
                     ReloadItems();
                 }

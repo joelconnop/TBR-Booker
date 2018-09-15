@@ -305,28 +305,31 @@ namespace TBRBooker.Model.Entities
             //in MainFrm, the idea is: for older dates, if 'show cancelled' ticked, it needs to scan the whole table (maybe make user re-tick show cancelled when changing date range)
             return IsOpenStatus(status) || 
                 bookingDate.AddMonths(Settings.Inst().MonthsForBookingHistory) > DateTime.Now;
+
+            // NOTICED THAT isFollowupSet is not been used. Can revisit this once followups
+            // in production are cleaned up
         }
 
-        public bool IsCompleted(DateTime? completedAsOf = null)
+        public bool BookingDateBeenAndGone(DateTime? compareDateIfOtherThanNow = null)
         {
-            if (!completedAsOf.HasValue)
-                completedAsOf = DTUtils.StartOfDay();
+            if (!compareDateIfOtherThanNow.HasValue)
+                compareDateIfOtherThanNow = DTUtils.StartOfDay();
 
             if (!IsBooked())
                 return false;
 
-            return BookingDate <= completedAsOf;
+            return BookingDate <= compareDateIfOtherThanNow;
         }
 
-        public bool IsOverdue(DateTime? overdueAsOf = null)
+        public bool IsOverdue(DateTime? compareDateOtherThanNow = null)
         {
-            if (!overdueAsOf.HasValue)
-                overdueAsOf = DTUtils.StartOfDay();
+            if (!compareDateOtherThanNow.HasValue)
+                compareDateOtherThanNow = DTUtils.StartOfDay();
 
             if (Status == BookingStates.PaymentDue)
                 return true;
 
-            if (!IsCompleted(overdueAsOf))
+            if (!BookingDateBeenAndGone(compareDateOtherThanNow))
                 return false;
 
             return !IsFullyPaid;

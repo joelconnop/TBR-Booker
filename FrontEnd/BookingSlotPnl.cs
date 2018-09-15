@@ -11,6 +11,7 @@ using TBRBooker.Model.Entities;
 using TBRBooker.Model.DTO;
 using TBRBooker.Business;
 using TBRBooker.Model.Enums;
+using TBRBooker.Base;
 
 namespace TBRBooker.FrontEnd
 {
@@ -24,6 +25,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             _calItm = calItm;
             _owner = owner;
         }
@@ -44,8 +46,16 @@ namespace TBRBooker.FrontEnd
                     SetBackColourForBooking(bookingItm.BookingStatus);
                     break;
                 case CalendarItemTypes.GoogleEvent:
-                    // var googleItm = _calItm as GoogleCalendarItemDTO;
+                    var googleItm = _calItm as GoogleCalendarItemDTO;
                     bookingLbl.Text = _calItm.Name;
+                    bookingLbl.ForeColor = timeLbl.ForeColor = Styles.MainColour();
+                    bookingLbl.Font = timeLbl.Font = new Font(bookingLbl.Font, FontStyle.Bold);
+                    if (googleItm.IsAllDay())
+                    {
+                        timeLbl.Visible = false;
+                        Height *= 3;
+                    }
+                        
                     SetBackColour();
                     break;
                 default:
@@ -65,7 +75,7 @@ namespace TBRBooker.FrontEnd
                     SetBackColourForBooking(bookingItm.BookingStatus);
                     break;
                 case CalendarItemTypes.GoogleEvent:
-                    BackColor = Color.PaleVioletRed;
+                    BackColor = Color.DarkRed;
                     break;
                 default:
                     ErrorHandler.HandleError(_owner, "Update calendar item slot",

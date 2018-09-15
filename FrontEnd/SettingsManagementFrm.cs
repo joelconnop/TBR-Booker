@@ -46,15 +46,18 @@ namespace TBRBooker.FrontEnd
             {
                 MessageBox.Show("A valid path to Sarah Jane's Google Drive (TBR area) is needed. Example: G:\\My Drive\\Bookings\\TBR Booker");
             }
-            
-            if (newSettings.Username != null && (_settings.Username == null 
+
+            // don't touch registry entries in test or we will mess with production config
+            if (!Settings.IsForcedToTestMode())
+            {
+                if (newSettings.Username != null && (_settings.Username == null
                 || !_settings.Username.Equals(newSettings.Username)))
-                Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.UserKey, newSettings.Username,
-                    RegistryValueKind.String);
-            
-            if (!_settings.WorkingDir.Equals(newSettings.WorkingDir))
-                Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.WorkingDirKey, newSettings.WorkingDir,
-                    RegistryValueKind.String);
+                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.UserKey, newSettings.Username,
+                        RegistryValueKind.String);
+                if (!_settings.WorkingDir.Equals(newSettings.WorkingDir))
+                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.WorkingDirKey, newSettings.WorkingDir,
+                        RegistryValueKind.String);
+            }
 
             var settingsFilename = newSettings.WorkingDir + "\\config\\" + newSettings.Username + "_settings.json";
             try

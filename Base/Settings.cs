@@ -25,14 +25,16 @@ namespace TBRBooker.Base
 
         public static Settings CreateDefaultInst()
         {
-                //read from config instead!
-                //could also make config into a property grid class, and read/save as xml file
-                if (IsForcedToTestMode())
-                    _instance = new Settings(true, 1, 0, false, "C:\\Programming\\TBR Booker Instance", 
-                        3, 0.98M, DayOfWeek.Wednesday, 7, "sarahjane@truebluereptiles.com.au");
-                else
-                    _instance = new Settings(false, 1, 0, false, "G:\\My Drive\\Bookings\\TBR Booker", 
-                        3, 0.98M, DayOfWeek.Wednesday, 7, "sarahjane@truebluereptiles.com.au");
+            if (IsForcedToTestMode())
+                _instance = new Settings(true, 1, 0, false, "C:\\Programming\\TBR Booker Instance",
+                    3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
+                    "sarahjane@truebluereptiles.com.au",
+                    "#23A8EF", "#FFE0C0");
+            else
+                _instance = new Settings(false, 1, 0, false, "G:\\My Drive\\Bookings\\TBR Booker",
+                    3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
+                    "sarahjane@truebluereptiles.com.au",
+                     "#23A8EF", "#FFE0C0");
             return _instance;
         }
 
@@ -40,6 +42,11 @@ namespace TBRBooker.Base
         {
             _instance = inst;
         }
+
+        // ADDING A NEW SETTING:
+        // -add to Clone function
+        // -default in full constructor
+        // -have a nice day
 
         public string Username { get; set; }
 
@@ -58,6 +65,11 @@ namespace TBRBooker.Base
         [DisplayName("Use 24 Hour Time")]
         public bool Is24HourTime { get; set; }
 
+        [DisplayName("Main UI Colour (google 'hex colour picker')")]
+        public string MainColour { get; set; }
+        [DisplayName("Contrast UI Colour")]
+        public string ContrastColour { get; set; }
+
         [Category("Hardcoded Settings")]
         [ReadOnly(true)]
         [DisplayName("Months for Booking History")]
@@ -67,6 +79,11 @@ namespace TBRBooker.Base
         [ReadOnly(true)]
         [DisplayName("Confirmation Call Day")]
         public DayOfWeek ConfirmationCallDay { get; set; }
+
+        [Category("Hardcoded Settings")]
+        [ReadOnly(true)]
+        [DisplayName("Confirmation Call Day")]
+        public DayOfWeek FollowupDay { get; set; }
 
         [Category("Hardcoded Settings")]
         [ReadOnly(true)]
@@ -84,7 +101,9 @@ namespace TBRBooker.Base
         //[DisplayName("Credit Card Multiplier (not in use)")]
         [Browsable(false)]
         public decimal CreditCardMultiplier;
-        
+
+
+
         public Settings()
         {
             //default constructor
@@ -92,7 +111,9 @@ namespace TBRBooker.Base
 
         public Settings(bool isTestMode, int mainScreenId, int bookingsScreenId, bool is24HourTime, string saveFilesPath,
             int monthsForBookingHistory, decimal creditCardMultiplier, 
-            DayOfWeek confirmationCallDay, int daysBeforeOverdue, string calendarAccount)
+            DayOfWeek confirmationCallDay, DayOfWeek followupDay,
+            int daysBeforeOverdue, string calendarAccount,
+            string mainColour, string contrastColour)
         {
             IsTestMode = isTestMode;
             MainScreenDefaultId = mainScreenId;
@@ -102,8 +123,11 @@ namespace TBRBooker.Base
             MonthsForBookingHistory = monthsForBookingHistory;
             CreditCardMultiplier = creditCardMultiplier;
             ConfirmationCallDay = confirmationCallDay;
+            FollowupDay = followupDay;
             DaysBeforeOverdue = daysBeforeOverdue;
             GmailCalendarAccount = calendarAccount;
+            MainColour = mainColour;
+            ContrastColour = contrastColour;
         }
 
         public Object Clone()
@@ -118,9 +142,12 @@ namespace TBRBooker.Base
                 Is24HourTime = Is24HourTime,
                 MonthsForBookingHistory = MonthsForBookingHistory,
                 ConfirmationCallDay = ConfirmationCallDay,
+                FollowupDay = FollowupDay,
                 DaysBeforeOverdue = DaysBeforeOverdue,
                 GmailCalendarAccount = GmailCalendarAccount,
-                CreditCardMultiplier = CreditCardMultiplier
+                CreditCardMultiplier = CreditCardMultiplier,
+                MainColour = MainColour,
+                ContrastColour = ContrastColour
             };
         }
 

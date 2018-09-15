@@ -36,9 +36,16 @@ namespace TBRBooker.Model.DTO
 
         public override string ToString()
         {
-            return $"{Name}; {(string.IsNullOrEmpty(Description) ? "" : Description.Trim(':') + ": ")}"
+            return $"{Name}; {(string.IsNullOrEmpty(Description) ? "" : Description.Trim().Trim(':') + ": ")}"
            //     + $"{String.Join(",", Attendees).Trim().Trim(',')} "
-                + (Duration > 1 ? ("for " + DTUtils.DurationToDisplayStr(Duration)) : "(unknown duration)");
+                + (Duration > 1 ? 
+                ((IsAllDay() ? "(all day)" : "for " + DTUtils.DurationToDisplayStr(Duration)))
+                : "(unknown duration)");
+        }
+
+        public bool IsAllDay()
+        {
+            return Duration >= 480;
         }
     }
 }

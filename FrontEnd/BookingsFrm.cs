@@ -27,6 +27,7 @@ namespace TBRBooker.FrontEnd
 
             _owner = owner;
             _panels = new Dictionary<string, BookingPnl>();
+            Styles.SetColours(this);
         }
 
         public void ShowOnAppropriateMonitor()

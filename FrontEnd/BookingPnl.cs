@@ -58,6 +58,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
+            Styles.SetColours(this);
             DoubleBuffered = true;
             _owner = owner;
             _booking = booking;
@@ -531,11 +532,14 @@ namespace TBRBooker.FrontEnd
 
                 UpdateConfirmationCall();
 
-                if (_currentFu != null && _currentFu.Purpose.Equals(DashboardBL.EnquiryFollowupText))
-                {
-                    FinishFollowup(_currentFu, "Booked");
-                    ConfigureFollowupControls();
-                }
+                // not sure what the mentality of the below code was, but we had no such thing when "Book it"
+                // pressed. suspect code was written in the wrong place, so i've put it there.
+                //if (_currentFu != null && _currentFu.IsOutstanding()
+                //    && _currentFu.Purpose.Equals(DashboardBL.EnquiryFollowupText))
+                //{
+                //    FinishFollowup(_currentFu, "Booked");
+                //    ConfigureFollowupControls();
+                //}
 
             }
             catch (Exception ex)
@@ -1157,13 +1161,14 @@ namespace TBRBooker.FrontEnd
                         if (!fu.Equals(_currentFu))
                         {
                             _booking.Followups.Remove(fu);
-                            _booking.Followups.Add(_currentFu);
+                            _booking.Followups.Add((Followup)_currentFu.Clone());
                         }
                         //do nothing if FU hasn't changed
                     }
                     else
                     {
-                        _booking.Followups.Add(_currentFu);
+                        // Clone because, if we continue operating on this booking, we need these objects out of sync until next save
+                        _booking.Followups.Add((Followup)_currentFu.Clone());
                     }
 
                     //unassign if it has just been completed
@@ -1173,11 +1178,14 @@ namespace TBRBooker.FrontEnd
 
                 if (_nextFu != null && fuScheduleChk.Checked)
                 {
-                    _booking.Followups.Add(_nextFu);
+                    _booking.Followups.Add((Followup)_nextFu.Clone());
                 }
 
                 // (even if null, ie cancelled job)
-                _booking.ConfirmationCall = _confirmationCall;
+                if (_confirmationCall == null)
+                    _booking.ConfirmationCall = null;
+                else
+                    _booking.ConfirmationCall = (Followup)_confirmationCall.Clone();
 
                 // credit somebody for this enquiry/booking
                 if (string.IsNullOrEmpty(_booking.EnquiryCredit))
@@ -1389,6 +1397,7 @@ namespace TBRBooker.FrontEnd
                         //ideally should check for overdue payment etc but that shouldn't happen
                         _newStatus = BookingStates.LostEnquiry;
                         isConfirmed = true;
+                        CompleteCurrentFollowupAutomatically("Did not book");
                     }
                     break;
                 case BookingStates.Booked:
@@ -1400,8 +1409,8 @@ namespace TBRBooker.FrontEnd
                         _newStatus = BookingStates.Cancelled;
                         isConfirmed = true;
                         completeBtn.Enabled = false;
-                        FinishFollowup(_currentFu, "Booking cancelled", true);
                         FinishFollowup(_confirmationCall, "Booking cancelled", true);
+                        CompleteCurrentFollowupAutomatically("Booking cancelled");
                     }
                     break;
                 case BookingStates.Completed:
@@ -1415,8 +1424,8 @@ namespace TBRBooker.FrontEnd
                         isConfirmed = true;
                         completeBtn.Enabled = false;
                         bookBtn.Enabled = true;
-                        FinishFollowup(_currentFu, "Booking cancelled", true);
                         FinishFollowup(_confirmationCall, "Booking cancelled", true);
+                        CompleteCurrentFollowupAutomatically("Booking cancelled");
                     }
                     break;
                 default:
@@ -1459,7 +1468,8 @@ namespace TBRBooker.FrontEnd
                 _newStatus = BookingStates.Booked;
 
                 UpdateConfirmationCall();
-                
+                CompleteCurrentFollowupAutomatically("Booked");
+
                 if (Save())
                 {
                     bookBtn.Enabled = false;
@@ -1505,7 +1515,12 @@ namespace TBRBooker.FrontEnd
                 //leaving this for now - it might be desirable to schedule an after service fu in some cases
                 //FinishFollowup(_currentFu, "Booking is completed and paid", true);
                 FinishFollowup(_confirmationCall != null && _confirmationCall.IsOutstanding()
-                    ? _confirmationCall : null, "Expired", true);
+                    ? _confirmationCall : null, "Confirmation call was not recorded", true);
+
+                // cleanup of legacy followups (from now on this should happen when at 'Book it'
+                CompleteCurrentFollowupAutomatically(
+                    "Expired followup was automatically completed");
+
                 if (Save())
                 {
                     completeBtn.Enabled = false;
@@ -2037,8 +2052,9 @@ namespace TBRBooker.FrontEnd
             if ((_currentFu == null || !_currentFu.IsOutstanding()))
             {
                 //there is no current followup, or user has already completed it
-                if (_nextFu != null)
+                if (_nextFu != null && !fuScheduleChk.Checked)
                 {
+                    // there is a new followup not yet synced to the form (use case: initial followup)
                     fuScheduleChk.Checked = true;
                     fuDatePick.Value = _nextFu.FollowupDate;
                     fuPurposeFld.Text = _nextFu.Purpose;
@@ -2171,6 +2187,35 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        private void CompleteCurrentFollowupAutomatically(string completedNote)
+        {
+            try
+            {
+                if (!IsOutstandingAutoFollowup())
+                {
+                    // if we only just started the enquiry and now need to close it (has not been saved yet),
+                    // just don't have that first follow up at all.
+                    if (_nextFu != null && _nextFu.Purpose.Equals(DashboardBL.EnquiryFollowupText))
+                        _nextFu = null;
+                        fuScheduleChk.Checked = false;
+                    return;
+                }
+
+                FinishFollowup(_currentFu, completedNote);
+                fuCompleteFld.Text = completedNote; // because Save() wants to sync the obj from form
+                ConfigureFollowupControls();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Complete Followup", ex, true);
+            }
+        }
+
+        private bool IsOutstandingAutoFollowup()
+        {
+            return _currentFu != null && _currentFu.IsOutstanding()
+                    && _currentFu.Purpose.Equals(DashboardBL.EnquiryFollowupText);
+        }
 
         private void fuConfirmationNoteFld_KeyPress(object sender, KeyPressEventArgs e)
         {

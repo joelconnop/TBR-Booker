@@ -70,16 +70,32 @@ namespace TBRBooker.Business
 
         public static Followup CreateFirstEnquiryFollowup(DateTime bookingDate)
         {
-            var preferredDate = DTUtils.StartOfDay().AddDays(1);
-            preferredDate = GetWeekdayIfPossible(preferredDate, bookingDate);
-            if (preferredDate > bookingDate || preferredDate == DTUtils.StartOfDay())
+            // resulting date should be:
+            // 1. Nothing, if the booking is today/tomorrow
+            // 2. Tomorrow, if the booking is within the next 8 days
+            // 3. The next Monday (7 days from now if today is Monday)
+            var dateOfService = DTUtils.StartOfDay(bookingDate);
+            var today = DTUtils.StartOfDay();
+
+            if (dateOfService.AddDays(-2) < today)
                 return null;
 
-            return new Followup()
+            if (dateOfService.AddDays(-8) < today)
+                MakeFU(GetWeekdayIfPossible(today.AddDays(1), dateOfService));
+
+            var preferredDate = today.AddDays(1);
+            while (preferredDate.DayOfWeek != Settings.Inst().FollowupDay)
+                preferredDate = preferredDate.AddDays(1);
+            return MakeFU(GetWeekdayIfPossible(preferredDate, dateOfService));
+
+            Followup MakeFU(DateTime fuDate)
             {
-                FollowupDate = preferredDate,
-                Purpose = EnquiryFollowupText
-            };
+                return new Followup()
+                {
+                    FollowupDate = fuDate,
+                    Purpose = EnquiryFollowupText
+                };
+            }
         }
 
         public static string EnquiryFollowupText = "Are you ready to book?";

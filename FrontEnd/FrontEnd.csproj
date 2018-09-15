@@ -109,10 +109,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BookingFrm.cs" />
-    <Compile Include="BookingFrm.Designer.cs">
-      <DependentUpon>BookingFrm.cs</DependentUpon>
-    </Compile>
     <Compile Include="BookingPnl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -172,6 +168,7 @@
     <Compile Include="SettingsManagementFrm.Designer.cs">
       <DependentUpon>SettingsManagementFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Styles.cs" />
     <Compile Include="Timeline.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -185,9 +182,6 @@
       <DependentUpon>TimePicker.cs</DependentUpon>
     </Compile>
     <Compile Include="ValidatingTextbox.cs" />
-    <EmbeddedResource Include="BookingFrm.resx">
-      <DependentUpon>BookingFrm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="BookingPnl.resx">
       <DependentUpon>BookingPnl.cs</DependentUpon>
     </EmbeddedResource>
