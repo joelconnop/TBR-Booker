@@ -39,9 +39,22 @@ namespace TBRBooker.Model.Entities
             return "";
         }
 
+        public Object Clone()
+        {
+            return new Service()
+            {
+                ServiceType = ServiceType,
+                AddCrocodile = AddCrocodile,
+                SpecificAnimalsToCome = SpecificAnimalsToCome,
+                PriceItems = PriceItems.Select(x => (PriceItem)x.Clone()).ToList(),
+                Pax = Pax,
+                Party = Party == null ? null : (Party)Party.Clone()
+            };
+        }
+
     }
 
-    public class Party
+    public class Party : ICloneable
     {
         //redundant with the PriceItem (PriceItemsBL.WhichPartyPackage())
         public PartyPackages Package { get; set; }
@@ -70,6 +83,16 @@ namespace TBRBooker.Model.Entities
             else if (BirthdayAge > 0)
                 return BirthdayAge.ToString();
             return "";
+        }
+
+        public Object Clone()
+        {
+            return new Party()
+            {
+                Package = Package,
+                BirthdayName = BirthdayName,
+                BirthdayAge = BirthdayAge
+            };
         }
     }
 

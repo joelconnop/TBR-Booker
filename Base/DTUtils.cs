@@ -125,5 +125,10 @@ namespace TBRBooker.Base
                 return dt2;
         }
 
+        public static int WeekOfMonthForDay(DateTime dt)
+        {
+            return Convert.ToInt32(Math.Ceiling(dt.Day / 7.0));
+        }
+
     }
 }

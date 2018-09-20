@@ -18,13 +18,13 @@ namespace TBRBooker.FrontEnd
     {
 
         private Settings _settings;
+        private readonly bool _initConfigNeeded;
 
-        public SettingsManagementFrm(Settings settings, bool canCancel)
+        public SettingsManagementFrm(Settings settings, bool initConfigNeeded)
         {
             InitializeComponent();
             _settings = settings;
-            if (!canCancel)
-                closeBtn.Enabled = false;
+            _initConfigNeeded = initConfigNeeded;
         }
 
         private void SettingsManagementFrm_Load(object sender, EventArgs e)
@@ -44,7 +44,7 @@ namespace TBRBooker.FrontEnd
 
             if (!Directory.Exists(newSettings.WorkingDir))
             {
-                MessageBox.Show("A valid path to Sarah Jane's Google Drive (TBR area) is needed. Example: G:\\My Drive\\Bookings\\TBR Booker");
+                MessageBox.Show("A valid working directory is needed (preferrably a Google Drive Stream location) is needed. Example: G:\\My Drive\\Bookings\\TBR Booker");
             }
 
             // don't touch registry entries in test or we will mess with production config
@@ -75,11 +75,23 @@ namespace TBRBooker.FrontEnd
             }
 
             Settings.SetInst(newSettings);
+            DialogResult = DialogResult.OK;
             Close();
         }
 
         private void closeBtn_Click(object sender, EventArgs e)
         {
+            if (_initConfigNeeded && MessageBox.Show(this,
+                "Initial Configuration is required to go any further. Would you like to set this up now?"
+                 + Environment.NewLine + Environment.NewLine
+                 + "- Choose YES to stay here and setup your username and working directory."
+                 + Environment.NewLine + "- Choose NO to exit the program for now (check your file system and/or registry entries)."
+                 + Environment.NewLine + Environment.NewLine + "HINT: If using Google Drive Stream, and it is not running, choose NO, and then startup Google Drive Stream before trying again.",
+                "TBR Booker Startup Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                        == DialogResult.Yes)
+                return;
+
+            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

@@ -19,15 +19,19 @@ namespace TBRBooker.FrontEnd
     {
 
         private CalendarItemDTO _calItm;
-        private MainFrm _owner;
+        private MainFrm _mainFrm;
+        private DayPanel _owner;
+        private int _maxHeight;
         
-        public BookingSlotPnl(CalendarItemDTO calItm, MainFrm owner)
+        public BookingSlotPnl(CalendarItemDTO calItm, MainFrm mainFrm, DayPanel owner, int maxHeight)
         {
             InitializeComponent();
 
             Styles.SetColours(this);
             _calItm = calItm;
+            _mainFrm = mainFrm;
             _owner = owner;
+            _maxHeight = maxHeight;
         }
 
         private void BookingSlotPnl_Load(object sender, EventArgs e)
@@ -53,13 +57,19 @@ namespace TBRBooker.FrontEnd
                     if (googleItm.IsAllDay())
                     {
                         timeLbl.Visible = false;
-                        Height *= 3;
+                        Height = Math.Min(_maxHeight, Height * 3);
                     }
                         
                     SetBackColour();
                     break;
+                case CalendarItemTypes.RepeatMarker:
+                    var repeatItm = _calItm as RepeatMarkerDTO;
+                    bookingLbl.Text = _calItm.Name;
+                    confirmBtn.Visible = rejectBtn.Visible = true;
+                    SetBackColourForBooking(BookingStates.OpenEnquiry);
+                    break;
                 default:
-                    ErrorHandler.HandleError(_owner, "Update calendar item slot",
+                    ErrorHandler.HandleError(_mainFrm, "Update calendar item slot",
                         new Exception("Unknown CalendarItemTypes " + _calItm.Type), true);
                     break;
             }
@@ -77,8 +87,11 @@ namespace TBRBooker.FrontEnd
                 case CalendarItemTypes.GoogleEvent:
                     BackColor = Color.DarkRed;
                     break;
+                case CalendarItemTypes.RepeatMarker:
+                    SetBackColourForBooking(BookingStates.OpenEnquiry);
+                    break;
                 default:
-                    ErrorHandler.HandleError(_owner, "Update calendar item slot",
+                    ErrorHandler.HandleError(_mainFrm, "Update calendar item slot",
                         new Exception("Unknown CalendarItemTypes " + _calItm.Type), true);
                     break;
             }
@@ -117,22 +130,24 @@ namespace TBRBooker.FrontEnd
 
         private void ActivateSlot()
         {
-            SetBackColour();
-
             switch (_calItm.Type)
             {
                 case CalendarItemTypes.Booking:
+                    SetBackColour();
                     var bookingItm = _calItm as BookingCalendarItemDTO;
-                    _owner.ShowBooking(BookingBL.GetBookingFull(bookingItm.BookingNum.ToString()));
+                    _mainFrm.ShowBooking(BookingBL.GetBookingFull(bookingItm.BookingNum.ToString()));
                     break;
                 case CalendarItemTypes.GoogleEvent:
+                    SetBackColour();
                     var googleItm = _calItm as GoogleCalendarItemDTO;
-                    MessageBox.Show(_owner, googleItm.ToString(),
+                    MessageBox.Show(_mainFrm, googleItm.ToString(),
                         "Google Calendar Event", MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                     break;
+                case CalendarItemTypes.RepeatMarker:
+                    break;
                 default:
-                    ErrorHandler.HandleError(_owner, "Activate Calendar Item",
+                    ErrorHandler.HandleError(_mainFrm, "Activate Calendar Item",
                         new Exception("Unknown CalendarItemTypes " + _calItm.Type), true);
                     break;
             }
@@ -140,7 +155,8 @@ namespace TBRBooker.FrontEnd
 
         private void BookingSlotPnl_MouseEnter(object sender, EventArgs e)
         {
-            BackColor = Color.LightGoldenrodYellow;
+            if (_calItm.Type != CalendarItemTypes.RepeatMarker)
+                BackColor = Color.LightGoldenrodYellow;
         }
 
         private void BookingSlotPnl_MouseLeave(object sender, EventArgs e)
@@ -150,7 +166,8 @@ namespace TBRBooker.FrontEnd
 
         private void bookingLbl_MouseEnter(object sender, EventArgs e)
         {
-            BackColor = Color.LightGoldenrodYellow;
+            if (_calItm.Type != CalendarItemTypes.RepeatMarker)
+                BackColor = Color.LightGoldenrodYellow;
         }
 
         private void timeLbl_Click(object sender, EventArgs e)
@@ -165,7 +182,8 @@ namespace TBRBooker.FrontEnd
 
         private void timeLbl_MouseEnter(object sender, EventArgs e)
         {
-            BackColor = Color.LightGoldenrodYellow;
+            if (_calItm.Type != CalendarItemTypes.RepeatMarker)
+                BackColor = Color.LightGoldenrodYellow;
         }
 
         private void bookingLbl_MouseLeave(object sender, EventArgs e)
@@ -176,6 +194,24 @@ namespace TBRBooker.FrontEnd
         private void timeLbl_MouseLeave(object sender, EventArgs e)
         {
             SetBackColour();
+        }
+
+        private void rejectBtn_Click(object sender, EventArgs e)
+        {
+            var reasonFrm = new InputDialog(
+                "Please record why this repeat is not going ahead", "", true);
+            if (reasonFrm.ShowDialog(this) == DialogResult.Cancel)
+                return;
+            RepeatScheduleBL.RejectRepeatBooking((RepeatMarkerDTO)_calItm, reasonFrm.InputValue);
+            _owner.RemoveSlot((RepeatMarkerDTO)_calItm);
+        }
+
+        private void confirmBtn_Click(object sender, EventArgs e)
+        {
+            _calItm = 
+                RepeatScheduleBL.ConfirmBookingFromRepeatMarker((RepeatMarkerDTO)_calItm);
+            confirmBtn.Visible = rejectBtn.Visible = false;
+            UpdateDisplay();
         }
     }
 }

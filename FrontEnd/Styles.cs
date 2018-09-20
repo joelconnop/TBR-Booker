@@ -65,6 +65,12 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        public static void SetFormStyles(Form form)
+        {
+            form.Icon = Properties.Resources.tbrv3;
+            SetColours(form);
+        }
+
         public static void SetColours(Control control)
         {
             try

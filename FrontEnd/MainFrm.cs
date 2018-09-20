@@ -32,17 +32,21 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
-            InitSettings();
+            if (!InitSettings())
+            {
+                Close();    // exit the program with error state
+            }
+            else
+            {
+                Styles.SetFormStyles(this);
+                _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
+                _isFirstLoad = true;
+                datePicker.Value = _calendarStartDate;
 
-            Styles.SetColours(this);
-            _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
-            datePicker.Value = _calendarStartDate;
-            _isFirstLoad = true;
-
-
+            }
         }
 
-        private void InitSettings()
+        private bool InitSettings()
         {
             string username;
             string workingDir;
@@ -65,9 +69,10 @@ namespace TBRBooker.FrontEnd
             {
                 MessageBox.Show("First time starting up TBR Booker. You will be taken to the Settings screen, please be sure to enter a username and confirm the Google Drive location.");
 
-                // open settings, then save enviornment variable
-                var settingsFrm = new SettingsManagementFrm(Settings.CreateDefaultInst(), false);
-                settingsFrm.ShowDialog(this);
+                // open settings (settings will save enviornment variable)
+                var settingsFrm = new SettingsManagementFrm(Settings.CreateDefaultInst(), true);
+                if (settingsFrm.ShowDialog(this) == DialogResult.Cancel)
+                    return false;
             }
             else
             {
@@ -78,13 +83,31 @@ namespace TBRBooker.FrontEnd
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to read the settings file at " + workingDir + " because: " + ex.Message);
+                    Clipboard.SetText(filename);
+                    if (MessageBox.Show(this, "Failed to read the settings file at:"
+                        + Environment.NewLine + filename
+                        + Environment.NewLine + Environment.NewLine + ex.Message
+                        + Environment.NewLine + Environment.NewLine
+                        + "This is the file specified in the Windows Registry. Would you like to start a new configuration?"
+                        + Environment.NewLine + Environment.NewLine
+                        + "- Choose YES to proceed to Settings screen to setup a new configuration."
+                        + Environment.NewLine + "- Choose NO to exit the program for now (check your file system and/or registry entries). We have copied the file path to clipboard for you."
+                        + Environment.NewLine + Environment.NewLine + "HINT: If using Google Drive Stream, and it is not running, choose NO, and then startup Google Drive Stream before trying again.",
+                        "TBR Booker Startup Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                        == DialogResult.Yes)
+                    {
+                        // open settings (settings will save enviornment variable)
+                        var settingsFrm = new SettingsManagementFrm(Settings.CreateDefaultInst(), true);
+                        return settingsFrm.ShowDialog(this) == DialogResult.OK;
+                    }
+                    return false;
                 }
             }
 
             Styles.InitStyles(Settings.Inst().MainColour, Settings.Inst().ContrastColour);
-        }
-    
+
+            return true;
+        }   
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
@@ -160,9 +183,33 @@ namespace TBRBooker.FrontEnd
             // read list from google calendar takes a good moment, so read 12 months upfront
             // then, going forward a week or a month does not require any reading.
             // Going forward 18 months or backewards 3 months does.
+            // generate repeat markers first load: from a month ago and for the next year
+            DateTime eventsStart;
+            DateTime eventsEnd;
+            DateTime repeatStart;
+            DateTime repeatEnd;
+            if (_isFirstLoad)
+            {
+                eventsStart = _calendarStartDate.AddMonths(-3);
+                eventsEnd = _calendarStartDate.AddMonths(12);
+                repeatStart = new DateTime(Math.Max(DTUtils.StartOfDay().Ticks,
+                    DTUtils.StartOfDay(_calendarStartDate).Ticks)).AddDays(-30);
+                repeatEnd = repeatStart.AddMonths(12);
+            }
+            else
+            {
+                eventsStart = repeatStart = _calendarStartDate;
+                eventsEnd = repeatEnd = _calendarStartDate.AddDays(30);
+            }
+
+            // add the repeat markers for desired date range
+            var repeatMarkers = RepeatScheduleBL.GetMarkersInRange(
+                repeatStart, repeatEnd, isForceReadAll);
+            calItems.AddRange(repeatMarkers);
+
+            // add the google events for desired date range
             calItems.AddRange(CalendarBL.GetGoogleEventsForMainCalendar(
-                isForceReadAll, _calendarStartDate, 
-                _calendarStartDate.AddDays(_isFirstLoad ? 365 : 30)));
+                isForceReadAll, eventsStart, eventsEnd));
                         
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)
@@ -304,7 +351,7 @@ namespace TBRBooker.FrontEnd
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var frm = new SettingsManagementFrm(Settings.Inst(), true);
+            var frm = new SettingsManagementFrm(Settings.Inst(), false);
             frm.ShowDialog(this);
         }
 
@@ -335,6 +382,22 @@ namespace TBRBooker.FrontEnd
                 //just open in chrome, let user decide whether to print now or just view
                 System.Diagnostics.Process.Start(filename);
             }
+        }
+
+        private void createRecurringEventToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var repeat = new RepeatSchedule()
+            {
+                Id = "SlitherLovers",
+                CustomerId = "636572137048488459-21/03/2018-102",
+                Cancellations = new List<(DateTime, string)>(),
+                StartDate = DTUtils.StartOfDay(new DateTime(2018, 9, 23)),
+                RepeatDay = DayOfWeek.Wednesday,
+                IsByDayOfWeek = true,
+                Frequency = 1,
+                WeekNumOfEveryMonth = 3
+            };
+            DBBox.AddOrUpdate(repeat);
         }
     }
 }

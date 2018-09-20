@@ -38,6 +38,7 @@ namespace TBRBooker.FrontEnd
         private int _lastX;
         private Booking _lastBooking;
         private int _lastBookingStartX;
+        private int _contextX;
         
         public DateTime BookingDate { get; set; }
         public int Time { get; set; }
@@ -79,10 +80,17 @@ namespace TBRBooker.FrontEnd
                 _others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
             }
 
+            var rangeStart = DTUtils.StartOfDay(BookingDate);
+            foreach (var repeatMarkers in RepeatScheduleBL.GetMarkersInRange
+                (rangeStart, rangeStart.AddHours(23.9), false))
+            {
+                _others.Add(repeatMarkers.HypotheticalBooking);
+            }
+
             try
             {
                 _events = new List<GoogleCalendarItemDTO>();
-                var rangeStart = DTUtils.StartOfDay(BookingDate);
+
                 _events.AddRange(TheGoogle.GetGoogleCalendar(
                     rangeStart, rangeStart.AddHours(23.9), false));
             }
@@ -278,7 +286,7 @@ namespace TBRBooker.FrontEnd
             if (_isSettingTime)
                 return;
 
-            var clickedBooking = DetectClickedBooking();
+            var clickedBooking = DetectClickedBooking(Box.PointToClient(MousePosition).X);
             if (clickedBooking != null)
             {
                 selectedLbl.Text = clickedBooking.Summary();
@@ -291,10 +299,9 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private Booking DetectClickedBooking()
+        private Booking DetectClickedBooking(int mouseX)
         {
-            var boxClickedX = Box.PointToClient(MousePosition).X;
-            var time = _timeScale.OrderBy(x => Math.Abs(x.Key - boxClickedX)).First().Value.Time;
+            var time = _timeScale.OrderBy(x => Math.Abs(x.Key - mouseX)).First().Value.Time;
             return BookingBL.GetClashBookings(_others, time, time).FirstOrDefault();
         }
 
@@ -311,14 +318,19 @@ namespace TBRBooker.FrontEnd
 
         private void openBookingMnu_Click(object sender, EventArgs e)
         {
-            OpenOtherBooking();
+            OpenOtherBooking(_contextX);
         }
 
-        private void OpenOtherBooking()
+        private void OpenOtherBooking(int mouseX)
         {
-            var clickedBooking = DetectClickedBooking();
+            var clickedBooking = DetectClickedBooking(_contextX);
             if (clickedBooking != null)
-                _bookingsFrm.ShowBooking(BookingBL.GetBookingFull(clickedBooking.Id), _bookingId);
+            {
+                if (clickedBooking.Id == Booking.RepeatingBookingId)
+                    MessageBox.Show($"Enquiry is a Repeat Marker only. You need to confirm the marker from the calendar before you can open it.");
+                else
+                    _bookingsFrm.ShowBooking(BookingBL.GetBookingFull(clickedBooking.Id), _bookingId);
+            }
         }
 
         private void Box_MouseDown(object sender, MouseEventArgs e)
@@ -350,7 +362,7 @@ namespace TBRBooker.FrontEnd
 
         private void Box_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            OpenOtherBooking();
+            OpenOtherBooking(Box.PointToClient(MousePosition).X);
         }
 
         private void Box_MouseMove(object sender, MouseEventArgs e)
@@ -388,6 +400,11 @@ namespace TBRBooker.FrontEnd
             DoRedraw();
             timeTmr.Stop();
             timeTmr.Enabled = false;
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            _contextX = Box.PointToClient(MousePosition).X;
         }
     }
 }

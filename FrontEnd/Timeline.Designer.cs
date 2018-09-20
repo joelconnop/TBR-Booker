@@ -62,25 +62,26 @@
             this.setTimeMnu,
             this.openBookingMnu});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(151, 54);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 76);
             this.contextMenuStrip1.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip1_Closed);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(147, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // setTimeMnu
             // 
             this.setTimeMnu.Name = "setTimeMnu";
-            this.setTimeMnu.Size = new System.Drawing.Size(150, 22);
+            this.setTimeMnu.Size = new System.Drawing.Size(180, 22);
             this.setTimeMnu.Text = "Set Time";
             this.setTimeMnu.Click += new System.EventHandler(this.setTimeMnu_Click);
             // 
             // openBookingMnu
             // 
             this.openBookingMnu.Name = "openBookingMnu";
-            this.openBookingMnu.Size = new System.Drawing.Size(150, 22);
+            this.openBookingMnu.Size = new System.Drawing.Size(180, 22);
             this.openBookingMnu.Text = "Open Booking";
             this.openBookingMnu.Click += new System.EventHandler(this.openBookingMnu_Click);
             // 

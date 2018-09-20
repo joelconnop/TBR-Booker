@@ -10,6 +10,7 @@ namespace TBRBooker.Model.Enums
     {
         NotSet,
         Booking,
-        GoogleEvent
+        GoogleEvent,
+        RepeatMarker
     }
 }

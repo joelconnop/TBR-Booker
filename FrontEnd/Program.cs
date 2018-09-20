@@ -16,7 +16,9 @@ namespace TBRBooker.FrontEnd
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainFrm());
+            var frm = new MainFrm();
+            if (!frm.IsDisposed)
+                Application.Run(frm);
         }
     }
 }

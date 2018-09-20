@@ -30,6 +30,8 @@
         {
             this.bookingLbl = new System.Windows.Forms.Label();
             this.timeLbl = new System.Windows.Forms.Label();
+            this.confirmBtn = new System.Windows.Forms.Button();
+            this.rejectBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // bookingLbl
@@ -58,10 +60,38 @@
             this.timeLbl.MouseEnter += new System.EventHandler(this.timeLbl_MouseEnter);
             this.timeLbl.MouseLeave += new System.EventHandler(this.timeLbl_MouseLeave);
             // 
+            // confirmBtn
+            // 
+            this.confirmBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.greentick;
+            this.confirmBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.confirmBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.confirmBtn.Location = new System.Drawing.Point(184, 26);
+            this.confirmBtn.Name = "confirmBtn";
+            this.confirmBtn.Size = new System.Drawing.Size(25, 25);
+            this.confirmBtn.TabIndex = 3;
+            this.confirmBtn.UseVisualStyleBackColor = true;
+            this.confirmBtn.Visible = false;
+            this.confirmBtn.Click += new System.EventHandler(this.confirmBtn_Click);
+            // 
+            // rejectBtn
+            // 
+            this.rejectBtn.BackgroundImage = global::TBRBooker.FrontEnd.Properties.Resources.redcross;
+            this.rejectBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.rejectBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rejectBtn.Location = new System.Drawing.Point(151, 26);
+            this.rejectBtn.Name = "rejectBtn";
+            this.rejectBtn.Size = new System.Drawing.Size(25, 25);
+            this.rejectBtn.TabIndex = 2;
+            this.rejectBtn.UseVisualStyleBackColor = true;
+            this.rejectBtn.Visible = false;
+            this.rejectBtn.Click += new System.EventHandler(this.rejectBtn_Click);
+            // 
             // BookingSlotPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.confirmBtn);
+            this.Controls.Add(this.rejectBtn);
             this.Controls.Add(this.timeLbl);
             this.Controls.Add(this.bookingLbl);
             this.Name = "BookingSlotPnl";
@@ -79,5 +109,7 @@
 
         private System.Windows.Forms.Label bookingLbl;
         private System.Windows.Forms.Label timeLbl;
+        private System.Windows.Forms.Button rejectBtn;
+        private System.Windows.Forms.Button confirmBtn;
     }
 }

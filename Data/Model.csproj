@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Address.cs" />
     <Compile Include="DashboardCategory.cs" />
+    <Compile Include="DTO\RepeatMarkerDTO.cs" />
     <Compile Include="DTO\BookingCalendarItemDTO.cs" />
     <Compile Include="DTO\DashboardItemDTO.cs" />
     <Compile Include="DTO\ExistingCustomerDTO.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Entities\Followup.cs" />
     <Compile Include="Entities\Payment.cs" />
     <Compile Include="Entities\PriceItem.cs" />
+    <Compile Include="Entities\RepeatSchedule.cs" />
     <Compile Include="Entities\Service.cs" />
     <Compile Include="Enums\CalendarItemTypes.cs" />
     <Compile Include="Enums\LeadSources.cs" />

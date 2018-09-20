@@ -125,6 +125,11 @@ namespace TBRBooker.Business
 
         public static void AddOrUpdate(BaseItem itm)
         {
+            if (!string.IsNullOrEmpty(itm.Id) && itm.Id.Equals(Booking.RepeatingBookingId))
+            {
+                throw new Exception("Entity still has the TBD status. Cannot save.");
+            }
+
             AmazonDynamoDBClient client = GetDynamoDBClient();
             Table table = Table.LoadTable(client, CheckTablenameForTest(itm.TableName));
 
@@ -179,6 +184,11 @@ namespace TBRBooker.Business
 
         public static T ReadItem<T>(string id) where T : BaseItem
         {
+            if (id.Equals(Booking.RepeatingBookingId))
+            {
+                throw new Exception("item has the TBD status. Cannot read.");
+            }
+
             var temp = Activator.CreateInstance<T>();
 
             Dictionary<string, BaseItem> cache = null;
@@ -351,6 +361,44 @@ namespace TBRBooker.Business
             //a bit like GetCustomerDirectory, except there must be an easier way when
             //we are just grabbing all records for a partitionkey (action)
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// could easily be converted into a ReadAll(T) function
+        /// </summary>
+        /// <returns></returns>
+        public static List<RepeatSchedule> GetRepeatSchedules()
+        {
+            // this table only ever changes programatically so happy to only read once per instance
+            var cache = GetCachedItems(RepeatSchedule.TABLE_NAME);
+            if (cache.Count > 0)
+                return cache.Values.Select(x => (RepeatSchedule)x).ToList();
+
+            AmazonDynamoDBClient client = GetDynamoDBClient();
+
+            var temp = new RepeatSchedule();
+            var config = new ScanOperationConfig()
+            {
+                Select = SelectValues.SpecificAttributes,
+                AttributesToGet = temp.GetReadAttributes()
+            };
+
+            Table table = Table.LoadTable(client, CheckTablenameForTest(temp.TableName));
+            var search = table.Scan(config);
+
+            List<Document> documentList = new List<Document>();
+            do
+            {
+                foreach (var doc in search.GetNextSet())
+                {
+                    var item = DocToItem<RepeatSchedule>(doc);
+
+                    if (temp.IsCacheItems() && item != null)
+                        cache.Add(item.Id, item);
+                }
+            } while (!search.IsDone);
+
+            return cache.Values.Select(x => (RepeatSchedule)x).ToList();
         }
 
         //public static void CleanupBookings()

@@ -47,6 +47,11 @@ namespace TBRBooker.Business
 
         public static void SaveBookingEtc(Booking booking)
         {
+            if (booking.Id.Equals(Booking.RepeatingBookingId))
+            {
+                throw new Exception("Booking still has the TBD status. Cannot save.");
+            }
+
             DBBox.AddOrUpdate(booking.Customer);
             booking.CustomerId = booking.Customer.Id;
 

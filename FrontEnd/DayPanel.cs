@@ -43,12 +43,20 @@ namespace TBRBooker.FrontEnd
 
             _owner = owner;
             _day = day;
-            _items = items.OrderBy(x => x.Time).ToList();
+            _items = items.OrderBy(
+                x => x is GoogleCalendarItemDTO && ((GoogleCalendarItemDTO)x).IsAllDay())
+                .ThenBy(x => x.Time).ToList();
             _showCancelled = showCancelled;
 
             dateLbl.Text = day.Day.ToString();
 
             _slotControls = new List<Control>();
+        }
+
+        public void RemoveSlot(CalendarItemDTO slot)
+        {
+            _items.Remove(slot);
+            ReloadItems();
         }
 
         private void DayPanel_Load(object sender, EventArgs e)
@@ -60,23 +68,25 @@ namespace TBRBooker.FrontEnd
         {
             _slotControls.ForEach(x => Controls.Remove(x));
 
+            int y = 2;  // 2 is just a little offset for between dividers
             for (int i = 0; i < _items.Count; i++)
             {
-                var slot = new BookingSlotPnl(_items[i], _owner);
+                var slot = new BookingSlotPnl(_items[i], _owner, this, Height - y);
                 _slotControls.Add(slot);
                 Controls.Add(slot);
-                slot.Location = new Point(0, i * (slot.Height + 2));
+                slot.Location = new Point(0, y);
                 var divider = new Label()
                 {
                     Name = "divider" + i + "Lbl",
                     Location = new Point(1, slot.Location.Y + slot.Height - 5),
                     Text = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
-                    ForeColor = Color.FromArgb(35, 168, 239),
+                    ForeColor = Styles.MainColour(),
                     Size = new Size(this.Width - 2, 10)
                 };
                 _slotControls.Add(divider);
                 Controls.Add(divider);
                 divider.SendToBack();
+                y += slot.Height;
             }
         }
 
@@ -122,5 +132,6 @@ namespace TBRBooker.FrontEnd
                 ErrorHandler.HandleError(_owner, "creating google event", ex, true);
             }
         }
+
     }
 }

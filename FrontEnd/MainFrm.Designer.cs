@@ -32,6 +32,7 @@
             this.mainMnu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allGeneralSummariesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.last30DaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +61,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.dashboardPnl = new System.Windows.Forms.Panel();
-            this.allGeneralSummariesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createRecurringEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -94,6 +95,15 @@
             this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
             this.reportsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reportsToolStripMenuItem.Text = "Reports";
+            // 
+            // allGeneralSummariesToolStripMenuItem
+            // 
+            this.allGeneralSummariesToolStripMenuItem.Name = "allGeneralSummariesToolStripMenuItem";
+            this.allGeneralSummariesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.allGeneralSummariesToolStripMenuItem.Text = "All General Summaries";
+            this.allGeneralSummariesToolStripMenuItem.ToolTipText = "Each report forces the same database read, so use this if you plan to view more t" +
+    "han one report";
+            this.allGeneralSummariesToolStripMenuItem.Click += new System.EventHandler(this.allGeneralSummariesToolStripMenuItem_Click);
             // 
             // generalSummaryToolStripMenuItem
             // 
@@ -153,7 +163,8 @@
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.databaseToolStripMenuItem,
             this.databaseReadToolStripMenuItem,
-            this.googleCalendarToolStripMenuItem});
+            this.googleCalendarToolStripMenuItem,
+            this.createRecurringEventToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
             this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.testingToolStripMenuItem.Text = "Testing";
@@ -162,21 +173,21 @@
             // databaseToolStripMenuItem
             // 
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.databaseToolStripMenuItem.Text = "Database write";
             this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
             // 
             // databaseReadToolStripMenuItem
             // 
             this.databaseReadToolStripMenuItem.Name = "databaseReadToolStripMenuItem";
-            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.databaseReadToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.databaseReadToolStripMenuItem.Text = "Database read";
             this.databaseReadToolStripMenuItem.Click += new System.EventHandler(this.databaseReadToolStripMenuItem_Click);
             // 
             // googleCalendarToolStripMenuItem
             // 
             this.googleCalendarToolStripMenuItem.Name = "googleCalendarToolStripMenuItem";
-            this.googleCalendarToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.googleCalendarToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.googleCalendarToolStripMenuItem.Text = "Google Calendar";
             this.googleCalendarToolStripMenuItem.Click += new System.EventHandler(this.googleCalendarToolStripMenuItem_Click);
             // 
@@ -366,14 +377,12 @@
             this.dashboardPnl.Size = new System.Drawing.Size(376, 861);
             this.dashboardPnl.TabIndex = 14;
             // 
-            // allGeneralSummariesToolStripMenuItem
+            // createRecurringEventToolStripMenuItem
             // 
-            this.allGeneralSummariesToolStripMenuItem.Name = "allGeneralSummariesToolStripMenuItem";
-            this.allGeneralSummariesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.allGeneralSummariesToolStripMenuItem.Text = "All General Summaries";
-            this.allGeneralSummariesToolStripMenuItem.ToolTipText = "Each report forces the same database read, so use this if you plan to view more t" +
-    "han one report";
-            this.allGeneralSummariesToolStripMenuItem.Click += new System.EventHandler(this.allGeneralSummariesToolStripMenuItem_Click);
+            this.createRecurringEventToolStripMenuItem.Name = "createRecurringEventToolStripMenuItem";
+            this.createRecurringEventToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.createRecurringEventToolStripMenuItem.Text = "Create Recurring Event";
+            this.createRecurringEventToolStripMenuItem.Click += new System.EventHandler(this.createRecurringEventToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -441,6 +450,7 @@
         private System.Windows.Forms.ToolStripMenuItem previousFinancialYearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allGeneralSummariesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createRecurringEventToolStripMenuItem;
     }
 }
 

@@ -12,6 +12,8 @@ namespace TBRBooker.Business
     public class CalendarBL
     {
 
+        
+
         public static List<GoogleCalendarItemDTO> GetGoogleEventsForMainCalendar
             (bool isForceReadAll, DateTime minStart, DateTime minEnd)
         {
@@ -32,7 +34,7 @@ namespace TBRBooker.Business
 
         public static List<BookingCalendarItemDTO> BuildCalendarFromDbRead
             (List<BookingCalendarItemDTO> dbCalendar, bool isForceReadAll)
-           {
+        {
             var calendar = new List<BookingCalendarItemDTO>();
 
             //update calendar items that are out of date due to the passing of time

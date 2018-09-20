@@ -25,7 +25,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
-            Styles.SetColours(this);
+            Styles.SetFormStyles(this);
             _owner = owner;
             _day = day;
             dateFld.Text = day.ToShortDateString();

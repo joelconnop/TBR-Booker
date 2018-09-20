@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TBRBooker.Model.DTO;
+using TBRBooker.Model.Entities;
 
 namespace TBRBooker.Business
 {
@@ -25,5 +26,6 @@ namespace TBRBooker.Business
 
             return matches;
         }
+
     }
 }

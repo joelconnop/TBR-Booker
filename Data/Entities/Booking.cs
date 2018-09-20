@@ -18,6 +18,7 @@ namespace TBRBooker.Model.Entities
     {
         public const string TABLE_NAME = "booking";
         public const string IS_OPEN_STR = "Y";
+        public const string RepeatingBookingId = "1337";    // has to be a number or expect crashes
 
         public Booking()
         {
@@ -31,10 +32,10 @@ namespace TBRBooker.Model.Entities
             return true;
         }
 
-        //public override bool IsNew()
-        //{
-        //    return IsNewBooking;
-        //}
+        // ! PROCESS FOR ADDING NEW FIELDS !
+        // consider sync in RepeatScheduleBL.CreateMarkersFromSchedule()
+        // consider add to PookingPnl? If so, also consider BookingPnl.CopyBookingDetails()
+        // objects that need initialising to do so in DayPanel
 
         /// <summary>
         /// because in this case we can't rely on checking the Id to decide if new
@@ -107,6 +108,8 @@ namespace TBRBooker.Model.Entities
         public string BookingName => ChooseNameForBooking();
 
         public LostJobReasons LostJobReason { get; set; }
+
+        public Service Service { get; set; }
 
         public decimal AmountPaid => PaymentHistory == null ? 0 : PaymentHistory.Sum(x => x.Amount);
         public decimal Balance => Service == null ? 0
@@ -182,15 +185,6 @@ namespace TBRBooker.Model.Entities
             var parsed = DTUtils.ParseTime(bookingTime);
             return new TimeSpan(parsed.Hour, parsed.Minute, 0);
         }
-
-        //public Booking(string tableName) : base("booking")  //, "bookingDateTicks")
-        //{
-
-        //}
-
-            //we will read/write this separately?
-           // [JsonIgnore]
-        public Service Service { get; set; }
 
 
         public override Document GetAddUpdateDoc()
