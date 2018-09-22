@@ -118,7 +118,8 @@ namespace TBRBooker.Business
                 StringComparison.InvariantCultureIgnoreCase)
                 && x.Date >= startDate && x.Date <= endDate).ToList();
 
-            var currentDate = DTUtils.StartOfDay(startDate);
+            var currentDate = new DateTime(Math.Max(DTUtils.StartOfDay().Ticks,
+                DTUtils.StartOfDay(startDate).Ticks));
             int weeksSinceLast = 1;
             while (currentDate < endDate)
             {
