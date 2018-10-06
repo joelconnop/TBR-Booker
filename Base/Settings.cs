@@ -29,12 +29,12 @@ namespace TBRBooker.Base
                 _instance = new Settings(true, 1, 0, false, "C:\\Programming\\TBR Booker Instance",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
-                    "#23A8EF", "#FFE0C0");
+                    "#23A8EF", "#FFE0C0", "");
             else
                 _instance = new Settings(false, 1, 0, false, "G:\\My Drive\\Bookings\\TBR Booker",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
-                     "#23A8EF", "#FFE0C0");
+                     "#23A8EF", "#FFE0C0", "");
             return _instance;
         }
 
@@ -48,25 +48,33 @@ namespace TBRBooker.Base
         // -default in full constructor
         // -have a nice day
 
+        [Category("Important")]
         public string Username { get; set; }
 
+        [Category("Important")]
         [DisplayName("Test Mode (separate 'muck-around' database)")]
         public bool IsTestMode { get; set; }
 
+        [Category("Important")]
         [DisplayName("Root Directory for Config and Save Files")]
         public string WorkingDir { get; set; }
+        [Category("Important")]
+        [DisplayName("Google API Key")]
+        public string GoogleAPIKey { get; set; }
 
+        [Category("Interface")]
         [DisplayName("Screen Id for Calendar (0 or 1)")]
         public int MainScreenDefaultId { get; set; }
-
+        [Category("Interface")]
         [DisplayName("Screen Id for Booking Forms (0 or 1)")]
         public int BookingsScreenId { get; set; }
-
+        [Category("Interface")]
         [DisplayName("Use 24 Hour Time")]
         public bool Is24HourTime { get; set; }
-
+        [Category("Interface")]
         [DisplayName("Main UI Colour (google 'hex colour picker')")]
         public string MainColour { get; set; }
+        [Category("Interface")]
         [DisplayName("Contrast UI Colour")]
         public string ContrastColour { get; set; }
 
@@ -113,7 +121,7 @@ namespace TBRBooker.Base
             int monthsForBookingHistory, decimal creditCardMultiplier, 
             DayOfWeek confirmationCallDay, DayOfWeek followupDay,
             int daysBeforeOverdue, string calendarAccount,
-            string mainColour, string contrastColour)
+            string mainColour, string contrastColour, string apiKey)
         {
             IsTestMode = isTestMode;
             MainScreenDefaultId = mainScreenId;
@@ -128,6 +136,7 @@ namespace TBRBooker.Base
             GmailCalendarAccount = calendarAccount;
             MainColour = mainColour;
             ContrastColour = contrastColour;
+            GoogleAPIKey = apiKey;
         }
 
         public Object Clone()
@@ -147,7 +156,8 @@ namespace TBRBooker.Base
                 GmailCalendarAccount = GmailCalendarAccount,
                 CreditCardMultiplier = CreditCardMultiplier,
                 MainColour = MainColour,
-                ContrastColour = ContrastColour
+                ContrastColour = ContrastColour,
+                GoogleAPIKey = GoogleAPIKey
             };
         }
 

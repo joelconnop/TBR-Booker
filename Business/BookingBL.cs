@@ -157,7 +157,8 @@ namespace TBRBooker.Business
             return nextNum.ToString();
         }
 
-        public static string GenerateBookingHtmlFile(Booking booking, bool isForArchive)
+        public static string GenerateBookingHtmlFile(
+            Booking booking, bool isForArchive, string fromAddress = "")
         {
             string form = Resources.BookingForm;
             //var assembly = Assembly.GetExecutingAssembly();
@@ -195,6 +196,24 @@ namespace TBRBooker.Business
                 form = form.Replace("[crocodile]", "<h4>Crocodile to come: YES</h4>");
             else
                 form = form.Replace("[crocodile]", "<label>Crocodile to come: No</label>");
+
+            if (isForArchive)
+                form = form.Replace("[directions]", "<p>Not requested</p>");
+            else
+            {
+                var dirHtml = $"<label>From {(string.IsNullOrEmpty(fromAddress) ? "Home" : fromAddress)}:</label><ol>";
+                List<string> steps;
+                if (string.IsNullOrEmpty(fromAddress))
+                    steps = TheGoogle.GetDirections(booking.Address,
+                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime));
+                else
+                    steps = TheGoogle.GetDirections(booking.Address,
+                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime),
+                        fromAddress);
+                steps.ForEach(x => dirHtml += $"<li>{x}</li>");
+                dirHtml += "</ol>";
+                form = form.Replace("[directions]", dirHtml);
+            }
 
             string archivePrefix = isForArchive ? "Backups\\" : "";
             string archiveSuffix = isForArchive ? $"_v{booking.EditSequence}" : "";

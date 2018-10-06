@@ -461,6 +461,7 @@
             this.addressMapBtn.TabIndex = 3;
             this.addressMapBtn.Text = "View Map";
             this.addressMapBtn.UseVisualStyleBackColor = true;
+            this.addressMapBtn.Click += new System.EventHandler(this.addressMapBtn_Click);
             // 
             // addressVenuFld
             // 

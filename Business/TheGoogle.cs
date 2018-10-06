@@ -3,10 +3,20 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using GoogleMapsApi;
+using GoogleMapsApi.Entities.Common;
+using GoogleMapsApi.Entities.Directions.Request;
+using GoogleMapsApi.Entities.Directions.Response;
+using GoogleMapsApi.Entities.Geocoding.Request;
+using GoogleMapsApi.Entities.Geocoding.Response;
+using GoogleMapsApi.StaticMaps;
+using GoogleMapsApi.StaticMaps.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,10 +48,10 @@ namespace TBRBooker.Business
         {
             var path = Base.Settings.Inst().WorkingDir + "\\config";
             using (var stream =
-                new FileStream(Path.Combine(path, "google-api-key.json"), 
+                new FileStream(System.IO.Path.Combine(path, "google-api-key.json"), 
                 FileMode.Open, FileAccess.Read))
             {
-                string credPath = Path.Combine(path, "google-api-creds.json");
+                string credPath = System.IO.Path.Combine(path, "google-api-creds.json");
 
                 return GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
@@ -215,6 +225,162 @@ namespace TBRBooker.Business
                 DTUtils.StartOfDay(gei.Start.DateTime.Value), time, duration,
                 gei.Summary, gei.Description, attendees, gei.Id, 
                 gei.Location);
+        }
+
+        public static List<string> PlacesSearch(string address)
+        {
+            return new List<string>();
+        }
+
+        private static (string Origin, string Destination, List<string> Waypoints)
+            RoutesParams(string startLocation, List<string> addresses)
+        {
+            var waypoints = new List<string>();
+            startLocation = startLocation.Trim();
+
+            if (string.IsNullOrEmpty(startLocation))
+            {
+                if (addresses.Count < 2)
+                    throw new Exception("No origin was provided.");
+                startLocation = addresses[0];
+                addresses.RemoveAt(0);
+            }
+            if (addresses.Count == 0)
+                throw new Exception("No destination was provided.");
+
+            var destination = addresses[addresses.Count - 1].Trim();
+
+            if (addresses.Count > 1)
+            {
+                for (int i = 0; i < addresses.Count - 1; i++)
+                {
+                    waypoints.Add(addresses[i].Trim());
+                }
+            }
+
+            return (startLocation, destination, waypoints);
+        }
+
+        public static string DayPlannerMap(List<string> addresses,
+            string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+        {
+            var routesParams = RoutesParams(startLocation, addresses);
+            
+            string url = "https://www.google.com/maps/dir/?api=1";
+            if (!string.IsNullOrEmpty(startLocation))
+            {
+                url += "&origin=" + WebUtility.UrlEncode(routesParams.Origin);
+            }
+            else
+            {
+                return "";
+            }
+
+            url += "&destination=" + WebUtility.UrlEncode(routesParams.Destination);
+
+            if (routesParams.Waypoints.Count > 0)
+            {
+                url += "&waypoints=";
+                for (int i = 0; i < routesParams.Waypoints.Count; i++)
+                {
+                    url += routesParams.Waypoints[i] + "|";
+                }
+                url = url.Trim('|');
+            }
+
+            return url;
+        }
+
+        /// <summary>
+        /// Gets the travel times and distances between for any number of places on a route
+        /// </summary>
+        /// <param name="addresses">can include start location if leaving startLocation blank
+        /// arrivalTimes is addresses - 1 if including startlocation in addresses</param>
+        /// <param name="startLocation">leave blank if prefer to have it in the array</param>
+        /// <returns></returns>
+        public static (int[] Durations, int[] Distances) TravelInfo(
+            List<string> addresses, DateTime roughDateAndTime,
+             string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+        {
+            int numPoints = addresses.Count;
+            if (string.IsNullOrEmpty(startLocation))
+                numPoints--;
+            var route = (new int[numPoints], new int[numPoints]);
+            if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey) 
+                || addresses.All(x => string.IsNullOrEmpty(x))                )
+            {
+                return route;
+            }
+
+            var routesParams = RoutesParams(startLocation, addresses);
+            var req = new DirectionsRequest()
+            {
+                ApiKey = Base.Settings.Inst().GoogleAPIKey,
+                Origin = routesParams.Origin,
+                Destination = routesParams.Destination,
+                ArrivalTime = roughDateAndTime,
+                Waypoints = routesParams.Waypoints.ToArray(),
+                TravelMode = TravelMode.Driving,
+                Alternatives = false
+            };
+            var response = GoogleMaps.Directions.Query(req);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                throw new Exception(response.ErrorMessage);
+            if (response.Status != DirectionsStatusCodes.OK)
+            {
+                throw new Exception(response.StatusStr);
+            }
+
+            var groute = response.Routes.Single();
+            int legsCount = groute.Legs.Count();
+            if (legsCount != numPoints)
+                throw new Exception($"Expected {numPoints} legs, but there were {legsCount}.");
+            int i = 0;
+            foreach (var leg in groute.Legs)
+            {
+                route.Item1[i] = leg.Duration.Value.Minutes;
+                route.Item2[i] = leg.Distance.Value;
+            }
+
+            return route;
+        }
+
+        public static List<string> GetDirections(string destination,
+            DateTime arrivalTime,
+            string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+        {
+            var dirs = new List<string>();
+            destination = destination.Trim();
+            startLocation = startLocation.Trim();
+
+            if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
+                || string.IsNullOrEmpty(startLocation) || string.IsNullOrEmpty(destination))
+                return dirs;
+
+            var req = new DirectionsRequest()
+            {
+                ApiKey = Base.Settings.Inst().GoogleAPIKey,
+                Origin = startLocation,
+                Destination = destination,
+                ArrivalTime = arrivalTime,
+                TravelMode = TravelMode.Driving,
+                Alternatives = false
+            };
+            var response = GoogleMaps.Directions.Query(req);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+                throw new Exception(response.ErrorMessage);
+            if (response.Status != DirectionsStatusCodes.OK)
+            {
+                throw new Exception(response.StatusStr);
+            }
+
+            var leg = response.Routes.Single().Legs.Single();
+            foreach (var step in leg.Steps)
+            {
+                dirs.Add(step.HtmlInstructions);
+            }
+
+            return dirs;
         }
 
     }

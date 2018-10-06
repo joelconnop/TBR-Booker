@@ -24,7 +24,7 @@ namespace TBRBooker.FrontEnd
         private BookingsFrm _bookingsFrm;
         private BookingPnl _owner;
         private string _bookingId;
-        private List<Booking> _others;
+        public List<Booking> Others { get; private set; }
         private List<GoogleCalendarItemDTO> _events;
 
         private const int _inset = 5;
@@ -43,6 +43,7 @@ namespace TBRBooker.FrontEnd
         public DateTime BookingDate { get; set; }
         public int Time { get; set; }
         public int Duration { get; set; }
+        public string Address { get; set; }
 
 
         public Timeline(Booking booking, BookingsFrm bookingsFrm, BookingPnl owner)
@@ -56,6 +57,7 @@ namespace TBRBooker.FrontEnd
             BookingDate = booking.BookingDate;
             Time = booking.BookingTime;
             Duration = booking.Duration;
+            Address = booking.Address;
             _isSettingTime = false;
             _isSetTimeMode = booking.Duration == 0;
             _timeScale = new Dictionary<int, (int Time, int Mins)>();
@@ -69,7 +71,7 @@ namespace TBRBooker.FrontEnd
 
         public void UpdateOtherBookings()
         {
-            _others = new List<Booking>();
+            Others = new List<Booking>();
 
             var bookingItems = DBBox.GetCalendarItems(false, false)
                 .Where(x => x.Date.ToShortDateString().Equals(BookingDate.ToShortDateString())
@@ -77,14 +79,14 @@ namespace TBRBooker.FrontEnd
                 .ToList();
             foreach (var summary in bookingItems)
             {
-                _others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
+                Others.Add(DBBox.ReadItem<Booking>((summary.BookingNum.ToString())));
             }
 
             var rangeStart = DTUtils.StartOfDay(BookingDate);
             foreach (var repeatMarkers in RepeatScheduleBL.GetMarkersInRange
                 (rangeStart, rangeStart.AddHours(23.9), false))
             {
-                _others.Add(repeatMarkers.HypotheticalBooking);
+                Others.Add(repeatMarkers.HypotheticalBooking);
             }
 
             try
@@ -234,7 +236,7 @@ namespace TBRBooker.FrontEnd
 
         private Brush FindBookingsHereAndGetBrush(Graphics g, int time, int timeX)
         {
-            var bookings = BookingBL.GetClashBookings(_others, time, time);
+            var bookings = BookingBL.GetClashBookings(Others, time, time);
 
             //show summary for the last booking, once we have finished drawing its graph
             if (_lastBooking != null && (bookings.Count == 0 || bookings[0] != _lastBooking))
@@ -302,7 +304,7 @@ namespace TBRBooker.FrontEnd
         private Booking DetectClickedBooking(int mouseX)
         {
             var time = _timeScale.OrderBy(x => Math.Abs(x.Key - mouseX)).First().Value.Time;
-            return BookingBL.GetClashBookings(_others, time, time).FirstOrDefault();
+            return BookingBL.GetClashBookings(Others, time, time).FirstOrDefault();
         }
 
         private void contextMenuStrip1_Closed(object sender, ToolStripDropDownClosedEventArgs e)

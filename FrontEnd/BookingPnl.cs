@@ -1283,7 +1283,13 @@ namespace TBRBooker.FrontEnd
                 }
 
                 //just open in chrome, let user decide whether to print now or just view
-                System.Diagnostics.Process.Start(BookingBL.GenerateBookingHtmlFile(_booking, false));
+                var time = startPick.GetSelected().Value;
+                var precedingBooking = Timeline.Others.Where(x => 
+                    x.BookingTime < time && Booking.IsOpenStatus(x.Status))
+                    .OrderByDescending(x => x.BookingTime).FirstOrDefault();
+                string fromAddress = precedingBooking?.Address ?? "";
+                System.Diagnostics.Process.Start(
+                    BookingBL.GenerateBookingHtmlFile(_booking, false, fromAddress));
             }
             catch (Exception ex)
             {
@@ -2494,5 +2500,44 @@ namespace TBRBooker.FrontEnd
 
         #endregion
 
+        private void addressMapBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var addresses = new List<string>();
+                var address = addressFld.Text.Trim();
+
+                var others = Timeline.Others.Where(x => Booking.IsOpenStatus(x.Status))
+                    .OrderBy(x => x.BookingTime).ToList();
+
+                foreach (var other in others)
+                {
+                    if (!string.IsNullOrEmpty(address)
+                        && startPick.GetSelected().Value < other.BookingTime)
+                    {
+                        addresses.Add(address);
+                        address = null;
+                    }
+                    if (string.IsNullOrEmpty(other.Address))
+                        addresses.Add($"UNKNOWN ADDRESS for {other.BookingNickname}, Qld");
+                    else
+                        addresses.Add(other.Address);
+                }
+                if (!string.IsNullOrEmpty(address))
+                {
+                    addresses.Add(address);
+                }
+
+                if (addresses.Any())
+                {
+                    var url = TheGoogle.DayPlannerMap(addresses);
+                    System.Diagnostics.Process.Start(url);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to get the map URL", ex);
+            }
+        }
     }
 }
