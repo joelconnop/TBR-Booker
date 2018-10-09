@@ -163,18 +163,24 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        public void OnBookingSave()
+        public void OnBookingSave(DateTime oldDate, DateTime newDate, bool isTimelineChanged)
         {
-            UpdateTimeLinesForTabs(leftTabs);
-            UpdateTimeLinesForTabs(rightTabs);
+            if (isTimelineChanged)
+            {
+                UpdateTimeLinesForTabs(leftTabs, oldDate, newDate);
+                UpdateTimeLinesForTabs(rightTabs, oldDate, newDate);
+            }
             _owner.UpdateCalendar();
         }
 
-        private void UpdateTimeLinesForTabs(TabControl tabs)
+        private void UpdateTimeLinesForTabs(TabControl tabs, DateTime oldDate, DateTime newDate)
         {
             foreach (var panel in _panels.Values)
             {
-                panel.Timeline.UpdateOtherBookings();
+                var bookingDate = panel.GetBooking().BookingDate;
+                if (bookingDate == oldDate || bookingDate == newDate)
+                    panel.Timeline.UpdateOtherBookingsAndTravelTimesAndRedraw();
+                // could potentially update crocodile pic here since he might be booked/cancelled on day either side
             }
         }
 

@@ -86,7 +86,7 @@ namespace TBRBooker.Base
             return ts.Hours * 60 + ts.Minutes;
         }
 
-        public static int EndTime(int startTime, int duration)
+        public static int AddTimeInts(int startTime, int duration)
         {
             var parsed = DTUtils.ParseTime(startTime);
             var ts = new TimeSpan(parsed.Hour, parsed.Minute, 0);
@@ -96,7 +96,7 @@ namespace TBRBooker.Base
         public static DateTime DateTimeFromInt(DateTime day, int time, int duration = 0)
         {
             if (duration > 0)
-                time = EndTime(time, duration);
+                time = AddTimeInts(time, duration);
 
             var parsed = DTUtils.ParseTime(time);
 

@@ -39,6 +39,8 @@ namespace TBRBooker.FrontEnd
         private Booking _lastBooking;
         private int _lastBookingStartX;
         private int _contextX;
+        private int _travelTime;
+        private bool _disableTravel;
         
         public DateTime BookingDate { get; set; }
         public int Time { get; set; }
@@ -57,19 +59,18 @@ namespace TBRBooker.FrontEnd
             BookingDate = booking.BookingDate;
             Time = booking.BookingTime;
             Duration = booking.Duration;
-            Address = booking.Address;
+            Address = booking.Address;  //Booking.CombineAddress(booking.Address, booking.VenueName);
             _isSettingTime = false;
             _isSetTimeMode = booking.Duration == 0;
             _timeScale = new Dictionary<int, (int Time, int Mins)>();
-
         }
 
         private void Timeline_Load(object sender, EventArgs e)
         {
-            UpdateOtherBookings();
+            UpdateOtherBookingsAndTravelTimesAndRedraw();
         }
 
-        public void UpdateOtherBookings()
+        public void UpdateOtherBookingsAndTravelTimesAndRedraw()
         {
             Others = new List<Booking>();
 
@@ -101,13 +102,104 @@ namespace TBRBooker.FrontEnd
                 ErrorHandler.HandleError(_owner, "Read Google Events", ex, true);
             }
 
-            DoRedraw();
+            SetTravelTimesAndRedraw();
         }
 
-        public void Redraw()
+        public void SetTravelTimesAndRedraw()
         {
-            _isSetTimeMode = false;
-            DoRedraw();
+            _isSetTimeMode = false; // this line... before timer or during timer? hopefully makes no diff
+            // wait just a tick, in case another change is imminent
+            if (!travelTmr.Enabled && !travelAndRedrawTmr.Enabled)
+            {
+                travelTmr.Start();
+                // this executes and redraws without any delay
+                SetTravelTimes();
+                DoRedraw();
+            }
+            else
+            {
+                // the last request was less than a second ago, try again in 3 seconds
+                Console.WriteLine("Tried to spam google maps but was caught by the timer.");
+                // this is a slower timer and is intended to give user chance to finish inputting
+                // before doing the next (and hopefully final) google api call
+                if (!travelAndRedrawTmr.Enabled)
+                    travelAndRedrawTmr.Start();
+                // else case: getting too spammy, ignore (but the change will probably display right
+                // when the 3 second timer expires and it redraws
+            }
+        }
+
+        private void SetTravelTimes()
+        {
+            if (_disableTravel)
+                return;
+
+            try
+            {
+                var addresses = new List<string>();
+                var finalArrivalTime = DTUtils.DateTimeFromInt(BookingDate, Time);
+                bool thisBookingAdded = false;
+                var sortedOthers = Others.Where(x => Booking.IsOpenStatus(x.Status))
+                    .OrderBy(x => x.BookingTime).ToList();
+                int thisAddressIdx = 0;
+
+                foreach (var other in sortedOthers)
+                {
+                    if (!thisBookingAdded && !string.IsNullOrEmpty(Address)
+                        && Time < other.BookingTime && Time > 0)
+                    {
+                        addresses.Add(Address);
+                        thisBookingAdded = true;
+                    }
+                    else if (!thisBookingAdded)
+                        thisAddressIdx++;
+                    if (string.IsNullOrEmpty(other.Address))
+                        addresses.Add($"UNKNOWN ADDRESS for {other.BookingNickname}, Qld");
+                    else
+                        addresses.Add(other.Address);
+                }
+                if (!thisBookingAdded)
+                {
+                    if (!string.IsNullOrEmpty(Address) && Time > 0)
+                        addresses.Add(Address);
+                    else
+                        thisAddressIdx = -1;
+                }
+                else if (Others.Any())
+                {
+                    var final = sortedOthers[Others.Count - 1];
+                    finalArrivalTime = DTUtils.DateTimeFromInt(final.BookingDate, final.BookingTime);
+                }
+
+                if (addresses.Any())
+                {
+                    var route = TheGoogle.TravelInfo(addresses, finalArrivalTime);
+
+                    // if they don't match then an address probably couldn't be recognised but don't throw exception
+                    if (route.Durations.Length == addresses.Count)
+                    {
+                        for (int i = 0; i < addresses.Count; i++)
+                        {
+                            // its a bit cheeky setting state on objects that might not get saved,
+                            // but it will work if this is the only significant usage of these fields
+                            Booking b = i == thisAddressIdx ? _owner.GetBooking() 
+                                : sortedOthers[thisAddressIdx >= 0 && thisAddressIdx < i ? i-1 : i];
+                            b.TravelTime = route.Durations[i];
+                            b.TravelDistance = route.Distances[i];
+                            if (i == thisAddressIdx)
+                            {
+                                _travelTime = route.Durations[i];
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _disableTravel = true;
+                ErrorHandler.HandleError(_owner, "Crunch Travel Times", ex, true);
+            }
+
         }
 
         private void DoRedraw()
@@ -236,43 +328,53 @@ namespace TBRBooker.FrontEnd
 
         private Brush FindBookingsHereAndGetBrush(Graphics g, int time, int timeX)
         {
-            var bookings = BookingBL.GetClashBookings(Others, time, time);
+            var clashBs = BookingBL.GetClashBookings(Others, time, time);
 
-            //show summary for the last booking, once we have finished drawing its graph
-            if (_lastBooking != null && (bookings.Count == 0 || bookings[0] != _lastBooking))
+            // show summary for the last booking, once we have finished drawing its graph
+            if (_lastBooking != null && (clashBs.Count == 0 || clashBs[0] != _lastBooking))
             {
-                g.DrawString($"{_lastBooking.BookingNickname} - {_lastBooking.LocationRegion}",
+                g.DrawString($"{_lastBooking.BookingNickname} - {_lastBooking.LocationRegion} - {_lastBooking.TravelDistance}km",
                     _font, Brushes.Black, new PointF(timeX, _insetGraphY + 5));
                 _lastBooking = null;
             }
-            if (_lastBooking == null && bookings.Count > 0)
+            if (_lastBooking == null && clashBs.Count > 0)
             {
-                _lastBooking = bookings[0];
+                _lastBooking = clashBs[0];
                 _lastBookingStartX = timeX + 10;
             }
 
-            var isThisBooking = Duration > 0 && BookingBL.GetClashBookings(new List<Booking> {
-                new Booking() { BookingTime = Time, Duration = Duration } }, time, time).Count == 1;
+            var isThisBooking = Time > 0 && Duration > 0 && BookingBL.GetClashBookings(new List<Booking> {
+                new Booking() {
+                    BookingTime = _travelTime > 0 
+                    ? DTUtils.AddTimeInts(Time, _travelTime * -1) 
+                    : Time,
+                    Duration = Duration + _travelTime } }, time, time).Count == 1;
 
             var blockouts = _events.Where(x => (x.Time >= time && x.EndTime <= time)
                 || (time >= x.Time && time <= x.EndTime))
                 .ToList();
 
-            if (isThisBooking && (bookings.Count > 0 || blockouts.Count > 0))
+            if (isThisBooking && (clashBs.Count > 0 || blockouts.Count > 0))
             {
-                return bookings.Any(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
+                return clashBs.Any(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
             }
 
             if (isThisBooking)
-                return Brushes.LimeGreen;
-
-            if (bookings.Count > 0)
             {
-                if (bookings.Count > 1 || blockouts.Count > 0)
+                if (time < Time)
+                    return Brushes.PaleGoldenrod;   // travel
+                return Brushes.LimeGreen;           // this booking
+            }
+
+            if (clashBs.Count > 0)
+            {
+                if (clashBs.Count > 1 || blockouts.Count > 0)
                 {
-                    return bookings.All(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
+                    return clashBs.All(x => x.IsBooked()) ? Brushes.Red : Brushes.IndianRed;
                 }
-                return bookings[0].IsBooked() ? new SolidBrush(Color.FromArgb(35, 168, 239)) : Brushes.DimGray;
+                if (time < clashBs[0].BookingTime)
+                    return Brushes.PaleGoldenrod;   // travel 
+                return new SolidBrush(BookingSlotPnl.BackColourForBooking(clashBs[0].Status));
             }
 
             if (blockouts.Count > 0)
@@ -393,20 +495,25 @@ namespace TBRBooker.FrontEnd
             {
                 _isSetTimeMode = _isSettingTime = false;
                 _owner.SetTime(Time, Duration);
+                SetTravelTimesAndRedraw();
             }
         }
 
-        private void timeTmr_Tick(object sender, EventArgs e)
+        private void travelTmr_Tick(object sender, EventArgs e)
         {
-            //Debug.WriteLine("Drawing!");
-            DoRedraw();
-            timeTmr.Stop();
-            timeTmr.Enabled = false;
+            travelTmr.Stop();
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             _contextX = Box.PointToClient(MousePosition).X;
+        }
+
+        private void travelAndRedrawTmr_Tick(object sender, EventArgs e)
+        {
+            travelTmr.Start();
+            DoRedraw();
+            travelAndRedrawTmr.Stop();
         }
     }
 }

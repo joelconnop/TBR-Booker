@@ -20,7 +20,7 @@ namespace TBRBooker.Model.DTO
         public readonly string Location;
 
 
-        public int EndTime => DTUtils.EndTime(Time, Duration);
+        public int EndTime => DTUtils.AddTimeInts(Time, Duration);
 
         public GoogleCalendarItemDTO(DateTime date, int time, int duration, 
             string name, string desc, List<string> attendees, string id, 

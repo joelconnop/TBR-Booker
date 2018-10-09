@@ -107,7 +107,7 @@ namespace TBRBooker.FrontEnd
             var newEndTime = 0;
             if (_duration > 0)
             {
-                newEndTime = DTUtils.EndTime(newStartTime, _duration);
+                newEndTime = DTUtils.AddTimeInts(newStartTime, _duration);
             }
             endPick.SetValues(newStartTime, 1900, 15, newEndTime);
         }
@@ -194,7 +194,7 @@ namespace TBRBooker.FrontEnd
             startPick.SetValues(600, 1900, 15, time);
 
             endPick.SetValues(time > 0 ? time : 600, 1900, 15,
-                duration > 0 ? DTUtils.EndTime(time, duration) : 0);
+                duration > 0 ? DTUtils.AddTimeInts(time, duration) : 0);
 
             _duration = duration;
             durationFld.Text = duration.ToString();

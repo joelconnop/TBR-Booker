@@ -47,7 +47,7 @@ namespace TBRBooker.FrontEnd
                 case CalendarItemTypes.Booking:
                     var bookingItm = _calItm as BookingCalendarItemDTO;
                     bookingLbl.Text = bookingItm.BookingNum + " " + bookingItm.Name;
-                    SetBackColourForBooking(bookingItm.BookingStatus);
+                    BackColor = BackColourForBooking(bookingItm.BookingStatus);
                     break;
                 case CalendarItemTypes.GoogleEvent:
                     var googleItm = _calItm as GoogleCalendarItemDTO;
@@ -66,7 +66,7 @@ namespace TBRBooker.FrontEnd
                     var repeatItm = _calItm as RepeatMarkerDTO;
                     bookingLbl.Text = _calItm.Name;
                     confirmBtn.Visible = rejectBtn.Visible = true;
-                    SetBackColourForBooking(BookingStates.OpenEnquiry);
+                    BackColor = BackColourForBooking(BookingStates.OpenEnquiry);
                     break;
                 default:
                     ErrorHandler.HandleError(_mainFrm, "Update calendar item slot",
@@ -82,13 +82,13 @@ namespace TBRBooker.FrontEnd
             {
                 case CalendarItemTypes.Booking:
                     var bookingItm = _calItm as BookingCalendarItemDTO;
-                    SetBackColourForBooking(bookingItm.BookingStatus);
+                    BackColor = BackColourForBooking(bookingItm.BookingStatus);
                     break;
                 case CalendarItemTypes.GoogleEvent:
                     BackColor = Color.DarkRed;
                     break;
                 case CalendarItemTypes.RepeatMarker:
-                    SetBackColourForBooking(BookingStates.OpenEnquiry);
+                    BackColor = BackColourForBooking(BookingStates.OpenEnquiry);
                     break;
                 default:
                     ErrorHandler.HandleError(_mainFrm, "Update calendar item slot",
@@ -97,27 +97,22 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void SetBackColourForBooking(BookingStates bookingState)
+        public static Color BackColourForBooking(BookingStates bookingState)
         {
             switch (bookingState)
             {
                 case BookingStates.Cancelled:
                 case BookingStates.LostEnquiry:
-                    BackColor = Color.Silver;
-                    break;
+                    return Color.Silver;
                 case BookingStates.Completed:
-                    BackColor = Color.Transparent;
-                    break;
+                    return Color.Transparent;
                 case BookingStates.Booked:
-                    BackColor = Color.LightSkyBlue;
-                    break;
+                    return Color.LightSkyBlue;
                 case BookingStates.OpenEnquiry:
-                    BackColor = Color.Orange;
-                    break;
+                    return Color.Orange;
                 case BookingStates.PaymentDue:
                 case BookingStates.CancelledWithoutPayment:
-                    BackColor = Color.LightPink;
-                    break;
+                    return Color.LightPink;
                 default:
                     throw new Exception("Unknown back colour for " + bookingState);
             }

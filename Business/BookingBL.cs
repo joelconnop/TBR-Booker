@@ -119,10 +119,8 @@ namespace TBRBooker.Business
 
         public static List<Booking> GetClashBookings(List<Booking> bookings, int startTime, int endTime)
         {
-            //HACK: DOES NOT YET ACCOUNT FOR TRAVEL (this will be the hardest part. Will also need to store.
-            //      But maybe its separate call to distinguish travel clash (different colour on timeline)
-            return bookings.Where(x => (x.BookingTime >= startTime && x.EndTime <= endTime)
-                    || (startTime >= x.BookingTime && endTime <= x.EndTime)).ToList();
+            return bookings.Where(x => (x.TravelStart >= startTime && x.EndTime <= endTime)
+                    || (startTime >= x.TravelStart && endTime <= x.EndTime)).ToList();
         }
 
         private static int LastBookingNum { get; set; }

@@ -115,14 +115,14 @@ namespace TBRBooker.FrontEnd
             endPick.SetEventHandler(EndTimeChanged);
             SetTime(_booking.BookingTime, _booking.Duration);
 
-            Timeline = new Timeline(_booking, _owner, this);
-            dateGrp.Controls.Add(Timeline);
-            Timeline.Location = new Point(13, 65);
-
             //address
             ComboBoxItem.InitComboBox(addressRegionBox, typeof(LocationRegions), _booking.LocationRegion);
             addressFld.Text = _booking.Address;
             addressVenuFld.Text = _booking.VenueName;
+
+            Timeline = new Timeline(_booking, _owner, this);
+            dateGrp.Controls.Add(Timeline);
+            Timeline.Location = new Point(13, 65);
 
             //service 
             _service = _booking.Service;
@@ -382,7 +382,7 @@ namespace TBRBooker.FrontEnd
                 if (Timeline != null)
                 {
                     Timeline.Time = tpv.Value;
-                    Timeline.Redraw();
+                    Timeline.SetTravelTimesAndRedraw();
                 }
             }
             catch (Exception ex)
@@ -396,7 +396,7 @@ namespace TBRBooker.FrontEnd
             var newEndTime = 0;
             if (_duration > 0)
             {
-                newEndTime = DTUtils.EndTime(newStartTime, _duration);
+                newEndTime = DTUtils.AddTimeInts(newStartTime, _duration);
             }
             endPick.SetValues(newStartTime, 1900, 15, newEndTime);
         }
@@ -420,7 +420,7 @@ namespace TBRBooker.FrontEnd
                         if (Timeline != null)
                         {
                             Timeline.Duration = newDuration;
-                            Timeline.Redraw();
+                            Timeline.UpdateOtherBookingsAndTravelTimesAndRedraw();
                         }
                     }
                 }
@@ -462,7 +462,7 @@ namespace TBRBooker.FrontEnd
                 if (Timeline != null)
                 {    
                     Timeline.Time = newStartTime;
-                    Timeline.Redraw();
+                    Timeline.UpdateOtherBookingsAndTravelTimesAndRedraw();
                 }
             }
             catch (Exception ex)
@@ -495,7 +495,7 @@ namespace TBRBooker.FrontEnd
                     _duration = newDuration;
                     UpdateEndTime(startPick.GetSelected().Value);
                     Timeline.Duration = newDuration;
-                    Timeline.Redraw();
+                    Timeline.UpdateOtherBookingsAndTravelTimesAndRedraw();
                     SetDurationDesc(newDuration);
                 }
             }
@@ -527,7 +527,7 @@ namespace TBRBooker.FrontEnd
                 if (Timeline != null)
                 {
                     Timeline.BookingDate = datePick.Value;
-                    Timeline.UpdateOtherBookings();
+                    Timeline.UpdateOtherBookingsAndTravelTimesAndRedraw();
                 }
 
                 UpdateConfirmationCall();
@@ -558,7 +558,7 @@ namespace TBRBooker.FrontEnd
             startPick.SetValues(600, 1900, 15, time);
 
             endPick.SetValues(time > 0 ? time : 600, 1900, 15, 
-                duration > 0 ? DTUtils.EndTime(time, duration) : 0);
+                duration > 0 ? DTUtils.AddTimeInts(time, duration) : 0);
 
             _duration = duration;
             durationFld.Text = duration.ToString();
@@ -812,7 +812,6 @@ namespace TBRBooker.FrontEnd
             SetTime(other.BookingTime, other.Duration);
             Timeline.Time = other.BookingTime;
             Timeline.Duration = other.Duration;
-            Timeline.Redraw();
 
             priceItemsLst.BeginUpdate();
 
@@ -820,6 +819,8 @@ namespace TBRBooker.FrontEnd
                 (addressRegionBox, other.LocationRegion);
             addressFld.Text = other.Address;
             addressVenuFld.Text = other.VenueName;
+            Timeline.Address = CombineAddress();
+            Timeline.SetTravelTimesAndRedraw();
 
             ComboBoxItem.ManuallySelectItem<ServiceTypes>
                 (serviceBox, other.Service.ServiceType);
@@ -1082,6 +1083,10 @@ namespace TBRBooker.FrontEnd
                     AutoSetNickname();
                 }
                 _booking.BookingNickname = contactNicknameFld.Text;
+
+                var oldDate = _booking.BookingDate;
+                var oldTime = _booking.BookingTime;
+                var oldDuration = _booking.Duration;
                 _booking.BookingDate = DTUtils.StartOfDay(datePick.Value);
                 _booking.BookingTime = startPick.GetSelected().Value;
                 _booking.Duration = _duration;
@@ -1205,7 +1210,9 @@ namespace TBRBooker.FrontEnd
                     ConfigureFollowupControls();
                 }
 
-                _owner.OnBookingSave();
+                _owner.OnBookingSave(oldDate, _booking.BookingDate,
+                    oldDate != _booking.BookingDate || oldTime != _booking.BookingTime
+                    || oldDuration != _booking.Duration);
                 Cursor = Cursors.Default;
 
                 savedFld.Visible = true;
@@ -2500,12 +2507,19 @@ namespace TBRBooker.FrontEnd
 
         #endregion
 
+        private string CombineAddress()
+        {
+            return addressFld.Text.Trim();
+            // don't use Venue unless it's been cleared by google maps
+            // return Booking.CombineAddress(addressFld.Text.Trim(), addressVenuFld.Text.Trim());
+        }
+
         private void addressMapBtn_Click(object sender, EventArgs e)
         {
             try
             {
                 var addresses = new List<string>();
-                var address = addressFld.Text.Trim();
+                var address = CombineAddress();
 
                 var others = Timeline.Others.Where(x => Booking.IsOpenStatus(x.Status))
                     .OrderBy(x => x.BookingTime).ToList();
@@ -2521,7 +2535,7 @@ namespace TBRBooker.FrontEnd
                     if (string.IsNullOrEmpty(other.Address))
                         addresses.Add($"UNKNOWN ADDRESS for {other.BookingNickname}, Qld");
                     else
-                        addresses.Add(other.Address);
+                        addresses.Add(other.Address);   //Booking.CombineAddress(other.Address, other.VenueName));
                 }
                 if (!string.IsNullOrEmpty(address))
                 {
@@ -2537,6 +2551,16 @@ namespace TBRBooker.FrontEnd
             catch (Exception ex)
             {
                 ErrorHandler.HandleError(this, "Failed to get the map URL", ex);
+            }
+        }
+
+        private void addressFld_Leave(object sender, EventArgs e)
+        {
+            var newAddr = CombineAddress();
+            if (!newAddr.Equals(Timeline.Address))
+            {
+                Timeline.Address = newAddr;
+                Timeline.SetTravelTimesAndRedraw();
             }
         }
     }

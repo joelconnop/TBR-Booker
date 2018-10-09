@@ -180,6 +180,7 @@
             this.fuCompletedCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.selectionLbl = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.serviceGrp.SuspendLayout();
             this.generalContextMnu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
@@ -222,6 +223,7 @@
             this.addressFld.Name = "addressFld";
             this.addressFld.Size = new System.Drawing.Size(417, 20);
             this.addressFld.TabIndex = 1;
+            this.addressFld.Leave += new System.EventHandler(this.addressFld_Leave);
             // 
             // label11
             // 
@@ -1923,5 +1925,6 @@
         private System.Windows.Forms.ToolStripMenuItem toggleHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeHighlightToolStripMenuItem;
         private System.Windows.Forms.Label selectionLbl;
+        private System.Windows.Forms.Timer timer1;
     }
 }

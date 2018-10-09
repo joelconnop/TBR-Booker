@@ -79,22 +79,28 @@ namespace TBRBooker.Model.Entities
         /// </summary>
         public int Duration { get; set; }
 
-        public int EndTime => DTUtils.EndTime(BookingTime, Duration);
+        /// <summary>
+        /// hhmm
+        /// </summary>
+        public int EndTime => DTUtils.AddTimeInts(BookingTime, Duration);
 
 
+        /// <summary>
+        /// might as well store travel info, but it isn't entirely accurate (if booking A is changed
+        /// and saved, booking B could have changed but not been saved)
+        /// </summary>
+        public int TravelDistance { get; set; }
+        public int TravelTime { get; set; }
         [JsonIgnore]
-        public int TravelTimeTo { get; set; }
+        public int TravelStart => DTUtils.AddTimeInts(BookingTime, TravelTime * -1);
 
-        [JsonIgnore]
-        public int TravelTimeFrom { get; set; }
-
+        
 
 
         public LocationRegions LocationRegion { get; set; }
         public string VenueName { get; set; } //(part of address if using address entity)
         public string Address { get; set; }
         //public Address Address { get; set; }
-
 
         /// <summary>
         /// this comes from customer, when relevant (eg. Gold Coast City Council)
@@ -186,6 +192,13 @@ namespace TBRBooker.Model.Entities
             return new TimeSpan(parsed.Hour, parsed.Minute, 0);
         }
 
+        public static string CombineAddress(string address, string venue)
+        {
+            string combined = venue;
+            if (!string.IsNullOrEmpty(combined) && !string.IsNullOrEmpty(address))
+                combined += ", ";
+            return combined + address;
+        }
 
         public override Document GetAddUpdateDoc()
         {

@@ -338,8 +338,9 @@ namespace TBRBooker.Business
             int i = 0;
             foreach (var leg in groute.Legs)
             {
-                route.Item1[i] = leg.Duration.Value.Minutes;
+                route.Item1[i] = (int)Math.Round(leg.Duration.Value.TotalMinutes);
                 route.Item2[i] = leg.Distance.Value;
+                i++;
             }
 
             return route;
