@@ -11,6 +11,7 @@ using TBRBooker.Model.Entities;
 using TBRBooker.Model.DTO;
 using TBRBooker.Business;
 using TBRBooker.Base;
+using TBRBooker.Model.Enums;
 
 namespace TBRBooker.FrontEnd
 {
@@ -43,6 +44,13 @@ namespace TBRBooker.FrontEnd
 
             _owner = owner;
             _day = day;
+            if (items.Count > 4 || !showCancelled)
+            {
+                var hideStates = new[] { BookingStates.Cancelled, BookingStates.CancelledWithoutPayment,
+                    BookingStates.LostEnquiry};
+                items = items.Where(x => !(x is BookingCalendarItemDTO) ||
+                !hideStates.Contains(((BookingCalendarItemDTO)x).BookingStatus)).ToList();
+            }
             _items = items.OrderBy(
                 x => x is GoogleCalendarItemDTO && ((GoogleCalendarItemDTO)x).IsAllDay())
                 .ThenBy(x => x.Time).ToList();

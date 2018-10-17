@@ -165,9 +165,9 @@ namespace TBRBooker.FrontEnd
                     else
                         thisAddressIdx = -1;
                 }
-                else if (Others.Any())
+                else if (sortedOthers.Any())
                 {
-                    var final = sortedOthers[Others.Count - 1];
+                    var final = sortedOthers[sortedOthers.Count - 1];
                     finalArrivalTime = DTUtils.DateTimeFromInt(final.BookingDate, final.BookingTime);
                 }
 
