@@ -106,7 +106,8 @@ namespace TBRBooker.FrontEnd
 
             LoadTitlebar();
 
-            SetCustomerEmblem(GetPastBookings());
+            SetCustomerEmblem(CustomerBL.GetPastBookings(
+                    _customer, _corporateAccount, _booking));
 
             //configure time
             _isChangingTime = true;
@@ -287,36 +288,7 @@ namespace TBRBooker.FrontEnd
             contactEmblemPic.Invalidate();  //redraws the picture
         }
 
-        /// <summary>
-        /// Can call this all we like because only the first time will need to hit database
-        /// </summary>
-        /// <returns></returns>
-        private List<Booking> GetPastBookings()
-        {
-            var otherBookings = new List<Booking>();
-
-            if (_customer != null)
-            {
-                _customer.BookingIds.ForEach(x => otherBookings.Add(DBBox.ReadItem<Booking>(x)));
-            }
-
-            if (_corporateAccount != null)
-            {
-                _corporateAccount.BookingIds.ForEach(x =>
-                {
-                    if (!otherBookings.Any(y => y.Id == x))
-                        otherBookings.Add(DBBox.ReadItem<Booking>(x));
-                });
-            }
-
-            // only want to consider bookings that are 'before' this one
-            // ('before' meaning either the Id or the booking date is before this one)
-            return otherBookings.Where(x => x.Id != _booking.Id
-                && (x.BookingNum() < _booking.BookingNum() ||
-                    x.BookingDate < _booking.BookingDate)).ToList();
-        }
-
-
+        
         private void LoadService(Service service, bool isCrocDisallowedForCopiedBooking)
         {
             if (service.ServiceType == ServiceTypes.ReptileParty)
@@ -749,7 +721,8 @@ namespace TBRBooker.FrontEnd
 
                 _customer = DBBox.ReadItem<Customer>((string)searchLst.SelectedItems[0].Tag);
 
-                var pastBookings = GetPastBookings();
+                var pastBookings = CustomerBL.GetPastBookings(
+                    _customer, _corporateAccount, _booking);
 
                 var accountId = pastBookings.OrderByDescending(x => x.BookingDate)
                     .FirstOrDefault(x => !string.IsNullOrEmpty(x.AccountId))?.AccountId ?? null;

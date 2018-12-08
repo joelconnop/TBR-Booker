@@ -27,5 +27,41 @@ namespace TBRBooker.Business
             return matches;
         }
 
+
+        /// <summary>
+        /// Can call this all we like because only the first time will need to hit database
+        /// Careful - this does not read the related records for booking (careful about BookingPnl implications
+        /// if changing to read full booking)
+        /// </summary>
+        /// <returns></returns>
+        public static List<Booking> GetPastBookings(Customer customer,
+            CorporateAccount corpAcct, Booking beforeThisOneOnly = null)
+        {
+            var otherBookings = new List<Booking>();
+
+            if (customer != null)
+            {
+                customer.BookingIds.ForEach(x => otherBookings.Add(DBBox.ReadItem<Booking>(x)));
+            }
+
+            if (corpAcct != null)
+            {
+                corpAcct.BookingIds.ForEach(x =>
+                {
+                    if (!otherBookings.Any(y => y.Id == x))
+                        otherBookings.Add(DBBox.ReadItem<Booking>(x));
+                });
+            }
+
+            if (beforeThisOneOnly != null)
+                // only want to consider bookings that are 'before' this one
+                // ('before' meaning either the Id or the booking date is before this one)
+                return otherBookings.Where(x => x.Id != beforeThisOneOnly.Id
+                    && (x.BookingNum() < beforeThisOneOnly.BookingNum() ||
+                        x.BookingDate < beforeThisOneOnly.BookingDate)).ToList();
+            else
+                return otherBookings;
+        }
+
     }
 }

@@ -677,6 +677,7 @@
             // 
             // searchLst
             // 
+            this.searchLst.FullRowSelect = true;
             this.searchLst.Location = new System.Drawing.Point(7, 29);
             this.searchLst.MultiSelect = false;
             this.searchLst.Name = "searchLst";

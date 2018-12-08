@@ -399,5 +399,98 @@ namespace TBRBooker.FrontEnd
             };
             DBBox.AddOrUpdate(repeat);
         }
+
+        private void searchFld_TextChanged(object sender, EventArgs e)
+        {
+            SearchCustomers(searchFld.Text);
+        }
+
+        private void SearchCustomers(string searchTerm)
+        {
+            if (searchTerm.Length < 3)  // || _isSearchingCustomers || !contactSearchChk.Checked)
+                return;
+
+           // _isSearchingCustomers = true;
+
+            try
+            {
+
+                searchLst.Items.Clear();
+                if (searchPnl.Visible == false)
+                {
+                    searchPnl.Visible = true;
+                }
+
+                foreach (var match in CustomerBL.SearchCustomers(searchTerm))
+                {
+                    var itm = new ListViewItem(match.DirectoryName);
+                    itm.Tag = match.CustomerId;
+                    searchLst.Items.Add(itm);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Unexpected error searching past customers", ex);          
+            }
+            finally
+            {
+              //  _isSearchingCustomers = false;
+            }
+
+        }
+
+        private void searcCloseBtn_Click(object sender, EventArgs e)
+        {
+            searchLst.Items.Clear();
+            bookingLst.Items.Clear();
+            searchPnl.Visible = false;
+        }
+
+        private void searchLst_ItemActivate(object sender, EventArgs e)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                var customer = DBBox.ReadItem<Customer>((string)searchLst.SelectedItems[0].Tag);
+                CorporateAccount acct = null;
+                if (!string.IsNullOrEmpty(customer.CompanyId))
+                    acct = DBBox.ReadItem<CorporateAccount>(customer.CompanyId);
+                var pastBookings = CustomerBL.GetPastBookings(customer, acct);
+
+                bookingLst.BeginUpdate();
+                bookingLst.Items.Clear();
+                foreach (var booking in pastBookings
+                    .OrderByDescending(x => x.BookingDate))
+                {
+                    var lvi = new ListViewItem(booking.Summary());
+                    lvi.Tag = booking.Id;   // not using the whole booking as tag because it isn't fully read
+                    bookingLst.Items.Add(lvi);
+                }
+                bookingLst.EndUpdate();
+
+                Cursor = Cursors.Default;
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                ErrorHandler.HandleError(this, "Failed to select customer", ex);
+            }
+        }
+
+        private void bookingLst_ItemActivate(object sender, EventArgs e)
+        {
+            try
+            {
+                var booking = BookingBL.GetBookingFull((string)bookingLst.SelectedItems[0].Tag);
+                ShowBooking(booking);
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                ErrorHandler.HandleError(this, "Failed to select booking", ex);
+            }
+
+        }
     }
 }

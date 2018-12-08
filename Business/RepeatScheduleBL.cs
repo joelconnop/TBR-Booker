@@ -105,7 +105,7 @@ namespace TBRBooker.Business
         {
             var markers = new List<RepeatMarkerDTO>();
 
-            if (schedule.StartDate < startDate)
+            if (schedule.StartDate > endDate)
                 return markers;
 
             var customer = DBBox.ReadItem<Customer>(schedule.CustomerId);
@@ -151,7 +151,6 @@ namespace TBRBooker.Business
                                 LocationRegion = lastBooking.LocationRegion,
                                 VenueName = lastBooking.VenueName,
                                 Address = lastBooking.Address,
-                                BookingNotes = lastBooking.BookingNotes,
                                 PaymentHistory = new List<Payment>(),
                                 Followups = new List<Followup>(),
                                 Service = (Service)lastBooking.Service.Clone(),  // also clones price items

@@ -26,7 +26,7 @@ new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 200, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyGoldCoast,
 new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 240, 1));
             _productLookup.Add(ProductIds.ReptileShowGoldCoast,
-new PriceItem(ProductIds.ReptileShowGoldCoast, 200, 1));
+new PriceItem(ProductIds.ReptileShowGoldCoast, 250, 1));
             _productLookup.Add(ProductIds.ReptileDisplayGoldCoast,
 new PriceItem(ProductIds.ReptileDisplayGoldCoast, 500, 1));
             _productLookup.Add(ProductIds.RoamingReptilesGoldCoast,
@@ -41,7 +41,7 @@ new PriceItem(ProductIds.ReptilePartyPlusLogan, 230, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyLogan,
 new PriceItem(ProductIds.PremiumReptilePartyLogan, 270, 1));
             _productLookup.Add(ProductIds.ReptileShowLogan,
-new PriceItem(ProductIds.ReptileShowLogan, 230, 1));
+new PriceItem(ProductIds.ReptileShowLogan, 250, 1));
             _productLookup.Add(ProductIds.ReptileDisplayLogan,
 new PriceItem(ProductIds.ReptileDisplayLogan, 500, 1));
             _productLookup.Add(ProductIds.RoamingReptilesLogan,
