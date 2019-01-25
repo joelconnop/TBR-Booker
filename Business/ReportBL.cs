@@ -181,6 +181,113 @@ namespace TBRBooker.Business
             File.WriteAllText(filename, form);
             return filename;
         }
+
+        public static string BookingReport(
+           Booking booking, bool isForArchive, string fromAddress = "")
+        {
+            string form = Resources.BookingForm;
+            //var assembly = Assembly.GetExecutingAssembly();
+            //var resourceName = "TBRBooker.Model.BookingForm.html";
+
+            //using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            //using (StreamReader reader = new StreamReader(stream))
+            //{
+            //    string result = reader.ReadToEnd();
+            //}
+            var title = $"{booking.BookingDate.DayOfWeek.ToString()} - {booking.Id} {booking.BookingNickname}";
+            form = form.Replace("[title]", title)
+                .Replace("[name]", booking.Customer.SmartName())
+                .Replace("[phone]", booking.Customer.SmartPhone())
+                .Replace("[email]", booking.Customer.EmailAddress)
+                .Replace("[date]", booking.BookingDate.ToString("D"))
+                .Replace("[time]", DTUtils.DisplayTime(booking.BookingTime))
+                .Replace("[address]", booking.Address)
+                .Replace("[service]", booking.Service.ToString())
+                .Replace("[particulars]", booking.Service.GetParticularsText())
+                .Replace("[pax]", booking.Service.Pax.ToString())
+                .Replace("[total]", booking.Service.TotalPrice.ToString("C"))
+                .Replace("[deposit]", booking.AmountPaid.ToString("C"))
+                .Replace("[balance]", (booking.Service.TotalPrice - booking.AmountPaid).ToString("C"))
+                .Replace("[invoiced]", booking.IsInvoiced ? "Yes" : "No")
+                .Replace("[animals]", booking.Service.SpecificAnimalsToCome)
+                .Replace("[notes]", booking.BookingNotes);
+
+            if (booking.IsPayOnDay)
+                form = form.Replace("[payonday]", "<td style='font-weight: bold'>Yes</td>");
+            else
+                form = form.Replace("[payonday]", "<td>No</td>");
+
+            if (booking.Service.AddCrocodile)
+                form = form.Replace("[crocodile]", "<h4>Crocodile to come: YES</h4>");
+            else
+                form = form.Replace("[crocodile]", "<label>Crocodile to come: No</label>");
+
+            if (isForArchive)
+                form = form.Replace("[directions]", "<p>Not requested</p>");
+            else
+            {
+                var dirHtml = $"<label>From {(string.IsNullOrEmpty(fromAddress) ? "Home" : fromAddress)}:</label><ol>";
+                List<string> steps;
+                if (string.IsNullOrEmpty(fromAddress))
+                    steps = TheGoogle.GetDirections(booking.Address,
+                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime));
+                else
+                    steps = TheGoogle.GetDirections(booking.Address,
+                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime),
+                        fromAddress);
+                steps.ForEach(x => dirHtml += $"<li>{x}</li>");
+                dirHtml += "</ol>";
+                form = form.Replace("[directions]", dirHtml);
+            }
+
+            string archivePrefix = isForArchive ? "Backups\\" : "";
+            string archiveSuffix = isForArchive ? $"_v{booking.EditSequence}" : "";
+            var filename = Settings.Inst().WorkingDir + $"\\Booking Forms\\{archivePrefix}{booking.BookingDate.ToString("yyyyMMdd")}-{booking.BookingDate.DayOfWeek.ToString().Substring(0, 3)} {booking.BookingNickname}{archiveSuffix}.html";
+            File.WriteAllText(filename, form);
+            return filename;
+        }
+
+        public static string BookingsReport(List<Booking> bookings, string reportName)
+        {
+            var completedStatus = new[] { BookingStates.Completed, BookingStates.PaymentDue };
+            var booked = bookings.Where(x => completedStatus.Contains(x.Status))
+                .OrderBy(x => x.BookingDate).ToList();
+            var report = FetchReport(reportName,
+                booked.First().BookingDate, booked.Last().BookingDate,
+                booked);
+
+            string form = Resources.BookingsReport;
+
+            var sb = new StringBuilder();
+            foreach (var booking in booked)
+            {
+                sb.Append("<tr class='stripedRow'>");
+                sb.Append($"<td class='stripedCol'>{booking.Id}</td>");
+                sb.Append($"<td class='stripedCol'>{booking.BookingDate.ToShortDateString()}</td>");
+                sb.Append($"<td class='stripedCol'>{booking.BookingName}</td>");
+                sb.Append($"<td class='stripedCol'>{booking.Service.TotalPrice.ToString("C")}</td>");
+                sb.Append($"<td class='stripedCol'>{booking.Balance.ToString("C")}</td>");
+                sb.Append("</tr>");
+            }
+
+            form = form.Replace("[name]", report.Name)
+                .Replace("[start]", report.StartDate.ToShortDateString())
+                .Replace("[end]", report.EndDate.ToShortDateString())
+                .Replace("[printed]", DateTime.Now.ToShortDateString())
+                .Replace("[numBookings]", bookings.Count.ToString())
+                .Replace("[totalSales]", report.TotalSales.ToString("C"))
+                .Replace("[collected]", report.CollectedSales.ToString("C"))
+                .Replace("[outstanding]", report.OverdueSales.ToString("C"))
+                .Replace("[data]", sb.ToString());
+                
+
+            var filename = Settings.Inst().WorkingDir + $"\\Reports\\{report.Name} {report.StartDate.ToString("yyyyMMdd")}-{report.EndDate.ToString("yyyyMMdd")} - {DateTime.Now.Ticks}.html";
+            File.WriteAllText(filename, form);
+            return filename;
+        }
+
+
+
     }
 
 }

@@ -1269,7 +1269,7 @@ namespace TBRBooker.FrontEnd
                     .OrderByDescending(x => x.BookingTime).FirstOrDefault();
                 string fromAddress = precedingBooking?.Address ?? "";
                 System.Diagnostics.Process.Start(
-                    BookingBL.GenerateBookingHtmlFile(_booking, false, fromAddress));
+                    ReportBL.BookingReport(_booking, false, fromAddress));
             }
             catch (Exception ex)
             {

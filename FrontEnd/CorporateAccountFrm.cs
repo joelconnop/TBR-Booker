@@ -194,5 +194,25 @@ namespace TBRBooker.FrontEnd
             savedTmr.Enabled = false;
         }
 
+        private void ledgerBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var bookings = new List<Booking>();
+                foreach (var bid in _account.BookingIds)
+                {
+                    bookings.Add(BookingBL.GetBookingFull(bid));
+                }
+
+                System.Diagnostics.Process.Start(
+                    ReportBL.BookingsReport(bookings, _account.TradingName));
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                ErrorHandler.HandleError(this, "Failed to Print Corporate Account Ledger", ex);
+            }
+
+        }
     }
 }

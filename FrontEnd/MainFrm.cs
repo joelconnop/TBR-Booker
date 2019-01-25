@@ -217,7 +217,7 @@ namespace TBRBooker.FrontEnd
                 for (int j = 0; j <= 6; j++)
                 {
                     var dayPnl = new DayPanel(day,
-                        calItems.Where(x => x.Date.DayOfYear == day.DayOfYear).ToList(),
+                        calItems.Where(x => DTUtils.SameDay(x.Date, day)).ToList(),
                         true, this, isForceReadAll || _isAllHistoryAvailable);
                     daysPanel.Controls.Add(dayPnl);
                     dayPnl.Location = new Point(j * (dayPnl.Size.Height + 5) + 5, i * (dayPnl.Size.Width + 5) + 5);

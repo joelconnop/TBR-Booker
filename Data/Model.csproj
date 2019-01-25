@@ -119,5 +119,8 @@
   <ItemGroup>
     <None Include="Resources\ReportForm.html" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\BookingsReport.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

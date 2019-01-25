@@ -62,8 +62,20 @@ namespace TBRBooker.Model.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;html&gt;
+        ///&lt;head&gt;
+        ///&lt;style&gt;
+        ///	h1 {
+        ///		font-size: 20px;
+        ///	}
+        ///	h3 {
+        ///		font-size: 16px;
+        ///	}
+        ///	p, td, li, h4, label {
+        ///		font-size: 12px;
+        ///	}
+        ///&lt;/style&gt;
+        ///&lt;/head&gt;
         ///    &lt;body&gt;
-        ///
         ///        &lt;h1&gt;[title]&lt;/h1&gt;
         ///
         ///        &lt;h3&gt;Customer Details&lt;/h3&gt;
@@ -72,17 +84,43 @@ namespace TBRBooker.Model.Properties {
         ///            &lt;tr&gt;&lt;td&gt;Phone:&lt;/td&gt;&lt;td&gt;[phone]&lt;/td&gt;&lt;/tr&gt;
         ///            &lt;tr&gt;&lt;td&gt;Email:&lt;/td&gt;&lt;td&gt;[email]&lt;/td&gt;&lt;/tr&gt;
         ///        &lt;/table&gt;
-        ///        &lt;br&gt;
         ///
         ///        &lt;h3&gt;Service Details&lt;/h3&gt;
         ///        &lt;table&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Date &amp; Day:&lt;/td&gt;&lt;td&gt;[date]&lt;/td&gt;&lt;/tr&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Time of Service:&lt;/td&gt;&lt;td&gt;[time]&lt;/td&gt;&lt;/tr&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Address:&lt;/td&gt;&lt;td&gt;[addres [rest of string was truncated]&quot;;.
+        ///            &lt;tr&gt;&lt;td&gt;Date &amp; Day:&lt;/t [rest of string was truncated]&quot;;.
         /// </summary>
         public static string BookingForm {
             get {
                 return ResourceManager.GetString("BookingForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///    &lt;body&gt;
+        ///
+        ///        &lt;h1&gt;[name]&lt;/h1&gt;
+        ///        &lt;h2&gt;[start] - [end]. Print Date: [printed]&lt;/h2&gt;
+        ///		&lt;br&gt;
+        ///
+        ///		&lt;h3&gt;Summary&lt;/h3&gt;
+        ///        &lt;table&gt;
+        ///			&lt;tr&gt;&lt;td&gt;Total Bookings:&lt;/td&gt;&lt;td&gt;[numBookings]&lt;/td&gt;&lt;/tr&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Total Value:&lt;/td&gt;&lt;td&gt;[totalSales]&lt;/td&gt;&lt;/tr&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Total Paid:&lt;/td&gt;&lt;td&gt;[collected]&lt;/td&gt;&lt;/tr&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Outstanding:&lt;/td&gt;&lt;td&gt;[outstanding]&lt;/td&gt;&lt;/tr&gt;
+        ///        &lt;/table&gt;
+        ///        &lt;br&gt;
+        ///
+        ///		&lt;h3&gt;Bookings&lt;/h3&gt;
+        ///        &lt;table&gt;
+        ///		&lt;th&gt;&lt;tr&gt;
+        ///			&lt;td&gt;Booking #&lt;/td&gt;
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string BookingsReport {
+            get {
+                return ResourceManager.GetString("BookingsReport", resourceCulture);
             }
         }
         

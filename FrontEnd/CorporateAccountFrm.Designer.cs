@@ -65,6 +65,7 @@
             this.closeBtn = new System.Windows.Forms.Button();
             this.savedFld = new System.Windows.Forms.Label();
             this.savedTmr = new System.Windows.Forms.Timer(this.components);
+            this.ledgerBtn = new System.Windows.Forms.Button();
             this.contactGrp.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -405,12 +406,23 @@
             this.savedTmr.Interval = 3000;
             this.savedTmr.Tick += new System.EventHandler(this.savedTmr_Tick);
             // 
+            // ledgerBtn
+            // 
+            this.ledgerBtn.Location = new System.Drawing.Point(482, 544);
+            this.ledgerBtn.Name = "ledgerBtn";
+            this.ledgerBtn.Size = new System.Drawing.Size(75, 23);
+            this.ledgerBtn.TabIndex = 16;
+            this.ledgerBtn.Text = "Ledger";
+            this.ledgerBtn.UseVisualStyleBackColor = true;
+            this.ledgerBtn.Click += new System.EventHandler(this.ledgerBtn_Click);
+            // 
             // CorporateAccountFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
             this.ClientSize = new System.Drawing.Size(800, 579);
+            this.Controls.Add(this.ledgerBtn);
             this.Controls.Add(this.savedFld);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.closeBtn);
@@ -470,5 +482,6 @@
         private System.Windows.Forms.Button closeBtn;
         private System.Windows.Forms.Label savedFld;
         private System.Windows.Forms.Timer savedTmr;
+        private System.Windows.Forms.Button ledgerBtn;
     }
 }

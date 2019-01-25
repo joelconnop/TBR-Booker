@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style>
+.striped {
+  border-collapse: collapse;
+  width: 75%;
+}
+
+th {
+  style: bold;
+  text-align: left;
+  padding: 8px;
+}
+
+th, .stripedCol {
+  text-align: left;
+  padding: 8px;
+}
+
+.stripedRow:nth-child(even) {background-color: #f2f2f2;}
+</style>
+</head>
+<body>
+
+        <h1>[name]</h1>
+        <h2>[start] - [end]. Print Date: [printed]</h2>
+		<br>
+
+		<h3>Summary</h3>
+        <table>
+			<tr><td>Total Bookings:</td><td>[numBookings]</td></tr>
+            <tr><td>Total Value:</td><td>[totalSales]</td></tr>
+            <tr><td>Total Paid:</td><td>[collected]</td></tr>
+            <tr><td>Outstanding:</td><td>[outstanding]</td></tr>
+        </table>
+        <br>
+
+		<h3>Bookings</h3>
+        <table class="striped">
+		<tr>
+			<th>Booking #</th>
+			<th>Service Date</th>
+			<th>Customer</th>
+            <th>Booking Value</th>
+			<th>Outstanding</th>
+		</tr>
+		[data]
+        </table>
+        <br>
+
+    </body>
+</html>

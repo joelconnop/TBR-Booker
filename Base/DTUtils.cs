@@ -130,5 +130,10 @@ namespace TBRBooker.Base
             return Convert.ToInt32(Math.Ceiling(dt.Day / 7.0));
         }
 
+        public static bool SameDay(DateTime dt1, DateTime dt2)
+        {
+            return StartOfDay(dt1) == StartOfDay(dt2);
+        }
+
     }
 }
