@@ -179,6 +179,9 @@
             this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.selectionLbl = new System.Windows.Forms.Label();
             this.addressTmr = new System.Windows.Forms.Timer(this.components);
+            this.addressSearchPnl = new System.Windows.Forms.Panel();
+            this.addressCloseBtn = new System.Windows.Forms.Button();
+            this.addressLst = new System.Windows.Forms.ListView();
             this.serviceGrp.SuspendLayout();
             this.generalContextMnu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
@@ -204,12 +207,11 @@
             this.fuCurrentPage.SuspendLayout();
             this.fuConfirmationPage.SuspendLayout();
             this.fuHistoryPage.SuspendLayout();
+            this.addressSearchPnl.SuspendLayout();
             this.SuspendLayout();
             // 
             // addressFld
             // 
-            this.addressFld.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.addressFld.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.addressFld.Location = new System.Drawing.Point(192, 38);
             this.addressFld.Name = "addressFld";
             this.addressFld.Size = new System.Drawing.Size(417, 20);
@@ -1690,12 +1692,46 @@
             this.addressTmr.Interval = 1000;
             this.addressTmr.Tick += new System.EventHandler(this.addressTmr_Tick);
             // 
+            // addressSearchPnl
+            // 
+            this.addressSearchPnl.BackColor = System.Drawing.SystemColors.Control;
+            this.addressSearchPnl.Controls.Add(this.addressCloseBtn);
+            this.addressSearchPnl.Controls.Add(this.addressLst);
+            this.addressSearchPnl.Location = new System.Drawing.Point(6, 456);
+            this.addressSearchPnl.Name = "addressSearchPnl";
+            this.addressSearchPnl.Size = new System.Drawing.Size(923, 17);
+            this.addressSearchPnl.TabIndex = 10;
+            this.addressSearchPnl.Visible = false;
+            // 
+            // addressCloseBtn
+            // 
+            this.addressCloseBtn.Location = new System.Drawing.Point(869, 0);
+            this.addressCloseBtn.Name = "addressCloseBtn";
+            this.addressCloseBtn.Size = new System.Drawing.Size(48, 23);
+            this.addressCloseBtn.TabIndex = 1;
+            this.addressCloseBtn.Text = "X";
+            this.addressCloseBtn.UseVisualStyleBackColor = true;
+            this.addressCloseBtn.Click += new System.EventHandler(this.addressCloseBtn_Click);
+            // 
+            // addressLst
+            // 
+            this.addressLst.FullRowSelect = true;
+            this.addressLst.Location = new System.Drawing.Point(7, 29);
+            this.addressLst.MultiSelect = false;
+            this.addressLst.Name = "addressLst";
+            this.addressLst.Size = new System.Drawing.Size(910, 113);
+            this.addressLst.TabIndex = 0;
+            this.addressLst.UseCompatibleStateImageBehavior = false;
+            this.addressLst.View = System.Windows.Forms.View.List;
+            this.addressLst.ItemActivate += new System.EventHandler(this.addressLst_ItemActivate);
+            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
             this.ContextMenuStrip = this.generalContextMnu;
+            this.Controls.Add(this.addressSearchPnl);
             this.Controls.Add(this.selectionLbl);
             this.Controls.Add(this.fuTabs);
             this.Controls.Add(this.completeBtn);
@@ -1756,6 +1792,7 @@
             this.fuConfirmationPage.ResumeLayout(false);
             this.fuConfirmationPage.PerformLayout();
             this.fuHistoryPage.ResumeLayout(false);
+            this.addressSearchPnl.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1912,5 +1949,8 @@
         private System.Windows.Forms.ToolStripMenuItem removeHighlightToolStripMenuItem;
         private System.Windows.Forms.Label selectionLbl;
         private System.Windows.Forms.Timer addressTmr;
+        private System.Windows.Forms.Panel addressSearchPnl;
+        private System.Windows.Forms.Button addressCloseBtn;
+        private System.Windows.Forms.ListView addressLst;
     }
 }

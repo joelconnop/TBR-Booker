@@ -30,7 +30,6 @@ namespace TBRBooker.FrontEnd
         public Timeline Timeline;
         private bool _isChangingTime;
         private bool _isSearchingCustomers;
-        private bool _isSearchModeForBookings;
         private int _duration;
         private List<ValidatingTextbox> _validators;
         private bool _addressWait;
@@ -697,10 +696,10 @@ namespace TBRBooker.FrontEnd
 
         private void searchLst_ItemActivated(object sender, EventArgs e)
         {
-            if (_isSearchModeForBookings)
-                SelectBooking();
-            else
-                SelectCustomer();
+            //if (_isSearchModeForBookings)
+            //    SelectBooking();
+            //else
+            SelectCustomer();
         }
 
         private void SelectBooking()
@@ -2545,17 +2544,6 @@ namespace TBRBooker.FrontEnd
                     return;
                 }
 
-                // detect if we selected one of the autocomplete options,
-                // instead of doing another search, update the timeline
-                var newAddr = CombineAddress();
-                if (!newAddr.Equals(Timeline.Address)
-                    && addressFld.AutoCompleteCustomSource.Contains(newAddr))
-                {
-                    Timeline.Address = newAddr;
-                    Timeline.SetTravelTimesAndRedraw();
-                    return;
-                }
-
                 // we want the search to happen a delay after the last key press
                 // so, if the timer is already running, stop it
                 if (_addressWait)
@@ -2565,7 +2553,7 @@ namespace TBRBooker.FrontEnd
                 else
                 {
                     _addressWait = true;
-                    AddressAutocompleteSearch(searchTerm);
+                    SearchAddresses(searchTerm);
                 }
                 addressTmr.Start();
             }
@@ -2575,30 +2563,67 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void AddressAutocompleteSearch(string searchTerm)
-        {
-            _addressLastSearchTerm = searchTerm;
-            var autoCompleteListCollection = new AutoCompleteStringCollection();
-            var matches = TheGoogle.PlacesSearch(searchTerm);
-            addressFld.Focus();
-            autoCompleteListCollection.AddRange(matches);
-            addressFld.AutoCompleteCustomSource = autoCompleteListCollection;
-        }
-
         private void addressTmr_Tick(object sender, EventArgs e)
         {
-            // there was a small delay, and we are now happy to search again.
-            _addressWait = false;
-            addressTmr.Stop();
-            // search up to the caret, and don't search less than 4 characters,
-            // and don't re-search the same thing as last search
-            var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
-            if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+            try
             {
-                return;
+                // there was a small delay, and we are now happy to search again.
+                _addressWait = false;
+                addressTmr.Stop();
+                // search up to the caret, and don't search less than 4 characters,
+                // and don't re-search the same thing as last search
+                var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
+                if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+                {
+                    return;
+                }
+                SearchAddresses(searchTerm);
             }
-            AddressAutocompleteSearch(searchTerm);
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Unexpected error searching past customers", ex);
+            }
         }
 
+
+        private void SearchAddresses(string searchTerm)
+        {
+            addressLst.Items.Clear();
+            if (addressSearchPnl.Visible == false)
+            {
+                addressSearchPnl.Height = 145;
+                addressSearchPnl.Visible = true;
+            }
+
+            _addressLastSearchTerm = searchTerm;
+            var matches = TheGoogle.PlacesSearch(searchTerm);
+            foreach (var match in matches)
+            {
+                var itm = new ListViewItem(match);
+                addressLst.Items.Add(itm);
+            }
+        }
+
+        private void addressCloseBtn_Click(object sender, EventArgs e)
+        {
+            addressSearchPnl.Visible = false;
+        }
+
+        private void addressLst_ItemActivate(object sender, EventArgs e)
+        {
+            // little trick so that we won't do another search on the chosen text
+            _addressLastSearchTerm = addressLst.SelectedItems[0].Text;
+
+            addressFld.Text = _addressLastSearchTerm;
+            addressSearchPnl.Visible = false;
+
+            // update the timeline
+            if (!_addressLastSearchTerm.Equals(Timeline.Address))
+            {
+                Timeline.Address = _addressLastSearchTerm;
+                Timeline.SetTravelTimesAndRedraw();
+                return;
+            }
+        }
     }
 }
