@@ -9,6 +9,7 @@ using GoogleMapsApi.Entities.Directions.Request;
 using GoogleMapsApi.Entities.Directions.Response;
 using GoogleMapsApi.Entities.Geocoding.Request;
 using GoogleMapsApi.Entities.Geocoding.Response;
+using GoogleMapsApi.Entities.PlaceAutocomplete.Request;
 using GoogleMapsApi.StaticMaps;
 using GoogleMapsApi.StaticMaps.Entities;
 
@@ -35,6 +36,8 @@ namespace TBRBooker.Business
         // at ~/.credentials/calendar-dotnet-quickstart.json
         static string[] Scopes = { CalendarService.Scope.Calendar };
         static string ApplicationName = "TBR Booker";
+        static int SearchRadius = 150000;   // 150km from Nerang
+
         private static UserCredential _creds;
 
         private static UserCredential GetCreds()
@@ -227,9 +230,33 @@ namespace TBRBooker.Business
                 gei.Location);
         }
 
-        public static List<string> PlacesSearch(string address)
+        public static string[] PlacesSearch(string searchTerm)
         {
-            return new List<string>();
+            if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
+                || string.IsNullOrEmpty(searchTerm))
+                return new string[0];
+            var req = new PlaceAutocompleteRequest()
+            {
+                ApiKey = Base.Settings.Inst().GoogleAPIKey,
+                Input = searchTerm,
+                Location = new Location(-27.982645, 153.340282),    // M1, Nerang
+                Radius = SearchRadius, // look for places within 250km of Nerang
+                StrinctBounds = true
+                // Type = "address"  // we want "address" AND "establishment"
+            };
+            var response = GoogleMaps.PlaceAutocomplete.Query(req);
+            switch (response.Status)
+            {
+                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.OK:
+                    return response.Results.Select(x => 
+                    x.Description.Replace(" QLD, Australia", "").Trim().Trim(','))
+                    .ToArray();
+                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.ZERO_RESULTS:
+                    return new[] { "(no results)" };
+                default:
+                    throw new Exception($"Places Search failed for '{searchTerm}'. Status = {response.Status}.");
+
+            }            
         }
 
         private static (string Origin, string Destination, List<string> Waypoints)
@@ -303,6 +330,9 @@ namespace TBRBooker.Business
              string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
         {
             int numPoints = addresses.Count;
+            if (numPoints == 0)
+                return (new int[0], new int[0]);
+
             if (string.IsNullOrEmpty(startLocation))
                 numPoints--;
             var route = (new int[numPoints], new int[numPoints]);
@@ -326,9 +356,15 @@ namespace TBRBooker.Business
             var response = GoogleMaps.Directions.Query(req);
             if (!string.IsNullOrEmpty(response.ErrorMessage))
                 throw new Exception(response.ErrorMessage);
-            if (response.Status != DirectionsStatusCodes.OK)
+            switch (response.Status)
             {
-                throw new Exception(response.StatusStr);
+                case DirectionsStatusCodes.ZERO_RESULTS:
+                case DirectionsStatusCodes.NOT_FOUND:
+                    return (new int[0], new int[0]);
+                case DirectionsStatusCodes.OK:
+                    break; //proceed
+                default:
+                    throw new Exception($"Failed to get travel info for {addresses[0]}. Result: {response.Status}");
             }
 
             var groute = response.Routes.Single();

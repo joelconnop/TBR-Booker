@@ -33,6 +33,8 @@ namespace TBRBooker.FrontEnd
         private bool _isSearchModeForBookings;
         private int _duration;
         private List<ValidatingTextbox> _validators;
+        private bool _addressWait;
+        private string _addressLastSearchTerm;
 
         private bool? _highlightMode;
         private List<string> _highlightedControls;
@@ -65,6 +67,7 @@ namespace TBRBooker.FrontEnd
             _newStatus = booking.Status;
             _isLoading = true;
             _highlightMode = null;
+            _addressLastSearchTerm = "";
 
             if (booking.IsNewBooking)
             {
@@ -119,7 +122,7 @@ namespace TBRBooker.FrontEnd
             //address
             ComboBoxItem.InitComboBox(addressRegionBox, typeof(LocationRegions), _booking.LocationRegion);
             addressFld.Text = _booking.Address;
-            addressVenuFld.Text = _booking.VenueName;
+            // addressVenuFld.Text = _booking.VenueName;
 
             Timeline = new Timeline(_booking, _owner, this);
             dateGrp.Controls.Add(Timeline);
@@ -791,7 +794,7 @@ namespace TBRBooker.FrontEnd
             ComboBoxItem.ManuallySelectItem<LocationRegions>
                 (addressRegionBox, other.LocationRegion);
             addressFld.Text = other.Address;
-            addressVenuFld.Text = other.VenueName;
+            // addressVenuFld.Text = other.VenueName;
             Timeline.Address = CombineAddress();
             Timeline.SetTravelTimesAndRedraw();
 
@@ -952,8 +955,8 @@ namespace TBRBooker.FrontEnd
                 unsavedChanges += "region, ";
             if (!addressFld.Text.Equals(_booking.Address))
                 unsavedChanges += "e-mail, ";
-            if (!addressVenuFld.Text.Equals(_booking.VenueName))
-                unsavedChanges += "venue, ";
+            //if (!addressVenuFld.Text.Equals(_booking.VenueName))
+            //    unsavedChanges += "venue, ";
 
             if (//_booking.Service != null && at the least it should be NotSet, for an existing booking
                 ComboBoxItem.GetSelected<ServiceTypes>(serviceBox) != _service.ServiceType)
@@ -1066,7 +1069,7 @@ namespace TBRBooker.FrontEnd
 
                 _booking.LocationRegion = ComboBoxItem.GetSelected<LocationRegions>(addressRegionBox);
                 _booking.Address = addressFld.Text;
-                _booking.VenueName = addressVenuFld.Text;
+                // _booking.VenueName = addressVenuFld.Text;
 
                 _booking.Service = _service;
                 var serviceType = ComboBoxItem.GetSelected<ServiceTypes>(serviceBox);
@@ -2527,14 +2530,75 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void addressFld_Leave(object sender, EventArgs e)
+        private void addressFld_TextChanged(object sender, EventArgs e)
         {
-            var newAddr = CombineAddress();
-            if (!newAddr.Equals(Timeline.Address))
+            if (_isLoading)
+                return;
+
+            try
             {
-                Timeline.Address = newAddr;
-                Timeline.SetTravelTimesAndRedraw();
+                // search up to the caret, and don't search less than 4 characters,
+                // and don't re-search the same thing as last search
+                var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
+                if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+                {
+                    return;
+                }
+
+                // detect if we selected one of the autocomplete options,
+                // instead of doing another search, update the timeline
+                var newAddr = CombineAddress();
+                if (!newAddr.Equals(Timeline.Address)
+                    && addressFld.AutoCompleteCustomSource.Contains(newAddr))
+                {
+                    Timeline.Address = newAddr;
+                    Timeline.SetTravelTimesAndRedraw();
+                    return;
+                }
+
+                // we want the search to happen a delay after the last key press
+                // so, if the timer is already running, stop it
+                if (_addressWait)
+                {
+                    addressTmr.Stop();
+                }
+                else
+                {
+                    _addressWait = true;
+                    AddressAutocompleteSearch(searchTerm);
+                }
+                addressTmr.Start();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Failed to set address autocomplete options", ex);
             }
         }
+
+        private void AddressAutocompleteSearch(string searchTerm)
+        {
+            _addressLastSearchTerm = searchTerm;
+            var autoCompleteListCollection = new AutoCompleteStringCollection();
+            var matches = TheGoogle.PlacesSearch(searchTerm);
+            addressFld.Focus();
+            autoCompleteListCollection.AddRange(matches);
+            addressFld.AutoCompleteCustomSource = autoCompleteListCollection;
+        }
+
+        private void addressTmr_Tick(object sender, EventArgs e)
+        {
+            // there was a small delay, and we are now happy to search again.
+            _addressWait = false;
+            addressTmr.Stop();
+            // search up to the caret, and don't search less than 4 characters,
+            // and don't re-search the same thing as last search
+            var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
+            if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+            {
+                return;
+            }
+            AddressAutocompleteSearch(searchTerm);
+        }
+
     }
 }

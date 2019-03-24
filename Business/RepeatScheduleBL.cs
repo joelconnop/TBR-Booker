@@ -149,7 +149,7 @@ namespace TBRBooker.Business
                                 BookingTime = lastBooking.BookingTime,
                                 Duration = lastBooking.Duration,
                                 LocationRegion = lastBooking.LocationRegion,
-                                VenueName = lastBooking.VenueName,
+                                //VenueName = lastBooking.VenueName,
                                 Address = lastBooking.Address,
                                 PaymentHistory = new List<Payment>(),
                                 Followups = new List<Followup>(),

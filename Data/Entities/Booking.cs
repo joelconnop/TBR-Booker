@@ -98,7 +98,7 @@ namespace TBRBooker.Model.Entities
 
 
         public LocationRegions LocationRegion { get; set; }
-        public string VenueName { get; set; } //(part of address if using address entity)
+        // public string VenueName { get; set; }   // now all part of (google places) address
         public string Address { get; set; }
         //public Address Address { get; set; }
 

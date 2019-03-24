@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.label13 = new System.Windows.Forms.Label();
             this.addressFld = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.serviceGrp = new System.Windows.Forms.GroupBox();
@@ -55,7 +54,6 @@
             this.shortDemosChk = new System.Windows.Forms.CheckBox();
             this.crocNoPic = new System.Windows.Forms.PictureBox();
             this.addressMapBtn = new System.Windows.Forms.Button();
-            this.addressVenuFld = new System.Windows.Forms.TextBox();
             this.addressGrp = new System.Windows.Forms.GroupBox();
             this.addressRegionBox = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -180,7 +178,7 @@
             this.fuCompletedCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fuNoteCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.selectionLbl = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.addressTmr = new System.Windows.Forms.Timer(this.components);
             this.serviceGrp.SuspendLayout();
             this.generalContextMnu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.crocPic)).BeginInit();
@@ -208,22 +206,15 @@
             this.fuHistoryPage.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(652, 22);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(69, 13);
-            this.label13.TabIndex = 6;
-            this.label13.Text = "Venue Name";
-            // 
             // addressFld
             // 
+            this.addressFld.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.addressFld.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.addressFld.Location = new System.Drawing.Point(192, 38);
             this.addressFld.Name = "addressFld";
             this.addressFld.Size = new System.Drawing.Size(417, 20);
             this.addressFld.TabIndex = 1;
-            this.addressFld.Leave += new System.EventHandler(this.addressFld_Leave);
+            this.addressFld.TextChanged += new System.EventHandler(this.addressFld_TextChanged);
             // 
             // label11
             // 
@@ -457,7 +448,7 @@
             // 
             // addressMapBtn
             // 
-            this.addressMapBtn.Location = new System.Drawing.Point(827, 37);
+            this.addressMapBtn.Location = new System.Drawing.Point(631, 36);
             this.addressMapBtn.Name = "addressMapBtn";
             this.addressMapBtn.Size = new System.Drawing.Size(75, 23);
             this.addressMapBtn.TabIndex = 3;
@@ -465,20 +456,11 @@
             this.addressMapBtn.UseVisualStyleBackColor = true;
             this.addressMapBtn.Click += new System.EventHandler(this.addressMapBtn_Click);
             // 
-            // addressVenuFld
-            // 
-            this.addressVenuFld.Location = new System.Drawing.Point(655, 38);
-            this.addressVenuFld.Name = "addressVenuFld";
-            this.addressVenuFld.Size = new System.Drawing.Size(134, 20);
-            this.addressVenuFld.TabIndex = 2;
-            // 
             // addressGrp
             // 
             this.addressGrp.BackColor = System.Drawing.SystemColors.Control;
             this.addressGrp.ContextMenuStrip = this.generalContextMnu;
             this.addressGrp.Controls.Add(this.addressMapBtn);
-            this.addressGrp.Controls.Add(this.addressVenuFld);
-            this.addressGrp.Controls.Add(this.label13);
             this.addressGrp.Controls.Add(this.addressFld);
             this.addressGrp.Controls.Add(this.label11);
             this.addressGrp.Controls.Add(this.addressRegionBox);
@@ -1703,6 +1685,11 @@
             this.selectionLbl.Text = "x";
             this.selectionLbl.Visible = false;
             // 
+            // addressTmr
+            // 
+            this.addressTmr.Interval = 1000;
+            this.addressTmr.Tick += new System.EventHandler(this.addressTmr_Tick);
+            // 
             // BookingPnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1775,7 +1762,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox addressFld;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.GroupBox serviceGrp;
@@ -1791,7 +1777,6 @@
         private System.Windows.Forms.RadioButton partyStandardRdo;
         private System.Windows.Forms.ComboBox serviceBox;
         private System.Windows.Forms.Button addressMapBtn;
-        private System.Windows.Forms.TextBox addressVenuFld;
         private System.Windows.Forms.GroupBox addressGrp;
         private System.Windows.Forms.ComboBox addressRegionBox;
         private System.Windows.Forms.Label label12;
@@ -1926,6 +1911,6 @@
         private System.Windows.Forms.ToolStripMenuItem toggleHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeHighlightToolStripMenuItem;
         private System.Windows.Forms.Label selectionLbl;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer addressTmr;
     }
 }
