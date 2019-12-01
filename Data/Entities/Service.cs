@@ -28,7 +28,7 @@ namespace TBRBooker.Model.Entities
         {
             var str = Party != null ? Party.ToString() : EnumHelper.GetEnumDescription(ServiceType);
             if (AddCrocodile)
-                str += " PLUS CROCODILE";
+                str += " CROCODILE";
             return str;
         }
 

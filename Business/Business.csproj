@@ -104,6 +104,7 @@
     <Compile Include="DashboardBL.cs" />
     <Compile Include="DBBox.cs" />
     <Compile Include="ErrorLogger.cs" />
+    <Compile Include="PenaltyBL.cs" />
     <Compile Include="RepeatScheduleBL.cs" />
     <Compile Include="ReportBL.cs" />
     <Compile Include="TheGoogle.cs" />

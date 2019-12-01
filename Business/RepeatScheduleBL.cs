@@ -100,7 +100,7 @@ namespace TBRBooker.Business
             return GetMarkersInRange(startDate, endDate);
         }
 
-        private static List<RepeatMarkerDTO> CreateMarkersFromSchedule(
+        public static List<RepeatMarkerDTO> CreateMarkersFromSchedule(
             RepeatSchedule schedule, DateTime startDate, DateTime endDate)
         {
             var markers = new List<RepeatMarkerDTO>();

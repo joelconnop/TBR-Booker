@@ -17,7 +17,6 @@ namespace TBRBooker.Model.Entities
     public class Booking : BaseItem
     {
         public const string TABLE_NAME = "booking";
-        public const string IS_OPEN_STR = "Y";
         public const string RepeatingBookingId = "1337";    // has to be a number or expect crashes
 
         public Booking()
@@ -205,7 +204,7 @@ namespace TBRBooker.Model.Entities
             var doc = base.GetAddUpdateDoc();
 
             //for CalendarItemDTO
-            doc["isOpen"] = IsOpen() ? IS_OPEN_STR : "";
+            doc["isOpen"] = IsOpen() ? Constants.DbBoolFilter : "";
             doc["bookingName"] = BookingName;
             doc["bookingTime"] = BookingTime;
             doc["bookingDate"] = BookingDate.Ticks;
@@ -239,7 +238,7 @@ namespace TBRBooker.Model.Entities
         public override void LoadAttributes(Document doc)
         {
             if (doc.ContainsKey("isOpen"))
-                IsOpenInDatabase = doc["isOpen"].AsString().Equals(IS_OPEN_STR);
+                IsOpenInDatabase = doc["isOpen"].AsString().Equals(Constants.DbBoolFilter);
             else
                 IsOpenInDatabase = false;
         }
