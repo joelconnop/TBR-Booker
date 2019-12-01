@@ -15,6 +15,7 @@ namespace TBRBooker.Model.Enums
         NotDoingReptiles,
         LostToCompetitor,
         TooExpensive,
-        CantAccommodateRequest
+        CantAccommodateRequest,
+        OurFault
     }
 }

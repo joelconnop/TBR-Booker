@@ -286,7 +286,34 @@ namespace TBRBooker.Business
             return filename;
         }
 
+        public static string PrintPenalties(List<Penalty> penalties)
+        {
+            penalties = penalties.OrderBy(x => x.RelevantDate).ToList();
+            string form = Resources.PenaltyForm;
+            var start = penalties.First().RelevantDate;
 
+            
+
+            var sb = new StringBuilder();
+            foreach (var penGroup in penalties.GroupBy(x => x.PenaltyType))
+            {
+                sb.AppendLine($"<h3>{EnumHelper.ReplaceCamelCaseWithSpace(penGroup.Key.ToString(), true)}</h3><table>");
+                foreach (var pen in penGroup)
+                {
+                    sb.AppendLine($"<tr><td>{pen.Description}</td><td>{pen.RelevantDate.ToShortDateString()}</td><td>{(pen.Value - pen.AbsolvedValue)}</td></tr>");
+                }
+                sb.AppendLine($"</table><br>");
+            }
+
+            form = form.Replace("[start]", start.ToShortDateString())
+                .Replace("[end]", DateTime.Today.ToShortDateString())
+                .Replace("[total]", penalties.Sum(x => x.Value - x.AbsolvedValue).ToString())
+                .Replace("[details]", sb.ToString());
+
+            var filename = Settings.Inst().WorkingDir + $"\\Reports\\Penalties {start.ToString("yyyyMMdd")} - {DateTime.Now.Ticks}.html";
+            File.WriteAllText(filename, form);
+            return filename;
+        }
 
     }
 

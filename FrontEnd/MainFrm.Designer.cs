@@ -65,9 +65,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.dashboardPnl = new System.Windows.Forms.Panel();
             this.searchPnl = new System.Windows.Forms.Panel();
+            this.bookingLst = new System.Windows.Forms.ListView();
             this.searcCloseBtn = new System.Windows.Forms.Button();
             this.searchLst = new System.Windows.Forms.ListView();
-            this.bookingLst = new System.Windows.Forms.ListView();
+            this.penaltiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.searchPnl.SuspendLayout();
@@ -98,9 +99,10 @@
             // 
             this.reportsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.allGeneralSummariesToolStripMenuItem,
-            this.generalSummaryToolStripMenuItem});
+            this.generalSummaryToolStripMenuItem,
+            this.penaltiesToolStripMenuItem});
             this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
-            this.reportsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.reportsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reportsToolStripMenuItem.Text = "Reports";
             // 
             // allGeneralSummariesToolStripMenuItem
@@ -154,14 +156,14 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -422,6 +424,17 @@
             this.searchPnl.TabIndex = 17;
             this.searchPnl.Visible = false;
             // 
+            // bookingLst
+            // 
+            this.bookingLst.Location = new System.Drawing.Point(8, 191);
+            this.bookingLst.MultiSelect = false;
+            this.bookingLst.Name = "bookingLst";
+            this.bookingLst.Size = new System.Drawing.Size(369, 151);
+            this.bookingLst.TabIndex = 2;
+            this.bookingLst.UseCompatibleStateImageBehavior = false;
+            this.bookingLst.View = System.Windows.Forms.View.List;
+            this.bookingLst.ItemActivate += new System.EventHandler(this.bookingLst_ItemActivate);
+            // 
             // searcCloseBtn
             // 
             this.searcCloseBtn.Location = new System.Drawing.Point(329, 4);
@@ -443,16 +456,12 @@
             this.searchLst.View = System.Windows.Forms.View.List;
             this.searchLst.ItemActivate += new System.EventHandler(this.searchLst_ItemActivate);
             // 
-            // bookingLst
+            // penaltiesToolStripMenuItem
             // 
-            this.bookingLst.Location = new System.Drawing.Point(8, 191);
-            this.bookingLst.MultiSelect = false;
-            this.bookingLst.Name = "bookingLst";
-            this.bookingLst.Size = new System.Drawing.Size(369, 151);
-            this.bookingLst.TabIndex = 2;
-            this.bookingLst.UseCompatibleStateImageBehavior = false;
-            this.bookingLst.View = System.Windows.Forms.View.List;
-            this.bookingLst.ItemActivate += new System.EventHandler(this.bookingLst_ItemActivate);
+            this.penaltiesToolStripMenuItem.Name = "penaltiesToolStripMenuItem";
+            this.penaltiesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.penaltiesToolStripMenuItem.Text = "Penalties";
+            this.penaltiesToolStripMenuItem.Click += new System.EventHandler(this.penaltiesToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -529,6 +538,7 @@
         private System.Windows.Forms.Button searcCloseBtn;
         private System.Windows.Forms.ListView searchLst;
         private System.Windows.Forms.ListView bookingLst;
+        private System.Windows.Forms.ToolStripMenuItem penaltiesToolStripMenuItem;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,12 +30,12 @@ namespace TBRBooker.Base
                 _instance = new Settings(true, 1, 0, false, "C:\\Programming\\TBR Booker Instance",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
-                    "#23A8EF", "#FFE0C0", "");
+                    "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);
             else
                 _instance = new Settings(false, 1, 0, false, "G:\\My Drive\\Bookings\\TBR Booker",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
-                     "#23A8EF", "#FFE0C0", "");
+                     "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);
             return _instance;
         }
 
@@ -110,7 +111,11 @@ namespace TBRBooker.Base
         [Browsable(false)]
         public decimal CreditCardMultiplier;
 
-
+        // note - the penalties do NOT include the last scan date (it is 'start of day')
+        [Category("Hardcoded Settings")]
+        [ReadOnly(true)]
+        [Browsable(false)]
+        public long LastScan;
 
 
 
@@ -124,7 +129,7 @@ namespace TBRBooker.Base
             int monthsForBookingHistory, decimal creditCardMultiplier, 
             DayOfWeek confirmationCallDay, DayOfWeek followupDay,
             int daysBeforeOverdue, string calendarAccount,
-            string mainColour, string contrastColour, string apiKey)
+            string mainColour, string contrastColour, string apiKey, long lastScan)
         {
             IsTestMode = isTestMode;
             MainScreenDefaultId = mainScreenId;
@@ -140,6 +145,7 @@ namespace TBRBooker.Base
             MainColour = mainColour;
             ContrastColour = contrastColour;
             GoogleAPIKey = apiKey;
+            LastScan = lastScan;
         }
 
         public Object Clone()
@@ -160,7 +166,8 @@ namespace TBRBooker.Base
                 CreditCardMultiplier = CreditCardMultiplier,
                 MainColour = MainColour,
                 ContrastColour = ContrastColour,
-                GoogleAPIKey = GoogleAPIKey
+                GoogleAPIKey = GoogleAPIKey,
+                LastScan = LastScan,
             };
         }
 
@@ -174,6 +181,48 @@ namespace TBRBooker.Base
                 .Any(a => a.FullName.StartsWith(testAssemblyName));
 #endif
 
+        }
+
+        public static void PersistSettings(Settings newSettings, Settings oldSettings, bool skipRegistry)
+        {
+            if (string.IsNullOrEmpty(newSettings.Username))
+            {
+                throw new Exception("A Username is required to go any further.");
+            }
+
+            if (!Directory.Exists(newSettings.WorkingDir))
+            {
+                throw new Exception("A valid working directory is needed (preferrably a Google Drive Stream location) is needed. Example: G:\\My Drive\\Bookings\\TBR Booker");
+            }
+
+            if (!skipRegistry && oldSettings == null)
+                throw new Exception("Cannot update registry, the old settings were mysteriously absent.");
+
+            // don't touch registry entries in test or we will mess with production config
+            if (!Settings.IsForcedToTestMode())
+            {
+                if (newSettings.Username != null && (oldSettings.Username == null
+                || !oldSettings.Username.Equals(newSettings.Username)))
+                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.UserKey, newSettings.Username,
+                        RegistryValueKind.String);
+                if (!oldSettings.WorkingDir.Equals(newSettings.WorkingDir))
+                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.WorkingDirKey, newSettings.WorkingDir,
+                        RegistryValueKind.String);
+            }
+
+            var settingsFilename = newSettings.WorkingDir + "\\config\\" + newSettings.Username + "_settings.json";
+            try
+            {
+                using (StreamWriter file = File.CreateText(settingsFilename))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, newSettings);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to write the settings to " + settingsFilename + " because: " + ex.Message, ex);
+            }
         }
 
     }

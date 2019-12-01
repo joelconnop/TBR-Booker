@@ -279,7 +279,7 @@ namespace TBRBooker.Business
                     AttributesToGet = attsToGet,
                     Filter = new QueryFilter()
                 };
-                qryConfig.Filter.AddCondition("isOpen", QueryOperator.Equal, Booking.IS_OPEN_STR);
+                qryConfig.Filter.AddCondition("isOpen", QueryOperator.Equal, Constants.DbBoolFilter);
                 qryConfig.IndexName = "isOpenIdx";
             }          
             
@@ -419,6 +419,40 @@ namespace TBRBooker.Business
         //        return new T();
         //    }
         //}
+
+        public static List<Penalty> GetUnpaidPenalties()
+        {
+            var cache = GetCachedItems(Penalty.TABLE_NAME);
+            cache.Clear();
+
+            AmazonDynamoDBClient client = GetDynamoDBClient();
+            Table table = Table.LoadTable(client, CheckTablenameForTest(Penalty.TABLE_NAME));
+            QueryOperationConfig qryConfig = null;
+
+            //typical case
+            qryConfig = new QueryOperationConfig()
+            {
+                Select = SelectValues.AllAttributes,
+                Filter = new QueryFilter()
+            };
+            qryConfig.Filter.AddCondition("isPending", QueryOperator.Equal, Constants.DbBoolFilter);
+            qryConfig.IndexName = "isPendingIdx";
+
+            var search = table.Query(qryConfig);
+            var penalties = new List<Penalty>();
+            do
+            {
+                foreach (var doc in search.GetNextSet())
+                {
+                    var item = DocToItem<Penalty>(doc);
+                    if (item.IsCacheItems() && item != null)
+                        cache.Add(item.Id, item);
+                    penalties.Add(item);
+                }
+            } while (!search.IsDone);
+
+            return penalties;
+        }
 
     }
 }

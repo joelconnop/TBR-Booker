@@ -326,6 +326,7 @@ namespace TBRBooker.FrontEnd
 
         private void InitBookingsFrm()
         {
+            // PenaltyBL.UpdatePenalties();
             if (_bookingsFrm == null || _bookingsFrm.IsDisposed)
             {
                 _bookingsFrm = new BookingsFrm(this);
@@ -491,6 +492,23 @@ namespace TBRBooker.FrontEnd
                 ErrorHandler.HandleError(this, "Failed to select booking", ex);
             }
 
+        }
+
+        private void penaltiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dlg = new InputDialog("Enter the password to print and reset penalties:",
+                "", false, ValidatingTextbox.TextBoxValidationType.GeneralDatabase, true);
+            dlg.ShowDialog(this);
+            if (dlg.DialogResult == DialogResult.OK)
+                PenaltyBL.PrintAndAbsolvePenalties();
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                ErrorHandler.HandleError(this, "Failed to select print and reset penalties", ex, true);
+            }
         }
     }
 }

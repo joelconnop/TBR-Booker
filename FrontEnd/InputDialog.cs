@@ -18,7 +18,8 @@ namespace TBRBooker.FrontEnd
         private readonly ValidatingTextbox _validator;
 
         public InputDialog(string description, string initialValue, bool isNullOk,
-            ValidatingTextbox.TextBoxValidationType validationType = ValidatingTextbox.TextBoxValidationType.NotSet)
+            ValidatingTextbox.TextBoxValidationType validationType = ValidatingTextbox.TextBoxValidationType.NotSet,
+            bool isPassword = false)
         {
             InitializeComponent();
 
@@ -26,9 +27,19 @@ namespace TBRBooker.FrontEnd
             _isNullOk = isNullOk;
             if (validationType != ValidatingTextbox.TextBoxValidationType.NotSet)
                 _validator = new ValidatingTextbox(this, inputFld, validationType);
+            descFld.Text = description;
+            if (isPassword)
+            {
+                inputFld.ForeColor = inputFld.BackColor;
+            }
         }
 
         private void saveBtn_Click(object sender, EventArgs e)
+        {
+            SaveAndClose();
+        }
+
+        private void SaveAndClose()
         {
             if (!_isNullOk && string.IsNullOrEmpty(inputFld.Text.Trim()))
             {
@@ -48,5 +59,10 @@ namespace TBRBooker.FrontEnd
             Close();
         }
 
+        private void inputFld_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+                SaveAndClose();
+        }
     }
 }

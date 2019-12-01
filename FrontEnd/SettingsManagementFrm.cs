@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Base;
+using TBRBooker.Business;
 
 namespace TBRBooker.FrontEnd
 {
@@ -34,47 +34,19 @@ namespace TBRBooker.FrontEnd
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            var newSettings = (Settings)SettingsGrid.SelectedObject;
-
-            if (string.IsNullOrEmpty(newSettings.Username))
-            {
-                MessageBox.Show("A Username is required to go any further.");
-                return;
-            }
-
-            if (!Directory.Exists(newSettings.WorkingDir))
-            {
-                MessageBox.Show("A valid working directory is needed (preferrably a Google Drive Stream location) is needed. Example: G:\\My Drive\\Bookings\\TBR Booker");
-            }
-
-            // don't touch registry entries in test or we will mess with production config
-            if (!Settings.IsForcedToTestMode())
-            {
-                if (newSettings.Username != null && (_settings.Username == null
-                || !_settings.Username.Equals(newSettings.Username)))
-                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.UserKey, newSettings.Username,
-                        RegistryValueKind.String);
-                if (!_settings.WorkingDir.Equals(newSettings.WorkingDir))
-                    Registry.SetValue(Settings.EnvironmentVarsRoot, Settings.WorkingDirKey, newSettings.WorkingDir,
-                        RegistryValueKind.String);
-            }
-
-            var settingsFilename = newSettings.WorkingDir + "\\config\\" + newSettings.Username + "_settings.json";
             try
             {
-                using (StreamWriter file = File.CreateText(settingsFilename))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, newSettings);
-                }
+                var newSettings = (Settings)SettingsGrid.SelectedObject;
+
+                Settings.PersistSettings(newSettings, _settings, false);
+
+                Settings.SetInst(newSettings);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to write the settings to " + settingsFilename + " because: " + ex.Message);
-                return;
+                ErrorHandler.HandleError(this, "saving settings", ex);
             }
-
-            Settings.SetInst(newSettings);
+            
             DialogResult = DialogResult.OK;
             Close();
         }

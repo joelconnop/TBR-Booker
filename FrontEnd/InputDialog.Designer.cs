@@ -62,6 +62,7 @@
             this.inputFld.Name = "inputFld";
             this.inputFld.Size = new System.Drawing.Size(442, 61);
             this.inputFld.TabIndex = 0;
+            this.inputFld.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.inputFld_KeyPress);
             // 
             // saveBtn
             // 
@@ -69,7 +70,7 @@
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(75, 23);
             this.saveBtn.TabIndex = 4;
-            this.saveBtn.Text = "Save";
+            this.saveBtn.Text = "Ok";
             this.saveBtn.UseVisualStyleBackColor = true;
             this.saveBtn.Click += new System.EventHandler(this.saveBtn_Click);
             // 
@@ -79,7 +80,7 @@
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(75, 23);
             this.closeBtn.TabIndex = 3;
-            this.closeBtn.Text = "Close";
+            this.closeBtn.Text = "Cancel";
             this.closeBtn.UseVisualStyleBackColor = true;
             this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
             // 

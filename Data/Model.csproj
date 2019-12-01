@@ -68,6 +68,7 @@
     <Compile Include="Entities\ErrorLog.cs" />
     <Compile Include="Entities\Followup.cs" />
     <Compile Include="Entities\Payment.cs" />
+    <Compile Include="Entities\Penalty.cs" />
     <Compile Include="Entities\PriceItem.cs" />
     <Compile Include="Entities\RepeatSchedule.cs" />
     <Compile Include="Entities\Service.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Enums\LostDealReasons.cs" />
     <Compile Include="Enums\Packages.cs" />
     <Compile Include="Enums\PaymentMethods.cs" />
+    <Compile Include="Enums\Penalties.cs" />
     <Compile Include="Enums\ProductIds.cs" />
     <Compile Include="Enums\ServiceTypes.cs" />
     <Compile Include="Enums\TimeSlots.cs" />
@@ -121,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\BookingsReport.html" />
+    <None Include="Resources\PenaltyForm.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
