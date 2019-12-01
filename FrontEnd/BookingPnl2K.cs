@@ -14,7 +14,7 @@ using TBRBooker.Base;
 
 namespace TBRBooker.FrontEnd
 {
-    public partial class BookingPnl : UserControl
+    public partial class BookingPnl2K : UserControl
     {
 
         BookingsFrm _owner;
@@ -55,7 +55,7 @@ namespace TBRBooker.FrontEnd
             return _booking;
         }
 
-        public BookingPnl(Booking booking, BookingsFrm owner, bool isOnLeftTab)
+        public BookingPnl2K(Booking booking, BookingsFrm owner, bool isOnLeftTab)
         {
             InitializeComponent();
 
@@ -67,12 +67,6 @@ namespace TBRBooker.FrontEnd
             _isLoading = true;
             _highlightMode = null;
             _addressLastSearchTerm = "";
-
-            // resize doesn't seem to work. No errors, just no changes?
-            //if (Settings.Inst().BookingsScreen2K)
-            //{
-            //    ResizeTo2K(isOnLeftTab);
-            //}
 
             if (booking.IsNewBooking)
             {
@@ -98,43 +92,6 @@ namespace TBRBooker.FrontEnd
             catch (Exception ex)
             {
                 ErrorHandler.HandleError(this, "Failed to fully load the booking", ex);
-            }
-        }
-
-        private void ResizeTo2K(bool isOnLeftTab)
-        {
-            var twoK = new BookingPnl2K(_booking, _owner, isOnLeftTab);
-
-            Size = new Size(twoK.Size.Width, twoK.Size.Height);
-
-            RecursiveResize(Controls, twoK.Controls);
-        }
-
-        private void RecursiveResize(ControlCollection cees, ControlCollection c2ks)
-        {
-            var cs = new List<List<Control>>();
-
-            if (cees.Count != c2ks.Count)
-            {
-                ErrorHandler.HandleError(this, "loading booking form", new Exception($"2K Controls length did not match {cees.Count} vs {c2ks.Count}."));
-                return;
-            }
-
-            for (int i = 0; i < cees.Count; i++)
-            {
-                var c = cees[0];
-                var c2kMatch = c2ks.Find(c.Name, false);
-                if (c2kMatch.Length != 1)
-                {
-                    ErrorHandler.HandleError(this, "loading booking form", new Exception($"2K control mismatch for {c.Name} - {c2kMatch.Length}."));
-                    return;
-                }
-                var c2k = c2kMatch.Single();
-
-                c.Left = c2k.Left;
-                c.Top = c2k.Top;
-                c.Size = new Size(c2k.Size.Width, c2k.Size.Height);
-                RecursiveResize(c.Controls, c2k.Controls);
             }
         }
 
@@ -166,7 +123,7 @@ namespace TBRBooker.FrontEnd
             addressFld.Text = _booking.Address;
             // addressVenuFld.Text = _booking.VenueName;
 
-            // NEEDED! But Timeline takes 'this' (a BookingPnl2K, NOT a BookingPnl!)  /// Timeline = new Timeline(_booking, _owner, this);
+            Timeline = new Timeline(_booking, _owner, this);
             dateGrp.Controls.Add(Timeline);
             Timeline.Location = new Point(13, 65);
 

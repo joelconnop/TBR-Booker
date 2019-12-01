@@ -15,23 +15,32 @@ namespace TBRBooker.FrontEnd
     public partial class BookingsFrm : Form
     {
 
-        public Dictionary<string, BookingPnl> _panels;
+        public Dictionary<string, BookingPnl2K> _panels;
         public MainFrm _owner;
 
-        private const int FullWidth = 1920;
-        private const int HalfWidth = 970;
+        private int _fullWidth = 1920;
+        private int _halfWidth = 970;
 
         public BookingsFrm(MainFrm owner)
         {
             InitializeComponent();
 
             _owner = owner;
-            _panels = new Dictionary<string, BookingPnl>();
+            _panels = new Dictionary<string, BookingPnl2K>();
             Styles.SetFormStyles(this);
         }
 
         public void ShowOnAppropriateMonitor()
         {
+            if (Settings.Inst().BookingsScreen2K)
+            {
+                Size = new Size(2400, 1350);
+                rightTabs.Left = 1200;
+                leftTabs.Size = rightTabs.Size = new Size(1160, 1300);
+                _fullWidth = 2400;
+                _halfWidth = 1180;
+            }
+
             if (WindowState == FormWindowState.Minimized)
             {
                 Screen[] screens = Screen.AllScreens;
@@ -80,10 +89,10 @@ namespace TBRBooker.FrontEnd
 
         private void AssessWidth()
         {
-            if (rightTabs.TabPages.Count > 0 && Width < FullWidth)
-                Width = FullWidth;
-            else if (rightTabs.TabPages.Count == 0 && Width > HalfWidth)
-                Width = HalfWidth;
+            if (rightTabs.TabPages.Count > 0 && Width < _fullWidth)
+                Width = _fullWidth;
+            else if (rightTabs.TabPages.Count == 0 && Width > _halfWidth)
+                Width = _halfWidth;
         }
 
         public void ShowBooking(Booking booking, string navigateFromBookingId = "")
@@ -115,7 +124,7 @@ namespace TBRBooker.FrontEnd
 
                 tabs.TabPages.Add(booking.Id, booking.Id);
                 var page = tabs.TabPages[booking.Id];
-                var panel = new BookingPnl(booking, this, isLeft);
+                var panel = new BookingPnl2K(booking, this, isLeft);
                 page.Controls.Add(panel);
                 tabs.SelectedTab = page;
                 _panels.Add(booking.Id, panel);
@@ -139,7 +148,7 @@ namespace TBRBooker.FrontEnd
                 {
                     try
                     {
-                        var bookingPnl = (BookingPnl)rightTabs.SelectedTab.Controls[0];
+                        var bookingPnl = (BookingPnl2K)rightTabs.SelectedTab.Controls[0];
                         SwitchTabGroup(bookingPnl.GetBooking().Id, false);
                         bookingPnl.ConfigureMoveButtons(true);
                     }

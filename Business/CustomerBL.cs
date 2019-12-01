@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TBRBooker.Model.DTO;
 using TBRBooker.Model.Entities;
@@ -16,11 +17,13 @@ namespace TBRBooker.Business
         {
             var directory = DBBox.GetCustomerDirectory();
             var matches = new List<ExistingCustomerDTO>();
+            searchTerm = searchTerm.ToLower();
 
             foreach (var c in directory)
             {
-                string cname = c.DirectoryName.Replace(" from ", " ");
-                if (cname.ToLower().Contains(searchTerm.ToLower()))
+                string cname = c.DirectoryName.Replace(" from ", " ").ToLower();
+                cname = Regex.Replace(cname, "[^a-z0-9]", "");
+                if (cname.Contains(searchTerm))
                     matches.Add(c);
             }
 

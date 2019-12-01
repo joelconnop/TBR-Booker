@@ -22,7 +22,7 @@ namespace TBRBooker.FrontEnd
         private Bitmap _pic;
 
         private BookingsFrm _bookingsFrm;
-        private BookingPnl _owner;
+        private BookingPnl2K _owner;
         private string _bookingId;
         public List<Booking> Others { get; private set; }
         private List<GoogleCalendarItemDTO> _events;
@@ -48,7 +48,7 @@ namespace TBRBooker.FrontEnd
         public string Address { get; set; }
 
 
-        public Timeline(Booking booking, BookingsFrm bookingsFrm, BookingPnl owner)
+        public Timeline(Booking booking, BookingsFrm bookingsFrm, BookingPnl2K owner)
         {
             InitializeComponent();
 

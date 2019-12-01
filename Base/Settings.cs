@@ -27,12 +27,12 @@ namespace TBRBooker.Base
         public static Settings CreateDefaultInst()
         {
             if (IsForcedToTestMode())
-                _instance = new Settings(true, 1, 0, false, "C:\\Programming\\TBR Booker Instance",
+                _instance = new Settings(true, 1, 0, true, false, "C:\\Programming\\TBR Booker Instance",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
                     "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);
             else
-                _instance = new Settings(false, 1, 0, false, "G:\\My Drive\\Bookings\\TBR Booker",
+                _instance = new Settings(false, 1, 0, true, false, "G:\\My Drive\\Bookings\\TBR Booker",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
                      "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);
@@ -69,6 +69,9 @@ namespace TBRBooker.Base
         [Category("Interface")]
         [DisplayName("Screen Id for Booking Forms (0 or 1)")]
         public int BookingsScreenId { get; set; }
+        [Category("Interface")]
+        [DisplayName("Use 2K Booking Form")]
+        public bool BookingsScreen2K { get; set; }
         [Category("Interface")]
         [DisplayName("Use 24 Hour Time")]
         public bool Is24HourTime { get; set; }
@@ -125,7 +128,7 @@ namespace TBRBooker.Base
             //default constructor
         }
 
-        public Settings(bool isTestMode, int mainScreenId, int bookingsScreenId, bool is24HourTime, string saveFilesPath,
+        public Settings(bool isTestMode, int mainScreenId, int bookingsScreenId, bool bookings2K, bool is24HourTime, string saveFilesPath,
             int monthsForBookingHistory, decimal creditCardMultiplier, 
             DayOfWeek confirmationCallDay, DayOfWeek followupDay,
             int daysBeforeOverdue, string calendarAccount,
@@ -134,6 +137,7 @@ namespace TBRBooker.Base
             IsTestMode = isTestMode;
             MainScreenDefaultId = mainScreenId;
             BookingsScreenId = bookingsScreenId;
+            BookingsScreen2K = bookings2K;
             Is24HourTime = is24HourTime;
             WorkingDir = saveFilesPath;
             MonthsForBookingHistory = monthsForBookingHistory;
@@ -157,6 +161,7 @@ namespace TBRBooker.Base
                 WorkingDir = WorkingDir,
                 MainScreenDefaultId = MainScreenDefaultId,
                 BookingsScreenId = BookingsScreenId,
+                BookingsScreen2K = BookingsScreen2K,
                 Is24HourTime = Is24HourTime,
                 MonthsForBookingHistory = MonthsForBookingHistory,
                 ConfirmationCallDay = ConfirmationCallDay,

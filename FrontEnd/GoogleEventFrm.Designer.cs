@@ -36,6 +36,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.descFld = new System.Windows.Forms.TextBox();
             this.contactGrp = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.numDaysFld = new System.Windows.Forms.TextBox();
             this.locationFld = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dateFld = new System.Windows.Forms.Label();
@@ -47,8 +49,6 @@
             this.durationFld = new System.Windows.Forms.TextBox();
             this.startPick = new TBRBooker.FrontEnd.TimePicker();
             this.label15 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.numDaysFld = new System.Windows.Forms.TextBox();
             this.contactGrp.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -130,6 +130,23 @@
             this.contactGrp.Size = new System.Drawing.Size(362, 355);
             this.contactGrp.TabIndex = 0;
             this.contactGrp.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(234, 239);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Number of Days";
+            // 
+            // numDaysFld
+            // 
+            this.numDaysFld.Location = new System.Drawing.Point(237, 258);
+            this.numDaysFld.Name = "numDaysFld";
+            this.numDaysFld.Size = new System.Drawing.Size(77, 20);
+            this.numDaysFld.TabIndex = 16;
+            this.numDaysFld.Text = "1";
             // 
             // locationFld
             // 
@@ -223,23 +240,6 @@
             this.label15.Size = new System.Drawing.Size(55, 13);
             this.label15.TabIndex = 15;
             this.label15.Text = "Start Time";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(234, 239);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
-            this.label4.TabIndex = 17;
-            this.label4.Text = "Number of Days";
-            // 
-            // numDaysFld
-            // 
-            this.numDaysFld.Location = new System.Drawing.Point(237, 258);
-            this.numDaysFld.Name = "numDaysFld";
-            this.numDaysFld.Size = new System.Drawing.Size(77, 20);
-            this.numDaysFld.TabIndex = 16;
-            this.numDaysFld.Text = "1";
             // 
             // GoogleEventFrm
             // 

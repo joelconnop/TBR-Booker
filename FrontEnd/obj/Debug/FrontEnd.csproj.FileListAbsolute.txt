@@ -91,3 +91,4 @@ C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.exe.manifest
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.application
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.InputDialog.resources
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\GoogleMapsApi.dll
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingPnl2K.resources
