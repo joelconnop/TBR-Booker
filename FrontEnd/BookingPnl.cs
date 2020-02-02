@@ -166,7 +166,7 @@ namespace TBRBooker.FrontEnd
             addressFld.Text = _booking.Address;
             // addressVenuFld.Text = _booking.VenueName;
 
-            // NEEDED! But Timeline takes 'this' (a BookingPnl2K, NOT a BookingPnl!)  /// Timeline = new Timeline(_booking, _owner, this);
+            Timeline = new Timeline(_booking, _owner, this); // NEEDED! But Timeline takes 'this' (a BookingPnl2K, NOT a BookingPnl!)
             dateGrp.Controls.Add(Timeline);
             Timeline.Location = new Point(13, 65);
 

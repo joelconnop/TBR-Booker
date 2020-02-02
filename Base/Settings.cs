@@ -27,12 +27,12 @@ namespace TBRBooker.Base
         public static Settings CreateDefaultInst()
         {
             if (IsForcedToTestMode())
-                _instance = new Settings(true, 1, 0, true, false, "C:\\Programming\\TBR Booker Instance",
+                _instance = new Settings(true, 1, 0, false, false, "C:\\Programming\\TBR Booker Instance",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
                     "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);
             else
-                _instance = new Settings(false, 1, 0, true, false, "G:\\My Drive\\Bookings\\TBR Booker",
+                _instance = new Settings(false, 1, 0, false, false, "G:\\My Drive\\Bookings\\TBR Booker",
                     3, 0.98M, DayOfWeek.Wednesday, DayOfWeek.Monday, 7,
                     "sarahjane@truebluereptiles.com.au",
                      "#23A8EF", "#FFE0C0", "", new DateTime(2019, 7, 1).Ticks);

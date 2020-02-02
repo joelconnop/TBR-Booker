@@ -16,7 +16,7 @@ namespace TBRBooker.FrontEnd
             var dbError = ErrorLogger.LogError(action, ex);
 
             var msg = (isStable ? 
-                "An unexpected error has occured for the feature:"
+                "Don't want to freak you out, but something went a wee bit wrong. You should be able to keep working, unless you actually needed the following to work:"
                 :
                 "An unexpected error has occurred, and the program could be unstable. You should make a note of what you were working on (hint: Print Screen) and restart the program.")
                 + Environment.NewLine + Environment.NewLine + action + ": "

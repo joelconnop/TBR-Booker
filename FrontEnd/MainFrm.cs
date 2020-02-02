@@ -208,8 +208,16 @@ namespace TBRBooker.FrontEnd
             calItems.AddRange(repeatMarkers);
 
             // add the google events for desired date range
-            calItems.AddRange(CalendarBL.GetGoogleEventsForMainCalendar(
-                isForceReadAll, eventsStart, eventsEnd));
+            try
+            {
+                calItems.AddRange(CalendarBL.GetGoogleEventsForMainCalendar(
+    isForceReadAll, eventsStart, eventsEnd));
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "load blockouts", ex, true);
+            }
+
                         
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)

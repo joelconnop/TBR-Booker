@@ -139,12 +139,8 @@ namespace TBRBooker.Business
             // Create Google Calendar API service.
             var service = CreateCalendarService();
 
-            // Define parameters of request.
-            EventsResource.ListRequest request = service.Events.List("primary");
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            //request.MaxResults = 10;
-            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+            // get request
+            var request = GetGoogleEventRequest(service);
 
             if (Calendar == null || isForceReadAll ||
                 (startDate < CalendarRange.Start && endDate > CalendarRange.End))
@@ -202,6 +198,17 @@ namespace TBRBooker.Business
             }
 
             return Calendar.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
+        }
+
+        private static EventsResource.ListRequest GetGoogleEventRequest(CalendarService service)
+        {
+            // Define parameters of request.
+            EventsResource.ListRequest request = service.Events.List("primary");
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            //request.MaxResults = 10;
+            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+            return request;
         }
 
         private static GoogleCalendarItemDTO MakeTBREvent(Event gei)

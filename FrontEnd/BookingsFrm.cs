@@ -15,7 +15,7 @@ namespace TBRBooker.FrontEnd
     public partial class BookingsFrm : Form
     {
 
-        public Dictionary<string, BookingPnl2K> _panels;
+        public Dictionary<string, BookingPnl> _panels;
         public MainFrm _owner;
 
         private int _fullWidth = 1920;
@@ -26,7 +26,7 @@ namespace TBRBooker.FrontEnd
             InitializeComponent();
 
             _owner = owner;
-            _panels = new Dictionary<string, BookingPnl2K>();
+            _panels = new Dictionary<string, BookingPnl>();
             Styles.SetFormStyles(this);
         }
 
@@ -124,7 +124,7 @@ namespace TBRBooker.FrontEnd
 
                 tabs.TabPages.Add(booking.Id, booking.Id);
                 var page = tabs.TabPages[booking.Id];
-                var panel = new BookingPnl2K(booking, this, isLeft);
+                var panel = new BookingPnl(booking, this, isLeft);
                 page.Controls.Add(panel);
                 tabs.SelectedTab = page;
                 _panels.Add(booking.Id, panel);
