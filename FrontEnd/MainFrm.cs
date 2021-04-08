@@ -262,8 +262,20 @@ namespace TBRBooker.FrontEnd
 
         private void datePicker_ValueChanged(object sender, EventArgs e)
         {
-            _calendarStartDate = DTUtils.StartOfDay(PickCalendarStartDate(datePicker.Value));
-            UpdateCalendar();
+            if (!dateTmr.Enabled)
+            {
+                dateTmr.Enabled = true;
+                dateTmr.Start();
+                _calendarStartDate = DTUtils.StartOfDay(PickCalendarStartDate(datePicker.Value));
+                UpdateCalendar();
+            }
+        }
+
+        private void dateTmr_Tick(object sender, EventArgs e)
+        {
+            // they have waited 3 secs since last calendar refresh. Allow it to happen again
+            dateTmr.Stop();
+            dateTmr.Enabled = false;
         }
 
         private void prevBtn_Click(object sender, EventArgs e)
@@ -366,27 +378,56 @@ namespace TBRBooker.FrontEnd
 
         private void last30DaysToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Cursor = Cursors.WaitCursor;
+            var file = ReportBL.GetReportFile("Last 30 Days", DTUtils.StartOfDay(datePicker.Value).AddMonths(-1), DTUtils.EndOfDay(datePicker.Value.AddDays(-1)));
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
         }
 
         private void currentFinancialYearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Cursor = Cursors.WaitCursor;
+            var file = ReportBL.GetCurrentYearReport(datePicker.Value);
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
         }
 
         private void previousFinancialYearToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+            var file = ReportBL.GetPreviousYearReport(datePicker.Value);
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
+        }
 
+        private void last12MonthsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            var file = ReportBL.GetReportFile("Last 12 Months", DTUtils.StartOfDay(datePicker.Value).AddDays(-365), DTUtils.EndOfDay(datePicker.Value.AddDays(-1)));
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
         }
 
         private void allTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+            var file = ReportBL.GetReportFile("All Time", DateTime.MinValue, DateTime.MaxValue);
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
+        }
 
+        private void selectedMonth1YearAgoJobkeeperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            var targetDate = datePicker.Value.AddDays(-365);
+            var file = ReportBL.GetReportFile(targetDate.ToString("MMMM yyyy"), DTUtils.StartOfMonth(targetDate), DTUtils.EndOfMonth(targetDate));
+            System.Diagnostics.Process.Start(file);
+            Cursor = Cursors.Default;
         }
 
         private void allGeneralSummariesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (var filename in ReportBL.GetAllReports())
+            foreach (var filename in ReportBL.GetAllReports(datePicker.Value))
             {
                 //just open in chrome, let user decide whether to print now or just view
                 System.Diagnostics.Process.Start(filename);

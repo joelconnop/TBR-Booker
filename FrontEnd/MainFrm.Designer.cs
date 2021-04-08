@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.mainMnu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,7 +38,9 @@
             this.last30DaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.previousFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.last12MonthsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.penaltiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,7 +71,8 @@
             this.bookingLst = new System.Windows.Forms.ListView();
             this.searcCloseBtn = new System.Windows.Forms.Button();
             this.searchLst = new System.Windows.Forms.ListView();
-            this.penaltiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dateTmr = new System.Windows.Forms.Timer(this.components);
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.searchPnl.SuspendLayout();
@@ -118,9 +122,11 @@
             // 
             this.generalSummaryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.last30DaysToolStripMenuItem,
+            this.last12MonthsToolStripMenuItem,
             this.currentFinancialYearToolStripMenuItem,
             this.previousFinancialYearToolStripMenuItem,
-            this.allTimeToolStripMenuItem});
+            this.allTimeToolStripMenuItem,
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem});
             this.generalSummaryToolStripMenuItem.Name = "generalSummaryToolStripMenuItem";
             this.generalSummaryToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.generalSummaryToolStripMenuItem.Text = "General Summary";
@@ -128,30 +134,45 @@
             // last30DaysToolStripMenuItem
             // 
             this.last30DaysToolStripMenuItem.Name = "last30DaysToolStripMenuItem";
-            this.last30DaysToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.last30DaysToolStripMenuItem.Text = "Last 30 Days";
+            this.last30DaysToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.last30DaysToolStripMenuItem.Text = "Last 30 Days (prior to selected date)";
             this.last30DaysToolStripMenuItem.Click += new System.EventHandler(this.last30DaysToolStripMenuItem_Click);
             // 
             // currentFinancialYearToolStripMenuItem
             // 
             this.currentFinancialYearToolStripMenuItem.Name = "currentFinancialYearToolStripMenuItem";
-            this.currentFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.currentFinancialYearToolStripMenuItem.Text = "Current Financial Year";
+            this.currentFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.currentFinancialYearToolStripMenuItem.Text = "Current Financial Year (selected date)";
             this.currentFinancialYearToolStripMenuItem.Click += new System.EventHandler(this.currentFinancialYearToolStripMenuItem_Click);
             // 
             // previousFinancialYearToolStripMenuItem
             // 
             this.previousFinancialYearToolStripMenuItem.Name = "previousFinancialYearToolStripMenuItem";
-            this.previousFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.previousFinancialYearToolStripMenuItem.Text = "Previous Financial Year";
+            this.previousFinancialYearToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.previousFinancialYearToolStripMenuItem.Text = "Previous Financial Year (prior to selected date)";
             this.previousFinancialYearToolStripMenuItem.Click += new System.EventHandler(this.previousFinancialYearToolStripMenuItem_Click);
+            // 
+            // last12MonthsToolStripMenuItem
+            // 
+            this.last12MonthsToolStripMenuItem.Name = "last12MonthsToolStripMenuItem";
+            this.last12MonthsToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.last12MonthsToolStripMenuItem.Text = "Last 12 Months (prior to selected date)";
+            this.last12MonthsToolStripMenuItem.Click += new System.EventHandler(this.last12MonthsToolStripMenuItem_Click);
             // 
             // allTimeToolStripMenuItem
             // 
             this.allTimeToolStripMenuItem.Name = "allTimeToolStripMenuItem";
-            this.allTimeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.allTimeToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
             this.allTimeToolStripMenuItem.Text = "All Time";
             this.allTimeToolStripMenuItem.Click += new System.EventHandler(this.allTimeToolStripMenuItem_Click);
+            // 
+            // penaltiesToolStripMenuItem
+            // 
+            this.penaltiesToolStripMenuItem.Name = "penaltiesToolStripMenuItem";
+            this.penaltiesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.penaltiesToolStripMenuItem.Text = "Penalties";
+            this.penaltiesToolStripMenuItem.Visible = false;
+            this.penaltiesToolStripMenuItem.Click += new System.EventHandler(this.penaltiesToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -175,7 +196,7 @@
             this.googleCalendarToolStripMenuItem,
             this.createRecurringEventToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.testingToolStripMenuItem.Text = "Testing";
             this.testingToolStripMenuItem.Visible = false;
             // 
@@ -456,12 +477,17 @@
             this.searchLst.View = System.Windows.Forms.View.List;
             this.searchLst.ItemActivate += new System.EventHandler(this.searchLst_ItemActivate);
             // 
-            // penaltiesToolStripMenuItem
+            // dateTmr
             // 
-            this.penaltiesToolStripMenuItem.Name = "penaltiesToolStripMenuItem";
-            this.penaltiesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.penaltiesToolStripMenuItem.Text = "Penalties";
-            this.penaltiesToolStripMenuItem.Click += new System.EventHandler(this.penaltiesToolStripMenuItem_Click);
+            this.dateTmr.Interval = 3000;
+            this.dateTmr.Tick += new System.EventHandler(this.dateTmr_Tick);
+            // 
+            // selectedMonth1YearAgoJobkeeperToolStripMenuItem
+            // 
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Name = "selectedMonth1YearAgoJobkeeperToolStripMenuItem";
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Text = "Selected month 1 year ago (Jobkeeper)";
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Click += new System.EventHandler(this.selectedMonth1YearAgoJobkeeperToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -539,6 +565,9 @@
         private System.Windows.Forms.ListView searchLst;
         private System.Windows.Forms.ListView bookingLst;
         private System.Windows.Forms.ToolStripMenuItem penaltiesToolStripMenuItem;
+        private System.Windows.Forms.Timer dateTmr;
+        private System.Windows.Forms.ToolStripMenuItem last12MonthsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectedMonth1YearAgoJobkeeperToolStripMenuItem;
     }
 }
 

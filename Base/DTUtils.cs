@@ -109,6 +109,24 @@ namespace TBRBooker.Base
             return new DateTime(date.Year, date.Month, date.Day);
         }
 
+        public static DateTime EndOfDay(DateTime? dayIfNotForToday = null)
+        {
+            DateTime date = StartOfDay(dayIfNotForToday);
+            return new DateTime(date.Year, date.Month, date.Day).AddDays(1).AddHours(-1);
+        }
+
+        public static DateTime StartOfMonth(DateTime? dayIfNotForToday = null)
+        {
+            DateTime date = StartOfDay(dayIfNotForToday);
+            return new DateTime(date.Year, date.Month, 1);
+        }
+
+        public static DateTime EndOfMonth(DateTime? dayIfNotForToday = null)
+        {
+            var date = StartOfMonth(dayIfNotForToday);
+            return date.AddMonths(1).AddHours(-1);
+        }
+
         public static DateTime Min(DateTime dt1, DateTime dt2)
         {
             if (dt1.Ticks < dt2.Ticks)

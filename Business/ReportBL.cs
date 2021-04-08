@@ -15,43 +15,64 @@ namespace TBRBooker.Business
     public class ReportBL
     {
 
-        public static List<string> GetAllReports()
+        private static (List<Booking> Bookings, DateTime Expiry) _reportData = (null, DateTime.MinValue);
+
+        public static List<Booking> GetReportData()
+        {
+            if (_reportData.Expiry < DateTime.Now)
+            {
+                var allBookings = BookingsForReport(DateTime.MinValue, DateTime.MaxValue);
+                _reportData = (allBookings, DateTime.Now.AddHours(12));
+                return allBookings;
+            }
+
+            return _reportData.Bookings;
+        }
+
+        public static List<string> GetAllReports(DateTime selectedDay)
         {
             var files = new List<string>();
 
-            var reportData = BookingsForReport(DateTime.MinValue, DateTime.MaxValue);
-            files.Add(MakeReportHtml(FetchReport("All Time", DateTime.MinValue, DateTime.MaxValue, reportData)));
-            files.Add(GetPreviousYearReport(reportData));
-            files.Add(GetCurrentYearReport(reportData));
-            files.Add(MakeReportHtml(FetchReport("Last 30 Days", DTUtils.StartOfDay().AddDays(-30), DTUtils.StartOfDay(), reportData)));
+            files.Add(GetPreviousYearReport(selectedDay));
+            files.Add(GetCurrentYearReport(selectedDay));
+            files.Add(GetReportFile("Last 30 Days", DTUtils.StartOfDay(selectedDay).AddMonths(-1), DTUtils.EndOfDay(selectedDay.AddDays(-1))));
+            files.Add(GetReportFile("Last 12 Months", DTUtils.StartOfDay(selectedDay).AddDays(-365), DTUtils.EndOfDay(selectedDay.AddDays(-1))));
 
             return files;
         }
 
-        public static string GetCurrentYearReport(List<Booking> reportData = null)
+        public static string GetReportFile(string name, DateTime startDate, DateTime endDate)
         {
-            DateTime start = new DateTime(DateTime.Now.Year, 7, 1);
-            DateTime end = new DateTime(DateTime.Now.Year + 1, 7, 1).AddHours(-1);
-            if (DateTime.Now.Year <= 6)
-            {
-                start = new DateTime(DateTime.Now.Year - 1, 7, 1);
-                end = new DateTime(DateTime.Now.Year, 7, 1).AddHours(-1);
-            }
-
-            return MakeReportHtml(FetchReport("Current Financial Year", start, end, reportData));
+            var reportData = GetReportData();
+            return MakeReportHtml(FetchReport(name, startDate, endDate));
         }
 
-        public static string GetPreviousYearReport(List<Booking> reportData = null)
+        public static string GetCurrentYearReport(DateTime selectedDay)
         {
-            DateTime start = new DateTime(DateTime.Now.Year - 1, 7, 1);
-            DateTime end = new DateTime(DateTime.Now.Year, 7, 1).AddHours(-1);
-            if (DateTime.Now.Year <= 6)
+            var reportData = GetReportData();
+            DateTime start = new DateTime(selectedDay.Year, 7, 1);
+            DateTime end = new DateTime(selectedDay.Year + 1, 7, 1).AddHours(-1);
+            if (selectedDay.Month <= 6)
             {
-                start = new DateTime(DateTime.Now.Year - 2, 7, 1);
-                end = new DateTime(DateTime.Now.Year - 1, 7, 1).AddHours(-1);
+                start = new DateTime(selectedDay.Year - 1, 7, 1);
+                end = new DateTime(selectedDay.Year, 7, 1).AddHours(-1);
             }
 
-            return MakeReportHtml(FetchReport("Last Financial Year", start, end, reportData));
+            return MakeReportHtml(FetchReport($"Financial Year {start.Year}-{end.Year}", start, end, reportData));
+        }
+
+        public static string GetPreviousYearReport(DateTime selectedDay)
+        {
+            var reportData = GetReportData();
+            DateTime start = new DateTime(selectedDay.Year - 1, 7, 1);
+            DateTime end = new DateTime(selectedDay.Year, 7, 1).AddHours(-1);
+            if (selectedDay.Month <= 6)
+            {
+                start = new DateTime(selectedDay.Year - 2, 7, 1);
+                end = new DateTime(selectedDay.Year - 1, 7, 1).AddHours(-1);
+            }
+
+            return MakeReportHtml(FetchReport($"Financial Year {start.Year}-{end.Year}", start, end, reportData));
         }
 
         public static string GetReport(string name, DateTime start, DateTime end)
