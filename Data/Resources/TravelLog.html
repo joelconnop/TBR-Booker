@@ -1,0 +1,33 @@
+<html>
+
+	<style>
+	table {
+	  font-family: arial, sans-serif;
+	  border-collapse: collapse;
+	  width: 100%;
+	}
+
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+
+	tr:nth-child(even) {
+	  background-color: #dddddd;
+	}
+	</style>
+
+    <body>
+        <h1>Travel Log</h1>
+        <h2>[start] - [end]</h2>
+		<br>
+		<p>All days are calculated by Google Maps Directions, starting and finishing at the place of business address of: [homeAddress]</p>
+        <table>
+            <tr><th>Date</th><th>Booking Locations</th><th>Distance</th></tr>
+            [rows]
+			<tr><td></td><td><b>Total:</b></td><td>[totalKm]</td></tr>
+        </table>
+    </body>
+
+</html>

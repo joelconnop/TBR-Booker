@@ -434,6 +434,36 @@ namespace TBRBooker.FrontEnd
             }
         }
 
+        private void travelLogLastFYearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(
+                this,
+                "This report uses a lot of google api calls and will be slow and possibly cost a tiny amount of real money. Proceed?",
+                "Travel Log",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning)
+                == DialogResult.No)
+            {
+                return;
+            }
+
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                var file = ReportBL.GetTravelLog(datePicker.Value);
+                System.Diagnostics.Process.Start(file);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(this, "Unexpected error generating the Travel Log", ex, true);          
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+            
+        }
+
         private void createRecurringEventToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var repeat = new RepeatSchedule()

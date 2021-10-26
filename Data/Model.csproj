@@ -62,6 +62,7 @@
     <Compile Include="DTO\ExistingCustomerDTO.cs" />
     <Compile Include="DTO\GoogleCalendarItemDTO.cs" />
     <Compile Include="DTO\ReportDTO.cs" />
+    <Compile Include="DTO\TravelLogDTO.cs" />
     <Compile Include="Entities\Booking.cs" />
     <Compile Include="DTO\CalendarItemDTO.cs" />
     <Compile Include="Entities\CorporateAccount.cs" />
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\BookingsReport.html" />
+    <None Include="Resources\TravelLog.html" />
     <None Include="Resources\PenaltyForm.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

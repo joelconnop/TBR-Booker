@@ -80,6 +80,67 @@ namespace TBRBooker.Business
             return MakeReportHtml(FetchReport(name, start, end));
         }
 
+        public static string GetTravelLog(DateTime selectedDay)
+        {
+            var reportData = GetReportData();
+            DateTime start = new DateTime(selectedDay.Year - 1, 7, 1);
+            DateTime end = new DateTime(selectedDay.Year, 7, 1).AddHours(-1);
+            var withinRange = reportData.Where(f => f.BookingDate >= start && f.BookingDate < end && f.IsBooked());
+            var workDaySummaries = new List<(string Day, string Bookings, int SubtotalKm)>();
+            var homeAddress = "666 Beechmont Road, Lower Beechmont, Qld 4211";
+
+            foreach (var dailyBookings in withinRange.GroupBy(f => DTUtils.StartOfDay(f.BookingDate)).OrderBy(f => f.Key))
+            {
+                var bookingStr = string.Join(", ", dailyBookings.Select(f => $"{f.BookingName} ({ExtractSuburb(f.Address)})")).Trim();
+                var finalArrivalTime = dailyBookings.Last().BookingDate;
+                var route = TheGoogle.TravelInfo(dailyBookings.Select(f => f.Address).ToList(), finalArrivalTime, homeAddress, finishAtStart: true);
+                var SubtotalKm = route.Distances.Sum() / 1000;
+                workDaySummaries.Add((dailyBookings.Key.ToShortDateString(), bookingStr, SubtotalKm));
+            }
+
+            var travelLog = new TravelLogDTO(
+                start.ToShortDateString(), end.ToShortDateString(), workDaySummaries.Sum(f => f.SubtotalKm), workDaySummaries);
+            var blankForm = Resources.TravelLog;
+            var form = blankForm.Replace("[start]", travelLog.StartDate)
+                .Replace("[end]", travelLog.EndDate)
+                .Replace("[homeAddress]", homeAddress)
+                .Replace("[totalKm]", travelLog.TotalKm.ToString())
+                .Replace("[rows]", String.Join(Environment.NewLine,
+                    travelLog.WorkDays.Select(f => $"<tr><td>{f.Day}</td><td>{f.Bookings}</td><td>{f.SubtotalKm}</td>")));
+            
+            var filename = Settings.Inst().WorkingDir + $"\\Reports\\Travel Log {start.ToString("yyyyMMdd")}-{end.ToString("yyyyMMdd")} - {DateTime.Now.Ticks}.html";
+            File.WriteAllText(filename, form);
+            return filename;
+        }
+
+        private static string ExtractSuburb(string address)
+        {
+            var pieces = address.Split(',').ToList();
+            if (pieces.Last().Trim().ToUpper() == "AUSTRALIA")
+            {
+                pieces.RemoveAt(pieces.Count - 1);
+            }
+
+            if (pieces.Count == 3)
+            {
+                return pieces[1].Trim();
+            }
+
+            if (pieces.Last().Trim().ToUpper().StartsWith("QLD") && pieces.Count > 1)
+            {
+                return pieces[pieces.Count - 2].Trim();
+            }
+
+            var relevantPiece = pieces.Last();
+            
+            if (relevantPiece.ToUpper().Contains(" QLD"))
+            {
+                return relevantPiece.Substring(0, relevantPiece.ToUpper().IndexOf(" QLD")).Trim();
+            }
+
+            return pieces.Last().Trim();
+        }
+
         private static List<Booking> BookingsForReport(DateTime start, DateTime end)
         {
             // expensive scan, but we need everything even old things before we can

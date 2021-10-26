@@ -36,10 +36,11 @@
             this.allGeneralSummariesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.last30DaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.last12MonthsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.previousFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.last12MonthsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.penaltiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,7 +73,7 @@
             this.searcCloseBtn = new System.Windows.Forms.Button();
             this.searchLst = new System.Windows.Forms.ListView();
             this.dateTmr = new System.Windows.Forms.Timer(this.components);
-            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.travelLogLastFYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             this.searchPnl.SuspendLayout();
@@ -104,6 +105,7 @@
             this.reportsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.allGeneralSummariesToolStripMenuItem,
             this.generalSummaryToolStripMenuItem,
+            this.travelLogLastFYearToolStripMenuItem,
             this.penaltiesToolStripMenuItem});
             this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
             this.reportsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
@@ -138,6 +140,13 @@
             this.last30DaysToolStripMenuItem.Text = "Last 30 Days (prior to selected date)";
             this.last30DaysToolStripMenuItem.Click += new System.EventHandler(this.last30DaysToolStripMenuItem_Click);
             // 
+            // last12MonthsToolStripMenuItem
+            // 
+            this.last12MonthsToolStripMenuItem.Name = "last12MonthsToolStripMenuItem";
+            this.last12MonthsToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.last12MonthsToolStripMenuItem.Text = "Last 12 Months (prior to selected date)";
+            this.last12MonthsToolStripMenuItem.Click += new System.EventHandler(this.last12MonthsToolStripMenuItem_Click);
+            // 
             // currentFinancialYearToolStripMenuItem
             // 
             this.currentFinancialYearToolStripMenuItem.Name = "currentFinancialYearToolStripMenuItem";
@@ -152,19 +161,19 @@
             this.previousFinancialYearToolStripMenuItem.Text = "Previous Financial Year (prior to selected date)";
             this.previousFinancialYearToolStripMenuItem.Click += new System.EventHandler(this.previousFinancialYearToolStripMenuItem_Click);
             // 
-            // last12MonthsToolStripMenuItem
-            // 
-            this.last12MonthsToolStripMenuItem.Name = "last12MonthsToolStripMenuItem";
-            this.last12MonthsToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
-            this.last12MonthsToolStripMenuItem.Text = "Last 12 Months (prior to selected date)";
-            this.last12MonthsToolStripMenuItem.Click += new System.EventHandler(this.last12MonthsToolStripMenuItem_Click);
-            // 
             // allTimeToolStripMenuItem
             // 
             this.allTimeToolStripMenuItem.Name = "allTimeToolStripMenuItem";
             this.allTimeToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
             this.allTimeToolStripMenuItem.Text = "All Time";
             this.allTimeToolStripMenuItem.Click += new System.EventHandler(this.allTimeToolStripMenuItem_Click);
+            // 
+            // selectedMonth1YearAgoJobkeeperToolStripMenuItem
+            // 
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Name = "selectedMonth1YearAgoJobkeeperToolStripMenuItem";
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Text = "Selected month 1 year ago (Jobkeeper)";
+            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Click += new System.EventHandler(this.selectedMonth1YearAgoJobkeeperToolStripMenuItem_Click);
             // 
             // penaltiesToolStripMenuItem
             // 
@@ -482,12 +491,12 @@
             this.dateTmr.Interval = 3000;
             this.dateTmr.Tick += new System.EventHandler(this.dateTmr_Tick);
             // 
-            // selectedMonth1YearAgoJobkeeperToolStripMenuItem
+            // travelLogLastFYearToolStripMenuItem
             // 
-            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Name = "selectedMonth1YearAgoJobkeeperToolStripMenuItem";
-            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
-            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Text = "Selected month 1 year ago (Jobkeeper)";
-            this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Click += new System.EventHandler(this.selectedMonth1YearAgoJobkeeperToolStripMenuItem_Click);
+            this.travelLogLastFYearToolStripMenuItem.Name = "travelLogLastFYearToolStripMenuItem";
+            this.travelLogLastFYearToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.travelLogLastFYearToolStripMenuItem.Text = "Travel Log last f year";
+            this.travelLogLastFYearToolStripMenuItem.Click += new System.EventHandler(this.travelLogLastFYearToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -568,6 +577,7 @@
         private System.Windows.Forms.Timer dateTmr;
         private System.Windows.Forms.ToolStripMenuItem last12MonthsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectedMonth1YearAgoJobkeeperToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem travelLogLastFYearToolStripMenuItem;
     }
 }
 

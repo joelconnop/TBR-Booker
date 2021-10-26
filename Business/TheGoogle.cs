@@ -334,12 +334,19 @@ namespace TBRBooker.Business
         /// <returns></returns>
         public static (int[] Durations, int[] Distances) TravelInfo(
             List<string> addresses, DateTime roughDateAndTime,
-             string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+             string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211", bool finishAtStart = false)
         {
-            int numPoints = addresses.Count;
-            if (numPoints == 0)
+            if (addresses.Count == 0)
+            {
                 return (new int[0], new int[0]);
+            }
 
+            if (finishAtStart && !string.IsNullOrEmpty(startLocation))
+            {
+                addresses.Add(startLocation);
+            }
+
+            var numPoints = addresses.Count;
             if (string.IsNullOrEmpty(startLocation))
                 numPoints--;
             var route = (new int[numPoints], new int[numPoints]);
@@ -358,7 +365,7 @@ namespace TBRBooker.Business
                 ArrivalTime = roughDateAndTime,
                 Waypoints = routesParams.Waypoints.ToArray(),
                 TravelMode = TravelMode.Driving,
-                Alternatives = false
+                Alternatives = false,
             };
             var response = GoogleMaps.Directions.Query(req);
             if (!string.IsNullOrEmpty(response.ErrorMessage))

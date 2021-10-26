@@ -141,7 +141,7 @@ namespace TBRBooker.Model.Properties {
         ///&lt;head&gt;
         ///&lt;style&gt;
         ///	h1 {
-        ///		font-size: 20px;
+        ///		font-size: 30px;
         ///	}
         ///	h3 {
         ///		font-size: 16px;
@@ -149,21 +149,29 @@ namespace TBRBooker.Model.Properties {
         ///	p, td, li, h4, label {
         ///		font-size: 12px;
         ///	}
+        ///	td {
+        ///		width: 100px;
+        ///	}
+        ///
         ///&lt;/style&gt;
-        ///&lt;/head&gt;
+        ///
+        ///&lt;html&gt;
         ///    &lt;body&gt;
-        ///        &lt;h1&gt;[title]&lt;/h1&gt;
         ///
-        ///        &lt;h3&gt;Customer Details&lt;/h3&gt;
-        ///        &lt;table&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Name:&lt;/td&gt;&lt;td&gt;[name]&lt;/td&gt;&lt;/tr&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Phone:&lt;/td&gt;&lt;td&gt;[phone]&lt;/td&gt;&lt;/tr&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Email:&lt;/td&gt;&lt;td&gt;[email]&lt;/td&gt;&lt;/tr&gt;
-        ///        &lt;/table&gt;
+        ///        &lt;h1&gt;Penalty Absolution&lt;/h1&gt;
+        ///        &lt;h2&gt;[start] - [end]&lt;/h2&gt;
+        ///		&lt;br&gt;
         ///
-        ///        &lt;h3&gt;Service Details&lt;/h3&gt;
-        ///        &lt;table&gt;
-        ///            &lt;tr&gt;&lt;td&gt;Date &amp; Day:&lt;/t [rest of string was truncated]&quot;;.
+        ///		[details]
+        ///
+        ///		&lt;br&gt;
+        ///
+        ///		 &lt;h3&gt;Total:       [total]&lt;/h3&gt;
+        ///
+        ///        &lt;br&gt;
+        ///
+        ///    &lt;/body&gt;
+        ///&lt;/html&gt;.
         /// </summary>
         public static string PenaltyForm {
             get {
@@ -196,6 +204,29 @@ namespace TBRBooker.Model.Properties {
         public static string ReportForm {
             get {
                 return ResourceManager.GetString("ReportForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///    &lt;body&gt;
+        ///
+        ///        &lt;h1&gt;Travel Log&lt;/h1&gt;
+        ///        &lt;h2&gt;[start] - [end]&lt;/h2&gt;
+        ///		&lt;br&gt;
+        ///
+        ///        &lt;table&gt;
+        ///            &lt;tr&gt;&lt;td&gt;Booking Locations&lt;/td&gt;&lt;td&gt;Distance&lt;/td&gt;&lt;/tr&gt;
+        ///            [rows]
+        ///			&lt;tr&gt;&lt;td&gt;&lt;b&gt;Total:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[totalKm]&lt;/td&gt;&lt;/tr&gt;
+        ///        &lt;/table&gt;
+        ///        
+        ///    &lt;/body&gt;
+        ///&lt;/html&gt;.
+        /// </summary>
+        public static string TravelLog {
+            get {
+                return ResourceManager.GetString("TravelLog", resourceCulture);
             }
         }
     }

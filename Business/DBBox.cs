@@ -199,19 +199,53 @@ namespace TBRBooker.Business
                     return (T)cache[id];
             }
 
-            AmazonDynamoDBClient client = GetDynamoDBClient();
-            Table table = Table.LoadTable(client, CheckTablenameForTest(temp.TableName));
-            GetItemOperationConfig config = new GetItemOperationConfig()
-            {
-                AttributesToGet = temp.GetReadAttributes(),
-            };
-            Document doc = table.GetItem(id, config);
-            var item = DocToItem<T>(doc);
-
+            var item = ReadItemWithRetry(id, temp, 0);
             if (temp.IsCacheItems() && item != null)
                 cache.Add(id, item);
 
             return item;
+        }
+
+        private static T ReadItemWithRetry<T>(string id, T temp, int retries) where T : BaseItem
+        {
+            try
+            {
+                AmazonDynamoDBClient client = GetDynamoDBClient();
+                Table table = Table.LoadTable(client, CheckTablenameForTest(temp.TableName));
+                GetItemOperationConfig config = new GetItemOperationConfig()
+                {
+                    AttributesToGet = temp.GetReadAttributes(),
+                };
+
+                Document doc = table.GetItem(id, config);
+                var item = DocToItem<T>(doc);
+                return item;
+            }
+            catch (System.Net.WebException webex)
+            {
+                // note this exception does not extend System.Exception
+                return MaybeRetry(webex.Message);
+            }
+            catch (Amazon.Runtime.Internal.HttpErrorResponseException awsex)
+            {
+                return MaybeRetry(awsex.Message);
+            }
+
+            T MaybeRetry(string errorMsg)
+            {
+                // doesn't seem to work. table.GetItem() might have an internal retry helper (but still throws in debug, but continues?)
+                if (retries < 3)
+                {
+                    // might have exceeded provisioning, just have a wee rest
+                    if (errorMsg == "The remote server returned an error: (400) Bad Request.")
+                    {
+                        System.Threading.Thread.Sleep(5000 * (retries + 1));
+                        return ReadItemWithRetry(id, temp, retries + 1);
+                    }
+                }
+
+                throw new Exception(errorMsg); // give up :(
+            }
         }
 
         private static List<T> SearchToItems<T>(Search search) where T: BaseItem
@@ -393,7 +427,7 @@ namespace TBRBooker.Business
                 {
                     var item = DocToItem<RepeatSchedule>(doc);
 
-                    if (temp.IsCacheItems() && item != null)
+                    if (temp.IsCacheItems() && item != null && !cache.ContainsKey(item.Id))
                         cache.Add(item.Id, item);
                 }
             } while (!search.IsDone);
