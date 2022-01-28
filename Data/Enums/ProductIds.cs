@@ -42,6 +42,10 @@ namespace TBRBooker.Model.Enums
         Parking,
         Discount,
         NotSet,
-        BotanicGardens
+        BotanicGardens,
+        BuggyLollyJarUpgrade,
+        BuggyLollyJarSingle,
+        Pinata,
+        FetesAndFairs
     }
 }

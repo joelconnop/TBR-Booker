@@ -20,52 +20,52 @@ namespace TBRBooker.Business
             _productLookup = new Dictionary<ProductIds, PriceItem>();
 
             _productLookup.Add(ProductIds.ReptilePartyGoldCoast,
-                new PriceItem(ProductIds.ReptilePartyGoldCoast, 170, 1));
+                new PriceItem(ProductIds.ReptilePartyGoldCoast, 200, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusGoldCoast,
-new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 200, 1));
+new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 230, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyGoldCoast,
-new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 240, 1));
+new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 300, 1));
             _productLookup.Add(ProductIds.ReptileShowGoldCoast,
 new PriceItem(ProductIds.ReptileShowGoldCoast, 250, 1));
             _productLookup.Add(ProductIds.ReptileDisplayGoldCoast,
-new PriceItem(ProductIds.ReptileDisplayGoldCoast, 500, 1));
+new PriceItem(ProductIds.ReptileDisplayGoldCoast, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesGoldCoast,
-new PriceItem(ProductIds.RoamingReptilesGoldCoast, 150, 1));
+new PriceItem(ProductIds.RoamingReptilesGoldCoast, 200, 1));
             _productLookup.Add(ProductIds.PythonAppearanceGoldCoast,
-new PriceItem(ProductIds.PythonAppearanceGoldCoast, 100, 1));
+new PriceItem(ProductIds.PythonAppearanceGoldCoast, 150, 1));
 
             _productLookup.Add(ProductIds.ReptilePartyLogan,
-                new PriceItem(ProductIds.ReptilePartyLogan, 200, 1));
+                new PriceItem(ProductIds.ReptilePartyLogan, 230, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusLogan,
-new PriceItem(ProductIds.ReptilePartyPlusLogan, 230, 1));
+new PriceItem(ProductIds.ReptilePartyPlusLogan, 260, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyLogan,
-new PriceItem(ProductIds.PremiumReptilePartyLogan, 270, 1));
+new PriceItem(ProductIds.PremiumReptilePartyLogan, 330, 1));
             _productLookup.Add(ProductIds.ReptileShowLogan,
-new PriceItem(ProductIds.ReptileShowLogan, 250, 1));
+new PriceItem(ProductIds.ReptileShowLogan, 260, 1));
             _productLookup.Add(ProductIds.ReptileDisplayLogan,
-new PriceItem(ProductIds.ReptileDisplayLogan, 500, 1));
+new PriceItem(ProductIds.ReptileDisplayLogan, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesLogan,
-new PriceItem(ProductIds.RoamingReptilesLogan, 180, 1));
+new PriceItem(ProductIds.RoamingReptilesLogan, 200, 1));
             _productLookup.Add(ProductIds.PythonAppearanceLogan,
-new PriceItem(ProductIds.PythonAppearanceLogan, 130, 1));
+new PriceItem(ProductIds.PythonAppearanceLogan, 200, 1));
 
             _productLookup.Add(ProductIds.ReptilePartyBrisbane,
-                new PriceItem(ProductIds.ReptilePartyBrisbane, 220, 1));
+                new PriceItem(ProductIds.ReptilePartyBrisbane, 250, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusBrisbane,
-new PriceItem(ProductIds.ReptilePartyPlusBrisbane, 250, 1));
+new PriceItem(ProductIds.ReptilePartyPlusBrisbane, 280, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyBrisbane,
-new PriceItem(ProductIds.PremiumReptilePartyBrisbane, 290, 1));
+new PriceItem(ProductIds.PremiumReptilePartyBrisbane, 350, 1));
             _productLookup.Add(ProductIds.ReptileShowBrisbane,
-new PriceItem(ProductIds.ReptileShowBrisbane, 250, 1));
+new PriceItem(ProductIds.ReptileShowBrisbane, 280, 1));
             _productLookup.Add(ProductIds.ReptileDisplayBrisbane,
-new PriceItem(ProductIds.ReptileDisplayBrisbane, 530, 1));
+new PriceItem(ProductIds.ReptileDisplayBrisbane, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesBrisbane,
-new PriceItem(ProductIds.RoamingReptilesBrisbane, 200, 1));
+new PriceItem(ProductIds.RoamingReptilesBrisbane, 220, 1));
             _productLookup.Add(ProductIds.PythonAppearanceBrisbane,
-new PriceItem(ProductIds.PythonAppearanceBrisbane, 150, 1));
+new PriceItem(ProductIds.PythonAppearanceBrisbane, 200, 1));
 
             _productLookup.Add(ProductIds.AdditionalHours,
-new PriceItem(ProductIds.AdditionalHours, 50, 0));
+new PriceItem(ProductIds.AdditionalHours, 100, 0));
             _productLookup.Add(ProductIds.AddCrocodile,
                 new PriceItem(ProductIds.AddCrocodile, 50, 1));
             _productLookup.Add(ProductIds.AdditionalParticipants,
@@ -76,6 +76,12 @@ new PriceItem(ProductIds.AdditionalHours, 50, 0));
 new PriceItem(ProductIds.AdditionalParticipantsPremium, 12, 0));
             _productLookup.Add(ProductIds.PartyBags,
 new PriceItem(ProductIds.PartyBags, 5, 0));
+            _productLookup.Add(ProductIds.BuggyLollyJarUpgrade,
+new PriceItem(ProductIds.BuggyLollyJarUpgrade, 65, 0));
+            _productLookup.Add(ProductIds.BuggyLollyJarSingle,
+new PriceItem(ProductIds.BuggyLollyJarUpgrade, 8, 0));
+            _productLookup.Add(ProductIds.Pinata,
+new PriceItem(ProductIds.Pinata, 60, 0));
             _productLookup.Add(ProductIds.ShortDemonstrations,
 new PriceItem(ProductIds.ShortDemonstrations, 100, 1));
             _productLookup.Add(ProductIds.InteractiveEncounter,
@@ -87,6 +93,8 @@ new PriceItem(ProductIds.Discount, -50, 1));
             _productLookup.Add(ProductIds.BotanicGardens, new PriceItem(ProductIds.BotanicGardens, 150, 1));
             _productLookup.Add(ProductIds.Other, new PriceItem(ProductIds.Other, 0, 1));
             _productLookup.Add(ProductIds.NotSet, new PriceItem(ProductIds.NotSet, 0, 0, ""));
+            _productLookup.Add(ProductIds.FetesAndFairs,
+new PriceItem(ProductIds.FetesAndFairs, 350, 1));
             return (PriceItem)_productLookup[productId].Clone();
         }
 
@@ -151,6 +159,8 @@ new PriceItem(ProductIds.Discount, -50, 1));
                 case ServiceTypes.PythonAppearance:
                     serviceX = 6;
                     break;
+                case ServiceTypes.FetesAndFairs:
+                    return Get(ProductIds.FetesAndFairs);
                 case ServiceTypes.Other:
                     return null;
                 default:

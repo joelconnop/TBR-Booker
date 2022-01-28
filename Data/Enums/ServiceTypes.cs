@@ -14,6 +14,7 @@ namespace TBRBooker.Model.Enums
         Display = 3,
         RoamingReptiles = 4,
         PythonAppearance = 5,
-        Other = 6
+        Other = 6,
+        FetesAndFairs = 7
     }
 }

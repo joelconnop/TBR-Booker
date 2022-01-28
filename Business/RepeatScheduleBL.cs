@@ -113,6 +113,21 @@ namespace TBRBooker.Business
             // don't need the 'full' booking, but we aren't willing to read one (and cache it)
             // without reading its dependencies too
             var lastBooking = BookingBL.GetBookingFull(customer.BookingIds.Last());
+
+            // a small mistake (by user?) can wind up referencing the wrong booking nickname over and over
+            if (lastBooking.BookingName != lastBooking.Customer.CompanyName)
+            {
+                for (int i = customer.BookingIds.Count - 1; i >= Math.Max(customer.BookingIds.Count - 5, 0); i--)
+                {
+                    var earlierBooking = BookingBL.GetBookingFull(customer.BookingIds[i]);
+                    if (earlierBooking.BookingName == earlierBooking.Customer.CompanyName)
+                    {
+                        lastBooking = earlierBooking;
+                        break;
+                    }
+                }
+            }
+            
             var bookingsInRange = DBBox.GetCalendarItems(false, false)
                 .Where(x => x.Name.Trim().Equals(lastBooking.BookingName.Trim(),
                 StringComparison.InvariantCultureIgnoreCase)
