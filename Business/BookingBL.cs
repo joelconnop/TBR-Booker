@@ -217,5 +217,22 @@ namespace TBRBooker.Business
             return bookingDateStart.AddTicks(ts.Ticks);
         }
 
+        public static Booking SearchBooking(string searchTerm)
+        {
+            if (searchTerm.Length == 6 && int.TryParse(searchTerm, out int bookingNum))
+            {
+                try
+                {
+                    var booking = BookingBL.GetBookingFull(searchTerm);
+                    return booking;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
     }
 }

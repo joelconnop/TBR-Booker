@@ -64,6 +64,12 @@ namespace TBRBooker.Business
         public static string GetPreviousYearReport(DateTime selectedDay)
         {
             var reportData = GetReportData();
+            var (start, end) = PreviousFinancialYear(selectedDay);
+            return MakeReportHtml(FetchReport($"Financial Year {start.Year}-{end.Year}", start, end, reportData));
+        }
+
+        private static (DateTime Start, DateTime End) PreviousFinancialYear(DateTime selectedDay)
+        {
             DateTime start = new DateTime(selectedDay.Year - 1, 7, 1);
             DateTime end = new DateTime(selectedDay.Year, 7, 1).AddHours(-1);
             if (selectedDay.Month <= 6)
@@ -72,7 +78,7 @@ namespace TBRBooker.Business
                 end = new DateTime(selectedDay.Year - 1, 7, 1).AddHours(-1);
             }
 
-            return MakeReportHtml(FetchReport($"Financial Year {start.Year}-{end.Year}", start, end, reportData));
+            return (start, end);
         }
 
         public static string GetReport(string name, DateTime start, DateTime end)
@@ -83,8 +89,7 @@ namespace TBRBooker.Business
         public static string GetTravelLog(DateTime selectedDay)
         {
             var reportData = GetReportData();
-            DateTime start = new DateTime(selectedDay.Year - 1, 7, 1);
-            DateTime end = new DateTime(selectedDay.Year, 7, 1).AddHours(-1);
+            var (start, end) = PreviousFinancialYear(selectedDay);
             var withinRange = reportData.Where(f => f.BookingDate >= start && f.BookingDate < end && f.IsBooked());
             var workDaySummaries = new List<(string Day, string Bookings, int SubtotalKm)>();
             var homeAddress = "666 Beechmont Road, Lower Beechmont, Qld 4211";
@@ -93,9 +98,16 @@ namespace TBRBooker.Business
             {
                 var bookingStr = string.Join(", ", dailyBookings.Select(f => $"{f.BookingName} ({ExtractSuburb(f.Address)})")).Trim();
                 var finalArrivalTime = dailyBookings.Last().BookingDate;
-                var route = TheGoogle.TravelInfo(dailyBookings.Select(f => f.Address).ToList(), finalArrivalTime, homeAddress, finishAtStart: true);
-                var SubtotalKm = route.Distances.Sum() / 1000;
-                workDaySummaries.Add((dailyBookings.Key.ToShortDateString(), bookingStr, SubtotalKm));
+                try
+                {
+                    var route = TheGoogle.TravelInfo(dailyBookings.Select(f => f.Address).ToList(), finalArrivalTime, homeAddress, finishAtStart: true);
+                    var SubtotalKm = route.Distances.Sum() / 1000;
+                    workDaySummaries.Add((dailyBookings.Key.ToShortDateString(), bookingStr, SubtotalKm));
+                }
+                catch
+                {
+                    workDaySummaries.Add((dailyBookings.Key.ToShortDateString(), bookingStr + " (CALCULATION ERROR)", 0));
+                }
             }
 
             var travelLog = new TravelLogDTO(

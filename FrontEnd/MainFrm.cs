@@ -346,7 +346,7 @@ namespace TBRBooker.FrontEnd
 
         private void InitBookingsFrm()
         {
-            // PenaltyBL.UpdatePenalties();
+            // PenaltyBL.UpdatePenalties(); // abandoned this idea, and it carries unneccessary risk of program/data instability
             if (_bookingsFrm == null || _bookingsFrm.IsDisposed)
             {
                 _bookingsFrm = new BookingsFrm(this);
@@ -494,7 +494,6 @@ namespace TBRBooker.FrontEnd
 
             try
             {
-
                 searchLst.Items.Clear();
                 if (searchPnl.Visible == false)
                 {
@@ -506,6 +505,14 @@ namespace TBRBooker.FrontEnd
                     var itm = new ListViewItem(match.DirectoryName);
                     itm.Tag = match.CustomerId;
                     searchLst.Items.Add(itm);
+                }
+
+                var booking = BookingBL.SearchBooking(searchTerm);
+                if (booking != null)
+                {
+                    var lvi = new ListViewItem(booking.Summary());
+                    lvi.Tag = booking.Id;
+                    bookingLst.Items.Add(lvi);
                 }
             }
             catch (Exception ex)
@@ -530,8 +537,17 @@ namespace TBRBooker.FrontEnd
         {
             try
             {
-                Cursor = Cursors.WaitCursor;
+                if (searchLst.SelectedItems[0].Tag is null)
+                {
+                    MessageBox.Show(
+                        this,
+                        "The selected item is not a valid customer.", "Customer Search",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
 
+                Cursor = Cursors.WaitCursor;
                 var customer = DBBox.ReadItem<Customer>((string)searchLst.SelectedItems[0].Tag);
                 CorporateAccount acct = null;
                 if (!string.IsNullOrEmpty(customer.CompanyId))

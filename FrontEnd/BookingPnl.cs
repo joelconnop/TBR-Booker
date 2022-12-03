@@ -966,18 +966,13 @@ namespace TBRBooker.FrontEnd
 
             if (_newStatus != _booking.Status)
                 unsavedChanges += "status, ";
-            if (!contactFirstNameFld.Text.Equals(_booking.Customer.FirstName))
-                unsavedChanges += "first name, ";
-            if (!contactLastNameFld.Text.Equals(_booking.Customer.LastName))
-                unsavedChanges += "last name, ";
+            CheckUnsavedChanges(contactFirstNameFld, _booking.Customer.FirstName, "first name, ");
+            unsavedChanges += CheckUnsavedChanges(contactLastNameFld, _booking.Customer.LastName, "last name, ");
             if (!contactNicknameFld.Text.Equals(_booking.BookingName) && !contactNicknameFld.Text.Equals(string.Empty))
                 unsavedChanges += "booking nickname, ";
-            if (!contactPrimaryNumFld.Text.Equals(_booking.Customer.PrimaryNumber))
-                unsavedChanges += "contact number, ";
-            if (!contactSecondaryNumFld.Text.Equals(_booking.Customer.SecondaryNumber))
-                unsavedChanges += "secondary number, ";
-            if (!contactEmailFld.Text.Equals(_booking.Customer.EmailAddress))
-                unsavedChanges += "e-mail, ";
+            unsavedChanges += CheckUnsavedChanges(contactPrimaryNumFld, _booking.Customer.PrimaryNumber, "contact number, ");
+            unsavedChanges += CheckUnsavedChanges(contactSecondaryNumFld, _booking.Customer.SecondaryNumber, "secondary number, ");
+            unsavedChanges += CheckUnsavedChanges(contactEmailFld, _booking.Customer.EmailAddress, "e-mail, ");
             if (ComboBoxItem.GetSelected<LeadSources>(contactLeadBox) != _booking.Customer.LeadSource)
                 unsavedChanges += "lead source, ";
 
@@ -995,10 +990,9 @@ namespace TBRBooker.FrontEnd
 
             if (ComboBoxItem.GetSelected<LocationRegions>(addressRegionBox) != _booking.LocationRegion)
                 unsavedChanges += "region, ";
-            if (!addressFld.Text.Equals(_booking.Address))
-                unsavedChanges += "e-mail, ";
-            //if (!addressVenuFld.Text.Equals(_booking.VenueName))
-            //    unsavedChanges += "venue, ";
+            unsavedChanges += CheckUnsavedChanges(addressFld, _booking.Address, unsavedChanges += "address, ");
+            //unsavedChanges += CheckUnsavedChanges(addressVenuFld, _booking.VenueName))
+            //    "venue, ";
 
             if (//_booking.Service != null && at the least it should be NotSet, for an existing booking
                 ComboBoxItem.GetSelected<ServiceTypes>(serviceBox) != _service.ServiceType)
@@ -1010,8 +1004,7 @@ namespace TBRBooker.FrontEnd
                 var party = _service.Party;
                 if (SelectedPartyPackage() != party.Package)
                     unsavedChanges += "party package, ";
-                if (!partyBirthdayNameFld.Text.Equals(party.BirthdayName))
-                    unsavedChanges += "birthday name, ";
+                unsavedChanges += CheckUnsavedChanges(partyBirthdayNameFld, party.BirthdayName, "birthday name, ");
                 if (!partyAgeFld.Text.Equals(party.BirthdayAge.ToString())
                     && !(string.IsNullOrEmpty(partyAgeFld.Text) && party.BirthdayAge == 0))
                     unsavedChanges += "birthday age, ";
@@ -1020,8 +1013,7 @@ namespace TBRBooker.FrontEnd
             if (!servicePaxFld.Text.Equals(_service.Pax.ToString())
                 && !(string.IsNullOrEmpty(servicePaxFld.Text) && _service.Pax == 0))
                 unsavedChanges += "pax, ";
-            if (!serviceAnimalsToCome.Text.Equals(_service.SpecificAnimalsToCome))
-                unsavedChanges += "animals to come, ";
+            unsavedChanges += CheckUnsavedChanges(serviceAnimalsToCome, _service.SpecificAnimalsToCome, "animals to come, ");
             if (serviceAddCrocChk.Checked != _service.AddCrocodile)
                 unsavedChanges += "add croc, ";
 
@@ -1056,16 +1048,26 @@ namespace TBRBooker.FrontEnd
             if (_confirmationCall != null && !_confirmationCall.Equals(_booking.ConfirmationCall))
                 unsavedChanges += "confirmation call, ";
 
-            if (!notesBookingFld.Text.Equals(_booking.BookingNotes))
-                unsavedChanges += "booking notes, ";
-            if (!notesPastFld.Text.Equals(_booking.Customer.PastNotes))
-                unsavedChanges += "past notes, ";
+            unsavedChanges += CheckUnsavedChanges(notesBookingFld, _booking.BookingNotes, "booking notes, ");
+            unsavedChanges += CheckUnsavedChanges(notesPastFld, _booking.Customer.PastNotes, "past notes, ");
 
             if (_highlightedControls.Count != _booking.HighlightedControls.Count
                 || !_highlightedControls.All(x => _booking.HighlightedControls.Contains(x)))
                 unsavedChanges += "highlighted fields, ";
 
             return unsavedChanges.Trim().Trim(',');
+        }
+
+        string CheckUnsavedChanges(TextBox field, string oldVal, string desc)
+        {
+            var cleanField = field.Text.Trim();
+            var cleanOld = oldVal == null ? string.Empty : oldVal.Trim();
+            if (!cleanField.Equals(cleanOld, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return desc;
+            }
+
+            return string.Empty;
         }
 
         public bool Save()

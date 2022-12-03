@@ -20,13 +20,13 @@ namespace TBRBooker.Business
             _productLookup = new Dictionary<ProductIds, PriceItem>();
 
             _productLookup.Add(ProductIds.ReptilePartyGoldCoast,
-                new PriceItem(ProductIds.ReptilePartyGoldCoast, 200, 1));
+                new PriceItem(ProductIds.ReptilePartyGoldCoast, 250, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusGoldCoast,
-new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 230, 1));
+new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 280, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyGoldCoast,
-new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 300, 1));
+new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 400, 1));
             _productLookup.Add(ProductIds.ReptileShowGoldCoast,
-new PriceItem(ProductIds.ReptileShowGoldCoast, 250, 1));
+new PriceItem(ProductIds.ReptileShowGoldCoast, 280, 1));
             _productLookup.Add(ProductIds.ReptileDisplayGoldCoast,
 new PriceItem(ProductIds.ReptileDisplayGoldCoast, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesGoldCoast,
@@ -35,17 +35,17 @@ new PriceItem(ProductIds.RoamingReptilesGoldCoast, 200, 1));
 new PriceItem(ProductIds.PythonAppearanceGoldCoast, 150, 1));
 
             _productLookup.Add(ProductIds.ReptilePartyLogan,
-                new PriceItem(ProductIds.ReptilePartyLogan, 230, 1));
+                new PriceItem(ProductIds.ReptilePartyLogan, 250, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusLogan,
-new PriceItem(ProductIds.ReptilePartyPlusLogan, 260, 1));
+new PriceItem(ProductIds.ReptilePartyPlusLogan, 280, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyLogan,
-new PriceItem(ProductIds.PremiumReptilePartyLogan, 330, 1));
+new PriceItem(ProductIds.PremiumReptilePartyLogan, 400, 1));
             _productLookup.Add(ProductIds.ReptileShowLogan,
-new PriceItem(ProductIds.ReptileShowLogan, 260, 1));
+new PriceItem(ProductIds.ReptileShowLogan, 280, 1));
             _productLookup.Add(ProductIds.ReptileDisplayLogan,
 new PriceItem(ProductIds.ReptileDisplayLogan, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesLogan,
-new PriceItem(ProductIds.RoamingReptilesLogan, 200, 1));
+new PriceItem(ProductIds.RoamingReptilesLogan, 250, 1));
             _productLookup.Add(ProductIds.PythonAppearanceLogan,
 new PriceItem(ProductIds.PythonAppearanceLogan, 200, 1));
 
@@ -54,13 +54,13 @@ new PriceItem(ProductIds.PythonAppearanceLogan, 200, 1));
             _productLookup.Add(ProductIds.ReptilePartyPlusBrisbane,
 new PriceItem(ProductIds.ReptilePartyPlusBrisbane, 280, 1));
             _productLookup.Add(ProductIds.PremiumReptilePartyBrisbane,
-new PriceItem(ProductIds.PremiumReptilePartyBrisbane, 350, 1));
+new PriceItem(ProductIds.PremiumReptilePartyBrisbane, 400, 1));
             _productLookup.Add(ProductIds.ReptileShowBrisbane,
 new PriceItem(ProductIds.ReptileShowBrisbane, 280, 1));
             _productLookup.Add(ProductIds.ReptileDisplayBrisbane,
 new PriceItem(ProductIds.ReptileDisplayBrisbane, 600, 1));
             _productLookup.Add(ProductIds.RoamingReptilesBrisbane,
-new PriceItem(ProductIds.RoamingReptilesBrisbane, 220, 1));
+new PriceItem(ProductIds.RoamingReptilesBrisbane, 250, 1));
             _productLookup.Add(ProductIds.PythonAppearanceBrisbane,
 new PriceItem(ProductIds.PythonAppearanceBrisbane, 200, 1));
 
@@ -87,7 +87,7 @@ new PriceItem(ProductIds.ShortDemonstrations, 100, 1));
             _productLookup.Add(ProductIds.InteractiveEncounter,
 new PriceItem(ProductIds.InteractiveEncounter, 50, 1));
             _productLookup.Add(ProductIds.Parking,
-new PriceItem(ProductIds.Parking, 20, 1));
+new PriceItem(ProductIds.Parking, 38, 1));
             _productLookup.Add(ProductIds.Discount,
 new PriceItem(ProductIds.Discount, -50, 1));
             _productLookup.Add(ProductIds.BotanicGardens, new PriceItem(ProductIds.BotanicGardens, 150, 1));
