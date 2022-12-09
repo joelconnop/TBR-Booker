@@ -51,7 +51,6 @@ C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.Core.pdb
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\AWSSDK.Core.xml
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\Newtonsoft.Json.xml
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\ja\Base.resources.dll
-C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csprojResolveAssemblyReference.cache
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingPnl.resources
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingsFrm.resources
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.DashboardCategoryPnl.resources
@@ -92,3 +91,5 @@ C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBR Booker.application
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.InputDialog.resources
 C:\Programming\TBR-Booker\FrontEnd\bin\Debug\GoogleMapsApi.dll
 C:\Programming\TBR-Booker\FrontEnd\obj\Debug\TBRBooker.FrontEnd.BookingPnl2K.resources
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.AssemblyReference.cache
+C:\Programming\TBR-Booker\FrontEnd\obj\Debug\FrontEnd.csproj.SuggestedBindingRedirects.cache

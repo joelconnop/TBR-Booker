@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <PublishUrlHistory>D:\Programming\TBR Booker Published\</PublishUrlHistory>
+    <PublishUrlHistory>C:\Programming\TBR Booker Published\|D:\Programming\TBR Booker Published\</PublishUrlHistory>
     <InstallUrlHistory>https://s3-ap-southeast-2.amazonaws.com/tbrbooker/</InstallUrlHistory>
     <SupportUrlHistory />
     <UpdateUrlHistory />
