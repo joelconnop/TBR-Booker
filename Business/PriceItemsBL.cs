@@ -133,7 +133,10 @@ namespace TBRBooker.Business
                     break;
                 case ServiceTypes.FetesAndFairs:
                     return Get(ProductIds.FetesAndFairs);
+                case ServiceTypes.LittleNatureLovers:
+                    return Get(ProductIds.LittleNatureLovers);
                 case ServiceTypes.Other:
+                case ServiceTypes.GuidedWalk:
                     return null;
                 default:
                     throw new Exception($"Unknown Service '{service}'.");
@@ -146,7 +149,60 @@ namespace TBRBooker.Business
 
         public static bool IsAService(ProductIds product)
         {
-            return product <= ProductIds.PythonAppearanceBrisbane;
+            switch (product)
+            {
+                case ProductIds.ReptilePartyGoldCoast:
+                case ProductIds.ReptilePartyPlusGoldCoast:
+                case ProductIds.PremiumReptilePartyGoldCoast:
+                case ProductIds.ReptileShowGoldCoast:
+                case ProductIds.ReptileDisplayGoldCoast:
+                case ProductIds.RoamingReptilesGoldCoast:
+                case ProductIds.PythonAppearanceGoldCoast:
+                case ProductIds.ReptilePartyLogan:
+                case ProductIds.ReptilePartyPlusLogan:
+                case ProductIds.PremiumReptilePartyLogan:
+                case ProductIds.ReptileShowLogan:
+                case ProductIds.ReptileDisplayLogan:
+                case ProductIds.RoamingReptilesLogan:
+                case ProductIds.PythonAppearanceLogan:
+                case ProductIds.ReptilePartyBrisbane:
+                case ProductIds.ReptilePartyPlusBrisbane:
+                case ProductIds.PremiumReptilePartyBrisbane:
+                case ProductIds.ReptileShowBrisbane:
+                case ProductIds.ReptileDisplayBrisbane:
+                case ProductIds.RoamingReptilesBrisbane:
+                case ProductIds.PythonAppearanceBrisbane:
+                case ProductIds.FetesAndFairs:
+                case ProductIds.LittleNatureLovers:
+                    return true;
+                case ProductIds.Other:
+                case ProductIds.AdditionalHours:
+                case ProductIds.AddCrocodile:
+                case ProductIds.AdditionalParticipants:
+                case ProductIds.AdditionalParticipantsPlus:
+                case ProductIds.AdditionalParticipantsPremium:
+                case ProductIds.PartyBags:
+                case ProductIds.ShortDemonstrations:
+                case ProductIds.InteractiveEncounter:
+                case ProductIds.Parking:
+                case ProductIds.Discount:
+                case ProductIds.NotSet:
+                case ProductIds.BuggyLollyJarUpgrade:
+                case ProductIds.BuggyLollyJarSingle:
+                case ProductIds.Pinata:
+                case ProductIds.GeneratorHire:
+                case ProductIds.BugCatcherUpgrade:
+                case ProductIds.BugCatcherSingle:
+                    return false;
+                case ProductIds.BotanicGardens:
+                case ProductIds.NocturnalNatives:
+                case ProductIds.NightAtTheGardens:
+                case ProductIds.ScalyReptiles:
+                    // these are services but all fall under the general 'guided walks'
+                    return false;
+                default:
+                    throw new Exception($"Undefined if {product} is a service.");
+            }
         }
 
         public static PartyPackages WhichPartyPackage(ProductIds product)

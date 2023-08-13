@@ -162,7 +162,7 @@ namespace TBRBooker.FrontEnd
             SetTime(_booking.BookingTime, _booking.Duration);
 
             //address
-            ComboBoxItem.InitComboBox(addressRegionBox, typeof(LocationRegions), _booking.LocationRegion);
+            ComboBoxItem.InitComboBox(addressRegionBox, _booking.LocationRegion);
             addressFld.Text = _booking.Address;
             // addressVenuFld.Text = _booking.VenueName;
 
@@ -172,8 +172,9 @@ namespace TBRBooker.FrontEnd
 
             //service 
             _service = _booking.Service;
-            ComboBoxItem.InitComboBox(serviceBox, typeof(ServiceTypes),
-                _service?.ServiceType ?? ServiceTypes.NotSet);
+            var excludeServices = new[] { ServiceTypes.RoamingReptiles, ServiceTypes.PythonAppearance }.ToList();
+            ComboBoxItem.InitComboBox(
+                serviceBox, _service?.ServiceType ?? ServiceTypes.NotSet, excludeServices, (int)ServiceTypes.Other);
             LoadService(_service, false);
             
 
@@ -189,19 +190,23 @@ namespace TBRBooker.FrontEnd
             //    priceOverrideFld.Text = _service.TotalPrice.ToString();
             //}
 
-            var ignoreSkus = new List<Enum>();
+            var ignoreSkus = new[]
+            {
+                ProductIds.BuggyLollyJarSingle, ProductIds.BuggyLollyJarUpgrade, ProductIds.BotanicGardens
+            }.ToList();
+
             foreach (ProductIds sku in Enum.GetValues(typeof(ProductIds)))
             {
                 if (PriceItemsBL.IsAService(sku))
                     ignoreSkus.Add(sku);
             }
-            ComboBoxItem.InitComboBox(priceProductBox, typeof(ProductIds), ProductIds.NotSet, ignoreSkus);
+            ComboBoxItem.InitComboBox<ProductIds>(priceProductBox, ProductIds.NotSet, ignoreSkus, (int)ProductIds.NotSet);
 
             //payments (must be done after price items added)
             UpdatePaymentFields();
             priceInvoiceBtn.Enabled = !_booking.IsInvoiced;
             pricingPayOnDayChk.Checked = _booking.IsPayOnDay;
-            ComboBoxItem.InitComboBox(priceMethodBox, typeof(PaymentMethods), PaymentMethods.NotSet);
+            ComboBoxItem.InitComboBox<PaymentMethods>(priceMethodBox, PaymentMethods.NotSet);
             _booking.PaymentHistory.ForEach(x => priceHistoryLst.Items.Add(x.ToString()));
 
             // crocodile allowed?
@@ -283,7 +288,7 @@ namespace TBRBooker.FrontEnd
         private void LoadCustomer()
         {
             //Contact
-            ComboBoxItem.InitComboBox(contactLeadBox, typeof(LeadSources), _customer?.LeadSource ?? LeadSources.NotSet);
+            ComboBoxItem.InitComboBox<LeadSources>(contactLeadBox, _customer?.LeadSource ?? LeadSources.NotSet);
 
             if (_customer != null)
             {

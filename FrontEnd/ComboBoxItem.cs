@@ -32,9 +32,10 @@ namespace TBRBooker.FrontEnd
             return EnumHelper.GetEnumDescription(Val);
         }
 
-        public static void InitComboBox(ComboBox cb, Type enumType, Enum startingValue,
-            List<Enum> excludeList = null)
+        public static void InitComboBox<T>(ComboBox cb, T startingValue,
+            List<T> excludeList = null, int? putThisOneLast = null) where T : Enum
         {
+            Type enumType = typeof(T);
             cb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cb.AutoCompleteSource = AutoCompleteSource.ListItems;
 
@@ -42,16 +43,30 @@ namespace TBRBooker.FrontEnd
             cb.Items.Clear();
 
             int i = 0;
-            foreach (Enum e in Enum.GetValues(enumType))
+            ComboBoxItem lastItem = null;
+            foreach (T e in Enum.GetValues(enumType))
             {
                 if (excludeList == null || !excludeList.Contains(e))
                 {
-
-                    cb.Items.Add(new ComboBoxItem(e));
-                    if (e.Equals(startingValue))
-                        cb.SelectedIndex = i;
-                    i++;
+                    if (putThisOneLast.HasValue && putThisOneLast.Value == Convert.ToInt32(e))
+                    {
+                        lastItem = new ComboBoxItem(e);
+                    }
+                    else
+                    {
+                        cb.Items.Add(new ComboBoxItem(e));
+                        if (e.Equals(startingValue))
+                            cb.SelectedIndex = i;
+                        i++;
+                    }
                 }
+            }
+
+            if (lastItem != null)
+            {
+                cb.Items.Add(lastItem);
+                if (lastItem.Val.Equals(startingValue))
+                    cb.SelectedIndex = i;
             }
 
             cb.EndUpdate();
