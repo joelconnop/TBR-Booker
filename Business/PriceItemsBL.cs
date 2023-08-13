@@ -10,92 +10,59 @@ namespace TBRBooker.Business
 {
     public class PriceItemsBL
     {
-            private static Dictionary<ProductIds, PriceItem> _productLookup;
+        private static Dictionary<ProductIds, PriceItem> _productLookup;
 
-            public static PriceItem Get(ProductIds productId)
+        public static PriceItem Get(ProductIds productId)
+        {
+            var products = new[]
+{
+    new { Id = ProductIds.ReptilePartyGoldCoast, Price = 250, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusGoldCoast, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyGoldCoast, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptileShowGoldCoast, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayGoldCoast, Price = 600, Quantity = 1 },
+    new { Id = ProductIds.RoamingReptilesGoldCoast, Price = 200, Quantity = 1 },
+    new { Id = ProductIds.PythonAppearanceGoldCoast, Price = 150, Quantity = 1 },
+
+    new { Id = ProductIds.ReptilePartyLogan, Price = 250, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusLogan, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyLogan, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptileShowLogan, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayLogan, Price = 600, Quantity = 1 },
+    new { Id = ProductIds.RoamingReptilesLogan, Price = 250, Quantity = 1 },
+    new { Id = ProductIds.PythonAppearanceLogan, Price = 200, Quantity = 1 },
+
+    new { Id = ProductIds.ReptilePartyBrisbane, Price = 250, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusBrisbane, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyBrisbane, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptileShowBrisbane, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayBrisbane, Price = 600, Quantity = 1 },
+    new { Id = ProductIds.RoamingReptilesBrisbane, Price = 250, Quantity = 1 },
+    new { Id = ProductIds.PythonAppearanceBrisbane, Price = 200, Quantity = 1 },
+
+    new { Id = ProductIds.AdditionalHours, Price = 100, Quantity = 0 },
+    new { Id = ProductIds.AddCrocodile, Price = 50, Quantity = 1 },
+    new { Id = ProductIds.AdditionalParticipants, Price = 6, Quantity = 0 },
+    new { Id = ProductIds.AdditionalParticipantsPlus, Price = 10, Quantity = 0 },
+    new { Id = ProductIds.AdditionalParticipantsPremium, Price = 12, Quantity = 0 },
+    new { Id = ProductIds.PartyBags, Price = 5, Quantity = 0 },
+    new { Id = ProductIds.BuggyLollyJarUpgrade, Price = 65, Quantity = 0 },
+    new { Id = ProductIds.BuggyLollyJarSingle, Price = 8, Quantity = 0 },
+    new { Id = ProductIds.Pinata, Price = 60, Quantity = 0 },
+    new { Id = ProductIds.ShortDemonstrations, Price = 100, Quantity = 1 },
+    new { Id = ProductIds.InteractiveEncounter, Price = 50, Quantity = 1 },
+    new { Id = ProductIds.Parking, Price = 38, Quantity = 1 },
+    new { Id = ProductIds.Discount, Price = -50, Quantity = 1 },
+    new { Id = ProductIds.BotanicGardens, Price = 150, Quantity = 1 },
+    new { Id = ProductIds.Other, Price = 0, Quantity = 1 },
+    new { Id = ProductIds.NotSet, Price = 0, Quantity = 0 },
+    new { Id = ProductIds.FetesAndFairs, Price = 350, Quantity = 1 }
+};
+
+            foreach (var product in products)
             {
-            if (_productLookup != null)
-                return (PriceItem)_productLookup[productId].Clone();
-
-            _productLookup = new Dictionary<ProductIds, PriceItem>();
-
-            _productLookup.Add(ProductIds.ReptilePartyGoldCoast,
-                new PriceItem(ProductIds.ReptilePartyGoldCoast, 250, 1));
-            _productLookup.Add(ProductIds.ReptilePartyPlusGoldCoast,
-new PriceItem(ProductIds.ReptilePartyPlusGoldCoast, 280, 1));
-            _productLookup.Add(ProductIds.PremiumReptilePartyGoldCoast,
-new PriceItem(ProductIds.PremiumReptilePartyGoldCoast, 400, 1));
-            _productLookup.Add(ProductIds.ReptileShowGoldCoast,
-new PriceItem(ProductIds.ReptileShowGoldCoast, 280, 1));
-            _productLookup.Add(ProductIds.ReptileDisplayGoldCoast,
-new PriceItem(ProductIds.ReptileDisplayGoldCoast, 600, 1));
-            _productLookup.Add(ProductIds.RoamingReptilesGoldCoast,
-new PriceItem(ProductIds.RoamingReptilesGoldCoast, 200, 1));
-            _productLookup.Add(ProductIds.PythonAppearanceGoldCoast,
-new PriceItem(ProductIds.PythonAppearanceGoldCoast, 150, 1));
-
-            _productLookup.Add(ProductIds.ReptilePartyLogan,
-                new PriceItem(ProductIds.ReptilePartyLogan, 250, 1));
-            _productLookup.Add(ProductIds.ReptilePartyPlusLogan,
-new PriceItem(ProductIds.ReptilePartyPlusLogan, 280, 1));
-            _productLookup.Add(ProductIds.PremiumReptilePartyLogan,
-new PriceItem(ProductIds.PremiumReptilePartyLogan, 400, 1));
-            _productLookup.Add(ProductIds.ReptileShowLogan,
-new PriceItem(ProductIds.ReptileShowLogan, 280, 1));
-            _productLookup.Add(ProductIds.ReptileDisplayLogan,
-new PriceItem(ProductIds.ReptileDisplayLogan, 600, 1));
-            _productLookup.Add(ProductIds.RoamingReptilesLogan,
-new PriceItem(ProductIds.RoamingReptilesLogan, 250, 1));
-            _productLookup.Add(ProductIds.PythonAppearanceLogan,
-new PriceItem(ProductIds.PythonAppearanceLogan, 200, 1));
-
-            _productLookup.Add(ProductIds.ReptilePartyBrisbane,
-                new PriceItem(ProductIds.ReptilePartyBrisbane, 250, 1));
-            _productLookup.Add(ProductIds.ReptilePartyPlusBrisbane,
-new PriceItem(ProductIds.ReptilePartyPlusBrisbane, 280, 1));
-            _productLookup.Add(ProductIds.PremiumReptilePartyBrisbane,
-new PriceItem(ProductIds.PremiumReptilePartyBrisbane, 400, 1));
-            _productLookup.Add(ProductIds.ReptileShowBrisbane,
-new PriceItem(ProductIds.ReptileShowBrisbane, 280, 1));
-            _productLookup.Add(ProductIds.ReptileDisplayBrisbane,
-new PriceItem(ProductIds.ReptileDisplayBrisbane, 600, 1));
-            _productLookup.Add(ProductIds.RoamingReptilesBrisbane,
-new PriceItem(ProductIds.RoamingReptilesBrisbane, 250, 1));
-            _productLookup.Add(ProductIds.PythonAppearanceBrisbane,
-new PriceItem(ProductIds.PythonAppearanceBrisbane, 200, 1));
-
-            _productLookup.Add(ProductIds.AdditionalHours,
-new PriceItem(ProductIds.AdditionalHours, 100, 0));
-            _productLookup.Add(ProductIds.AddCrocodile,
-                new PriceItem(ProductIds.AddCrocodile, 50, 1));
-            _productLookup.Add(ProductIds.AdditionalParticipants,
-                new PriceItem(ProductIds.AdditionalParticipants, 6, 0));
-            _productLookup.Add(ProductIds.AdditionalParticipantsPlus,
-    new PriceItem(ProductIds.AdditionalParticipantsPlus, 10, 0));
-            _productLookup.Add(ProductIds.AdditionalParticipantsPremium,
-new PriceItem(ProductIds.AdditionalParticipantsPremium, 12, 0));
-            _productLookup.Add(ProductIds.PartyBags,
-new PriceItem(ProductIds.PartyBags, 5, 0));
-            _productLookup.Add(ProductIds.BuggyLollyJarUpgrade,
-new PriceItem(ProductIds.BuggyLollyJarUpgrade, 65, 0));
-            _productLookup.Add(ProductIds.BuggyLollyJarSingle,
-new PriceItem(ProductIds.BuggyLollyJarUpgrade, 8, 0));
-            _productLookup.Add(ProductIds.Pinata,
-new PriceItem(ProductIds.Pinata, 60, 0));
-            _productLookup.Add(ProductIds.ShortDemonstrations,
-new PriceItem(ProductIds.ShortDemonstrations, 100, 1));
-            _productLookup.Add(ProductIds.InteractiveEncounter,
-new PriceItem(ProductIds.InteractiveEncounter, 50, 1));
-            _productLookup.Add(ProductIds.Parking,
-new PriceItem(ProductIds.Parking, 38, 1));
-            _productLookup.Add(ProductIds.Discount,
-new PriceItem(ProductIds.Discount, -50, 1));
-            _productLookup.Add(ProductIds.BotanicGardens, new PriceItem(ProductIds.BotanicGardens, 150, 1));
-            _productLookup.Add(ProductIds.Other, new PriceItem(ProductIds.Other, 0, 1));
-            _productLookup.Add(ProductIds.NotSet, new PriceItem(ProductIds.NotSet, 0, 0, ""));
-            _productLookup.Add(ProductIds.FetesAndFairs,
-new PriceItem(ProductIds.FetesAndFairs, 350, 1));
-            return (PriceItem)_productLookup[productId].Clone();
+                _productLookup.Add(product.Id, new PriceItem(product.Id, product.Price, product.Quantity));
+            }
         }
 
         public static PriceItem GetBaseItem(LocationRegions region, ServiceTypes service, 
