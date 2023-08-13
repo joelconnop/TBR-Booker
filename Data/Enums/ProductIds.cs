@@ -46,6 +46,13 @@ namespace TBRBooker.Model.Enums
         BuggyLollyJarUpgrade,
         BuggyLollyJarSingle,
         Pinata,
-        FetesAndFairs
+        FetesAndFairs,
+        ScalyReptiles,
+        NocturnalNatives,
+        NightAtTheGardens,
+        LittleNatureLovers,
+        GeneratorHire,
+        BugCatcherUpgrade,
+        BugCatcherSingle
     }
 }

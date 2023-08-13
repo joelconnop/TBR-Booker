@@ -14,55 +14,60 @@ namespace TBRBooker.Business
 
         public static PriceItem Get(ProductIds productId)
         {
+            if (_productLookup != null)
+                return (PriceItem)_productLookup[productId].Clone();
+
+            _productLookup = new Dictionary<ProductIds, PriceItem>();
             var products = new[]
 {
-    new { Id = ProductIds.ReptilePartyGoldCoast, Price = 250, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusGoldCoast, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyGoldCoast, Price = 270, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusGoldCoast, Price = 310, Quantity = 1 },
     new { Id = ProductIds.PremiumReptilePartyGoldCoast, Price = 400, Quantity = 1 },
-    new { Id = ProductIds.ReptileShowGoldCoast, Price = 280, Quantity = 1 },
-    new { Id = ProductIds.ReptileDisplayGoldCoast, Price = 600, Quantity = 1 },
-    new { Id = ProductIds.RoamingReptilesGoldCoast, Price = 200, Quantity = 1 },
-    new { Id = ProductIds.PythonAppearanceGoldCoast, Price = 150, Quantity = 1 },
+    new { Id = ProductIds.ReptileShowGoldCoast, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayGoldCoast, Price = 640, Quantity = 1 },
 
-    new { Id = ProductIds.ReptilePartyLogan, Price = 250, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusLogan, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyLogan, Price = 270, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusLogan, Price = 310, Quantity = 1 },
     new { Id = ProductIds.PremiumReptilePartyLogan, Price = 400, Quantity = 1 },
-    new { Id = ProductIds.ReptileShowLogan, Price = 280, Quantity = 1 },
-    new { Id = ProductIds.ReptileDisplayLogan, Price = 600, Quantity = 1 },
-    new { Id = ProductIds.RoamingReptilesLogan, Price = 250, Quantity = 1 },
-    new { Id = ProductIds.PythonAppearanceLogan, Price = 200, Quantity = 1 },
+    new { Id = ProductIds.ReptileShowLogan, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayLogan, Price = 640, Quantity = 1 },
 
-    new { Id = ProductIds.ReptilePartyBrisbane, Price = 250, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusBrisbane, Price = 280, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyBrisbane, Price = 270, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusBrisbane, Price = 310, Quantity = 1 },
     new { Id = ProductIds.PremiumReptilePartyBrisbane, Price = 400, Quantity = 1 },
-    new { Id = ProductIds.ReptileShowBrisbane, Price = 280, Quantity = 1 },
-    new { Id = ProductIds.ReptileDisplayBrisbane, Price = 600, Quantity = 1 },
-    new { Id = ProductIds.RoamingReptilesBrisbane, Price = 250, Quantity = 1 },
-    new { Id = ProductIds.PythonAppearanceBrisbane, Price = 200, Quantity = 1 },
-
+    new { Id = ProductIds.ReptileShowBrisbane, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptileDisplayBrisbane, Price = 640, Quantity = 1 },
+        
     new { Id = ProductIds.AdditionalHours, Price = 100, Quantity = 0 },
     new { Id = ProductIds.AddCrocodile, Price = 50, Quantity = 1 },
     new { Id = ProductIds.AdditionalParticipants, Price = 6, Quantity = 0 },
     new { Id = ProductIds.AdditionalParticipantsPlus, Price = 10, Quantity = 0 },
     new { Id = ProductIds.AdditionalParticipantsPremium, Price = 12, Quantity = 0 },
     new { Id = ProductIds.PartyBags, Price = 5, Quantity = 0 },
-    new { Id = ProductIds.BuggyLollyJarUpgrade, Price = 65, Quantity = 0 },
-    new { Id = ProductIds.BuggyLollyJarSingle, Price = 8, Quantity = 0 },
+    new { Id = ProductIds.BugCatcherUpgrade, Price = 60, Quantity = 1 },
+    new { Id = ProductIds.BugCatcherSingle, Price = 10, Quantity = 0 },
     new { Id = ProductIds.Pinata, Price = 60, Quantity = 0 },
     new { Id = ProductIds.ShortDemonstrations, Price = 100, Quantity = 1 },
-    new { Id = ProductIds.InteractiveEncounter, Price = 50, Quantity = 1 },
-    new { Id = ProductIds.Parking, Price = 38, Quantity = 1 },
+    new { Id = ProductIds.InteractiveEncounter, Price = 100, Quantity = 1 },
+    new { Id = ProductIds.Parking, Price = 37, Quantity = 1 },
     new { Id = ProductIds.Discount, Price = -50, Quantity = 1 },
-    new { Id = ProductIds.BotanicGardens, Price = 150, Quantity = 1 },
     new { Id = ProductIds.Other, Price = 0, Quantity = 1 },
     new { Id = ProductIds.NotSet, Price = 0, Quantity = 0 },
-    new { Id = ProductIds.FetesAndFairs, Price = 350, Quantity = 1 }
+    new { Id = ProductIds.FetesAndFairs, Price = 370, Quantity = 1 },
+
+    new { Id = ProductIds.NocturnalNatives, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.NightAtTheGardens, Price = 158, Quantity = 1 },
+    new { Id = ProductIds.LittleNatureLovers, Price = 125, Quantity = 1 },
+    new { Id = ProductIds.ScalyReptiles, Price = 290, Quantity = 1 },
+    new { Id = ProductIds.GeneratorHire, Price = 100, Quantity = 1 }
 };
 
             foreach (var product in products)
             {
                 _productLookup.Add(product.Id, new PriceItem(product.Id, product.Price, product.Quantity));
             }
+
+            return (PriceItem)_productLookup[productId].Clone();
         }
 
         public static PriceItem GetBaseItem(LocationRegions region, ServiceTypes service, 
