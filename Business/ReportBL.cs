@@ -227,7 +227,7 @@ namespace TBRBooker.Business
                 Math.Round(booked.Sum(y => y.AmountPaid)),
                 Math.Round(booked.Where(x => !x.IsOverdue()).Sum(y => y.Balance)),
                 Math.Round(booked.Where(x => x.IsOverdue(today)).Sum(y => y.Balance)),
-                Math.Round(filtered.Where(x => x.Status == Model.Enums.BookingStates.CancelledWithoutPayment)
+                Math.Round(filtered.Where(x => x.Status == Model.Enums.BookingStates.BadDept)
                     .Sum(y => y.Balance)),
                 filtered.Count,
                 booked.Count,
@@ -235,7 +235,7 @@ namespace TBRBooker.Business
                 enquiries.Count(x => x.Status == BookingStates.OpenEnquiry),
                 enquiries.Count(x => x.Status == Model.Enums.BookingStates.Cancelled
                     || x.Status == Model.Enums.BookingStates.LostEnquiry),
-                filtered.Count(x => x.Status == Model.Enums.BookingStates.CancelledWithoutPayment),
+                filtered.Count(x => x.Status == Model.Enums.BookingStates.BadDept),
                 booked.Count == 0 ? 0 : Convert.ToInt32(Math.Round((double)booked.Count / (double)filtered.Count, 2) * 100),
                 booked.Count == 0 ? 0 : Math.Round(booked.Sum(x => x.Service.TotalPrice) / booked.Count),
                 payments

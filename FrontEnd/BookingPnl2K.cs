@@ -275,7 +275,7 @@ namespace TBRBooker.FrontEnd
             int bookings = pastBookings.Count(x => x.IsBooked());
             int didntBook = pastBookings.Count() - bookings;
             int overdue = pastBookings.Count(x => x.Status == BookingStates.PaymentDue 
-                || x.Status == BookingStates.CancelledWithoutPayment);
+                || x.Status == BookingStates.BadDept);
 
             if (overdue > 1 || overdue == 1 && bookings <= 2)
                 contactEmblemPic.Image = Properties.Resources.customer_overdue;
@@ -1323,7 +1323,7 @@ namespace TBRBooker.FrontEnd
                     statusLbl.Text = "PAYMENT DUE";
                     statusLbl.ForeColor = Color.DarkRed;
                     break;
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     statusLbl.Text = "NEVER PAID!";
                     statusLbl.ForeColor = Color.OrangeRed;
                     break;
@@ -1365,7 +1365,7 @@ namespace TBRBooker.FrontEnd
                     }
                     break;
                 case BookingStates.Cancelled:
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     if (MessageBox.Show("Are you sure you want to restore this booking?",
                         "Restore Booking", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                         == DialogResult.Yes)

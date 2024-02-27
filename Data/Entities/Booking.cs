@@ -272,7 +272,7 @@ namespace TBRBooker.Model.Entities
                 case BookingStates.LostEnquiry:
                     return false;
                 case BookingStates.Cancelled:
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     return isIncludeCancelled;
                 default:
                     throw new Exception($"Unknown if status {status} is a booking or enquiry.");
@@ -290,7 +290,7 @@ namespace TBRBooker.Model.Entities
                     return false;
                 case BookingStates.LostEnquiry:
                 case BookingStates.Cancelled:
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     return true;
                 default:
                     throw new Exception($"Unknown if status {status} is a booking or enquiry.");
@@ -348,7 +348,7 @@ namespace TBRBooker.Model.Entities
                 case BookingStates.Completed:
                 case BookingStates.Cancelled:
                 case BookingStates.LostEnquiry:
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     return false;
                 case BookingStates.OpenEnquiry:
                 case BookingStates.Booked:

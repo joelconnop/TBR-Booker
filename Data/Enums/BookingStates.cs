@@ -21,7 +21,7 @@ namespace TBRBooker.Model.Enums
         Cancelled,
         [Description("Payment Due")]
         PaymentDue,
-        [Description("Never Paid")]
-        CancelledWithoutPayment
+        [Description("Bad Dept")]
+        BadDept
     }
 }

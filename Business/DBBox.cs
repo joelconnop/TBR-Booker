@@ -14,6 +14,7 @@ using Shouldly;
 using TBRBooker.Model.DTO;
 using TBRBooker.Model.Enums;
 using TBRBooker.Base;
+using System.Net;
 
 namespace TBRBooker.Business
 {
@@ -223,29 +224,58 @@ namespace TBRBooker.Business
             }
             catch (System.Net.WebException webex)
             {
-                // note this exception does not extend System.Exception
-                return MaybeRetry(webex.Message);
+                if (webex.Status == WebExceptionStatus.Timeout ||
+                    webex.Status == WebExceptionStatus.ConnectFailure)
+                {
+                    return MaybeRetry(webex.Message, 3);
+                }
+
+                throw;
             }
             catch (Amazon.Runtime.Internal.HttpErrorResponseException awsex)
             {
-                return MaybeRetry(awsex.Message);
+                return MaybeRetry(awsex.Message, 3);
+            }
+            catch (Amazon.DynamoDBv2.Model.ProvisionedThroughputExceededException dynamoEx)
+            {
+                return MaybeRetry(dynamoEx.Message, 7);
             }
 
-            T MaybeRetry(string errorMsg)
+            T MaybeRetry(string errorMsg, int maxRetries)
             {
-                // doesn't seem to work. table.GetItem() might have an internal retry helper (but still throws in debug, but continues?)
-                if (retries < 3)
+                if (retries < maxRetries)
                 {
-                    // might have exceeded provisioning, just have a wee rest
-                    if (errorMsg == "The remote server returned an error: (400) Bad Request.")
-                    {
-                        System.Threading.Thread.Sleep(5000 * (retries + 1));
-                        return ReadItemWithRetry(id, temp, retries + 1);
-                    }
+                    System.Threading.Thread.Sleep(GetExponentialBackoffDelay(retries));
+                    return ReadItemWithRetry(id, temp, retries + 1);
                 }
 
                 throw new Exception(errorMsg); // give up :(
             }
+        }
+
+        private static readonly Random jitter = new Random();
+
+        private static int GetExponentialBackoffDelay(int retryAttempt)
+        {
+            // Exponential backoff retry delays:
+            // 1st retry:  2^1  = 2 seconds
+            // 2nd retry:  2^2  = 4 seconds
+            // 3rd retry:  2^3  = 8 seconds
+            // 4th retry:  2^4  = 16 seconds
+            // 5th retry:  2^5  = 32 seconds
+            // 6th retry:  2^6  = 64 seconds  (or 1 minute and 4 seconds)
+            // 7th retry:  2^7  = 128 seconds (or 2 minutes and 8 seconds)
+            // 8th retry:  2^8  = 256 seconds (or 4 minutes and 16 seconds)
+            // 9th retry:  2^9  = 512 seconds (or 8 minutes and 32 seconds)
+            // 10th retry: 2^10 = 1024 seconds (or 17 minutes and 4 seconds)
+
+            // Calculate exponential backoff
+            int delay = (int)Math.Pow(2, retryAttempt) * 1000;  // in milliseconds
+
+            // Add jitter (randomness)
+            delay += jitter.Next(0, 1000);  // Adds between 0 to 1 second
+
+            return delay;
         }
 
         private static List<T> SearchToItems<T>(Search search) where T: BaseItem

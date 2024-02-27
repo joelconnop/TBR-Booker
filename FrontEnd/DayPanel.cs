@@ -60,7 +60,7 @@ namespace TBRBooker.FrontEnd
         {
             if (_rawItems.Count > 4 || !_showCancelled)
             {
-                var hideStates = new[] { BookingStates.Cancelled, BookingStates.CancelledWithoutPayment,
+                var hideStates = new[] { BookingStates.Cancelled, BookingStates.BadDept,
                     BookingStates.LostEnquiry};
                 _items = _rawItems.Where(x => !(x is BookingCalendarItemDTO) ||
                 !hideStates.Contains(((BookingCalendarItemDTO)x).BookingStatus)).ToList();

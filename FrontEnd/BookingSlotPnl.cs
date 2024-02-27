@@ -111,7 +111,7 @@ namespace TBRBooker.FrontEnd
                 case BookingStates.OpenEnquiry:
                     return Color.Orange;
                 case BookingStates.PaymentDue:
-                case BookingStates.CancelledWithoutPayment:
+                case BookingStates.BadDept:
                     return Color.LightPink;
                 default:
                     throw new Exception("Unknown back colour for " + bookingState);

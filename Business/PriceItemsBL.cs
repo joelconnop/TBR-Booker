@@ -20,21 +20,21 @@ namespace TBRBooker.Business
             _productLookup = new Dictionary<ProductIds, PriceItem>();
             var products = new[]
 {
-    new { Id = ProductIds.ReptilePartyGoldCoast, Price = 270, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusGoldCoast, Price = 310, Quantity = 1 },
-    new { Id = ProductIds.PremiumReptilePartyGoldCoast, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyGoldCoast, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusGoldCoast, Price = 350, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyGoldCoast, Price = 450, Quantity = 1 },
     new { Id = ProductIds.ReptileShowGoldCoast, Price = 300, Quantity = 1 },
     new { Id = ProductIds.ReptileDisplayGoldCoast, Price = 640, Quantity = 1 },
 
-    new { Id = ProductIds.ReptilePartyLogan, Price = 270, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusLogan, Price = 310, Quantity = 1 },
-    new { Id = ProductIds.PremiumReptilePartyLogan, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyLogan, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusLogan, Price = 350, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyLogan, Price = 450, Quantity = 1 },
     new { Id = ProductIds.ReptileShowLogan, Price = 300, Quantity = 1 },
     new { Id = ProductIds.ReptileDisplayLogan, Price = 640, Quantity = 1 },
 
-    new { Id = ProductIds.ReptilePartyBrisbane, Price = 270, Quantity = 1 },
-    new { Id = ProductIds.ReptilePartyPlusBrisbane, Price = 310, Quantity = 1 },
-    new { Id = ProductIds.PremiumReptilePartyBrisbane, Price = 400, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyBrisbane, Price = 300, Quantity = 1 },
+    new { Id = ProductIds.ReptilePartyPlusBrisbane, Price = 350, Quantity = 1 },
+    new { Id = ProductIds.PremiumReptilePartyBrisbane, Price = 450, Quantity = 1 },
     new { Id = ProductIds.ReptileShowBrisbane, Price = 300, Quantity = 1 },
     new { Id = ProductIds.ReptileDisplayBrisbane, Price = 640, Quantity = 1 },
         
