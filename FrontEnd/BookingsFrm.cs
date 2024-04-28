@@ -16,7 +16,7 @@ namespace TBRBooker.FrontEnd
     {
 
         public Dictionary<string, BookingPnl> _panels;
-        public MainFrm _owner;
+        public MainFrm Owner;
 
         private int _fullWidth = 1920;
         private int _halfWidth = 970;
@@ -25,7 +25,7 @@ namespace TBRBooker.FrontEnd
         {
             InitializeComponent();
 
-            _owner = owner;
+            Owner = owner;
             _panels = new Dictionary<string, BookingPnl>();
             Styles.SetFormStyles(this);
         }
@@ -179,7 +179,7 @@ namespace TBRBooker.FrontEnd
                 UpdateTimeLinesForTabs(leftTabs, oldDate, newDate);
                 UpdateTimeLinesForTabs(rightTabs, oldDate, newDate);
             }
-            _owner.UpdateCalendar();
+            Owner.UpdateCalendar();
         }
 
         private void UpdateTimeLinesForTabs(TabControl tabs, DateTime oldDate, DateTime newDate)

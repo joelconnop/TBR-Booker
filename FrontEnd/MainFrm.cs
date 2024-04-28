@@ -15,6 +15,7 @@ using TBRBooker.Model.DTO;
 using Microsoft.Win32;
 using System.IO;
 using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TBRBooker.FrontEnd
 {
@@ -27,6 +28,7 @@ namespace TBRBooker.FrontEnd
         private int _screenId;
         private bool _isAllHistoryAvailable;
         private bool _isFirstLoad;
+        public SaveWorker SaveWorker;
 
         public MainFrm()
         {
@@ -42,7 +44,8 @@ namespace TBRBooker.FrontEnd
                 _calendarStartDate = PickCalendarStartDate(DTUtils.StartOfDay());
                 _isFirstLoad = true;
                 datePicker.Value = _calendarStartDate;
-
+                SaveWorker = new SaveWorker();
+                SaveWorker.InitializeBackgroundWorker(SavingPic);
             }
         }
 
@@ -603,6 +606,61 @@ namespace TBRBooker.FrontEnd
             {
                 Cursor = Cursors.Default;
                 ErrorHandler.HandleError(this, "Failed to select print and reset penalties", ex, true);
+            }
+        }
+
+
+        private BackgroundWorker bgWorker = new BackgroundWorker();
+
+        public void InitializeBackgroundWorker()
+        {
+            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+            bgWorker.ProgressChanged += new ProgressChangedEventHandler(bgWorker_ProgressChanged);
+            bgWorker.WorkerReportsProgress = true;
+            bgWorker.WorkerSupportsCancellation = true;
+        }
+
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var booking = e.Argument as Booking;
+            // Perform the save operation here
+            DBBox.AddOrUpdate(booking);
+            // You can report progress if needed
+            bgWorker.ReportProgress(50);
+        }
+
+        private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                MessageBox.Show("Operation was canceled.");
+            }
+            else if (e.Error != null)
+            {
+                MessageBox.Show("Error occurred: " + e.Error.Message);
+            }
+            else
+            {
+                MessageBox.Show("Booking saved successfully!");
+            }
+        }
+
+        private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // progressBar.Value = e.ProgressPercentage; // Update progress bar if needed
+        }
+
+        // To start the operation:
+        public void SaveBooking(Booking booking)
+        {
+            if (!bgWorker.IsBusy)
+            {
+                bgWorker.RunWorkerAsync(booking);
+            }
+            else
+            {
+                MessageBox.Show("A save operation is already running.");
             }
         }
     }

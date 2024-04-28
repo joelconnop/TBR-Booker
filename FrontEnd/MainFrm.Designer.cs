@@ -41,6 +41,7 @@
             this.previousFinancialYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectedMonth1YearAgoJobkeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.travelLogLastFYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.penaltiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +51,7 @@
             this.googleCalendarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createRecurringEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.SavingPic = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.searchFld = new System.Windows.Forms.TextBox();
             this.refreshBtn = new System.Windows.Forms.Button();
@@ -73,9 +75,9 @@
             this.searcCloseBtn = new System.Windows.Forms.Button();
             this.searchLst = new System.Windows.Forms.ListView();
             this.dateTmr = new System.Windows.Forms.Timer(this.components);
-            this.travelLogLastFYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SavingPic)).BeginInit();
             this.searchPnl.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -108,7 +110,7 @@
             this.travelLogLastFYearToolStripMenuItem,
             this.penaltiesToolStripMenuItem});
             this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
-            this.reportsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reportsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.reportsToolStripMenuItem.Text = "Reports";
             // 
             // allGeneralSummariesToolStripMenuItem
@@ -175,6 +177,13 @@
             this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Text = "Selected month 1 year ago (Jobkeeper)";
             this.selectedMonth1YearAgoJobkeeperToolStripMenuItem.Click += new System.EventHandler(this.selectedMonth1YearAgoJobkeeperToolStripMenuItem_Click);
             // 
+            // travelLogLastFYearToolStripMenuItem
+            // 
+            this.travelLogLastFYearToolStripMenuItem.Name = "travelLogLastFYearToolStripMenuItem";
+            this.travelLogLastFYearToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.travelLogLastFYearToolStripMenuItem.Text = "Travel Log last f year";
+            this.travelLogLastFYearToolStripMenuItem.Click += new System.EventHandler(this.travelLogLastFYearToolStripMenuItem_Click);
+            // 
             // penaltiesToolStripMenuItem
             // 
             this.penaltiesToolStripMenuItem.Name = "penaltiesToolStripMenuItem";
@@ -186,14 +195,14 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -240,6 +249,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Controls.Add(this.SavingPic);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.searchFld);
             this.panel1.Controls.Add(this.refreshBtn);
@@ -253,6 +263,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1904, 100);
             this.panel1.TabIndex = 1;
+            // 
+            // SavingPic
+            // 
+            this.SavingPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.SavingPic.Cursor = System.Windows.Forms.Cursors.Default;
+            this.SavingPic.InitialImage = null;
+            this.SavingPic.Location = new System.Drawing.Point(465, 9);
+            this.SavingPic.Name = "SavingPic";
+            this.SavingPic.Size = new System.Drawing.Size(84, 87);
+            this.SavingPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.SavingPic.TabIndex = 17;
+            this.SavingPic.TabStop = false;
+            this.SavingPic.Visible = false;
             // 
             // label1
             // 
@@ -365,7 +388,7 @@
             this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label6.Location = new System.Drawing.Point(71, 130);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(73, 16);
+            this.label6.Size = new System.Drawing.Size(72, 16);
             this.label6.TabIndex = 7;
             this.label6.Text = "MONDAY";
             // 
@@ -376,7 +399,7 @@
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label8.Location = new System.Drawing.Point(280, 130);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 16);
+            this.label8.Size = new System.Drawing.Size(79, 16);
             this.label8.TabIndex = 8;
             this.label8.Text = "TUESDAY";
             // 
@@ -387,7 +410,7 @@
             this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label9.Location = new System.Drawing.Point(486, 130);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(105, 16);
+            this.label9.Size = new System.Drawing.Size(104, 16);
             this.label9.TabIndex = 9;
             this.label9.Text = "WEDNESDAY";
             // 
@@ -398,7 +421,7 @@
             this.label10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label10.Location = new System.Drawing.Point(714, 130);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(92, 16);
+            this.label10.Size = new System.Drawing.Size(91, 16);
             this.label10.TabIndex = 10;
             this.label10.Text = "THURSDAY";
             // 
@@ -409,7 +432,7 @@
             this.label11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label11.Location = new System.Drawing.Point(940, 130);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 16);
+            this.label11.Size = new System.Drawing.Size(62, 16);
             this.label11.TabIndex = 11;
             this.label11.Text = "FRIDAY";
             // 
@@ -420,7 +443,7 @@
             this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label12.Location = new System.Drawing.Point(1139, 130);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(91, 16);
+            this.label12.Size = new System.Drawing.Size(90, 16);
             this.label12.TabIndex = 12;
             this.label12.Text = "SATURDAY";
             // 
@@ -431,7 +454,7 @@
             this.label13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.label13.Location = new System.Drawing.Point(1361, 130);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(71, 16);
+            this.label13.Size = new System.Drawing.Size(70, 16);
             this.label13.TabIndex = 13;
             this.label13.Text = "SUNDAY";
             // 
@@ -456,6 +479,7 @@
             // 
             // bookingLst
             // 
+            this.bookingLst.HideSelection = false;
             this.bookingLst.Location = new System.Drawing.Point(8, 191);
             this.bookingLst.MultiSelect = false;
             this.bookingLst.Name = "bookingLst";
@@ -477,6 +501,7 @@
             // 
             // searchLst
             // 
+            this.searchLst.HideSelection = false;
             this.searchLst.Location = new System.Drawing.Point(8, 34);
             this.searchLst.MultiSelect = false;
             this.searchLst.Name = "searchLst";
@@ -490,13 +515,6 @@
             // 
             this.dateTmr.Interval = 3000;
             this.dateTmr.Tick += new System.EventHandler(this.dateTmr_Tick);
-            // 
-            // travelLogLastFYearToolStripMenuItem
-            // 
-            this.travelLogLastFYearToolStripMenuItem.Name = "travelLogLastFYearToolStripMenuItem";
-            this.travelLogLastFYearToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.travelLogLastFYearToolStripMenuItem.Text = "Travel Log last f year";
-            this.travelLogLastFYearToolStripMenuItem.Click += new System.EventHandler(this.travelLogLastFYearToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -526,6 +544,7 @@
             this.mainMnu.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SavingPic)).EndInit();
             this.searchPnl.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -578,6 +597,7 @@
         private System.Windows.Forms.ToolStripMenuItem last12MonthsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectedMonth1YearAgoJobkeeperToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem travelLogLastFYearToolStripMenuItem;
+        private System.Windows.Forms.PictureBox SavingPic;
     }
 }
 

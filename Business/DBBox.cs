@@ -161,6 +161,79 @@ namespace TBRBooker.Business
 
         }
 
+        /// <summary>
+        /// below written by Chat GPT, but didn't try it out because I noticed it would still group by tablename
+        /// (only 1 record per table anyway). Kept the code in case we write to multiple records in same table
+        /// in the future. But remember it hasn't been tested!
+        /// </summary>
+        /// <param name="items"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="Exception"></exception>
+        public static void AddOrUpdateMultiple(IReadOnlyList<BaseItem> items)
+        {
+            AmazonDynamoDBClient client = GetDynamoDBClient();
+            var writeRequests = new List<WriteRequest>();
+            int index = 0;
+
+            foreach (var itm in items)
+            {
+                if (itm.IsNew())
+                {
+                    itm.Id = GetUniqueId(itm);
+                    var doc = itm.GetAddUpdateDoc();
+                    writeRequests[index++] = new WriteRequest
+                    {
+                        PutRequest = new PutRequest { Item = DocumentToAttributeMap(doc) }
+                    };
+                }
+                else
+                {
+                    // Update operations can't be batched in the same way as Put/Delete,
+                    // so consider implementing a queue for updates or handling them separately.
+                    throw new NotImplementedException("Batch update not implemented. Consider handling updates separately.");
+                }
+            }
+
+            // Group by table name to support different tables in the same batch call
+            var batchRequests = writeRequests.GroupBy(req => req.PutRequest.Item["TableName"].S)
+                                             .ToDictionary(group => group.Key, group => group.ToList());
+
+            foreach (var batchRequest in batchRequests)
+            {
+                var tableName = batchRequest.Key;
+                var requestItems = batchRequest.Value;
+                var batchWriteItemRequest = new BatchWriteItemRequest
+                {
+                    RequestItems = new Dictionary<string, List<WriteRequest>> { { tableName, requestItems } }
+                };
+
+                // Perform the batch write operation
+                var response = client.BatchWriteItem(batchWriteItemRequest);
+
+                // Check for unprocessed items and handle potential retries
+                if (response.UnprocessedItems.Count > 0)
+                {
+                    // Implement retry logic or handle failures appropriately
+                    throw new Exception("Some items were not processed. Implement retry logic as needed.");
+                }
+
+                // Optionally, update the cache for each item after successful write
+                foreach (var item in items)
+                {
+                    if (item.IsCacheItems())
+                    {
+                        GetCachedItems(item.TableName).Add(item.Id, item);
+                    }
+                }
+            }
+        }
+
+        private static Dictionary<string, AttributeValue> DocumentToAttributeMap(Document document)
+        {
+            // Convert a DynamoDB Document to a dictionary of AttributeValues
+            return document.ToAttributeMap();
+        }
+
         //public static List<T> GetItemsLike<T>(string filterText) where T : BaseItem
         //{
         //    AmazonDynamoDBClient client = GetDynamoDBClient();

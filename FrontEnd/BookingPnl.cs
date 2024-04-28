@@ -1224,7 +1224,11 @@ namespace TBRBooker.FrontEnd
                     _newStatus == BookingStates.Booked)
                     _booking.SaleCredit = Settings.Inst().Username;
 
-                BookingBL.SaveBookingEtc(_booking);
+                if (!BookingBL.SaveBookingEtcBackground(_booking, _owner.Owner.SaveWorker.Worker))
+                {
+                    Cursor = Cursors.Default;
+                    return false;
+                }
 
                 //once saved, the 'next' followup becomes the 'current' followup
                 if (_nextFu != null && fuScheduleChk.Checked)

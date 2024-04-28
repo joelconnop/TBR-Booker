@@ -12,12 +12,12 @@ using TBRBooker.Model.Properties;
 using TBRBooker.Base;
 using TBRBooker.Model.DTO;
 using TBRBooker.Model.Enums;
+using System.ComponentModel;
 
 namespace TBRBooker.Business
 {
     public class BookingBL
     {
-
         public static Booking GetBookingFull(string id)
         {
             var booking = DBBox.ReadItem<Booking>(id);
@@ -45,13 +45,24 @@ namespace TBRBooker.Business
                 booking.HighlightedControls = new List<string>();
         }
 
-        public static void SaveBookingEtc(Booking booking)
+        public static bool SaveBookingEtcBackground(Booking booking, BackgroundWorker saveWorker)
         {
             if (booking.Id.Equals(Booking.RepeatingBookingId))
             {
                 throw new Exception("Booking still has the TBD status. Cannot save.");
             }
 
+            if (saveWorker.IsBusy)
+            {
+                return false;
+            }
+
+            saveWorker.RunWorkerAsync(booking); 
+            return true;
+        }
+
+        public static void SaveBookingEtc(Booking booking)
+        {
             DBBox.AddOrUpdate(booking.Customer);
             booking.CustomerId = booking.Customer.Id;
 
