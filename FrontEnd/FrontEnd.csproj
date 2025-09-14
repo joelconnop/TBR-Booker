@@ -27,7 +27,7 @@
     <PublisherName>True Blue Reptiles</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationRevision>38</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -57,10 +57,10 @@
     <ApplicationIcon>Resources\tbrv3.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>65686BBC973CE4E395596D086B5AC611FAA982C2</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0C151C0F6B388FB9990F3079114D345CAD5E12BD</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>FrontEnd_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>FrontEnd_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -249,6 +249,7 @@
       <DependentUpon>TimePicker.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FrontEnd_1_TemporaryKey.pfx" />
+    <None Include="FrontEnd_2_TemporaryKey.pfx" />
     <None Include="FrontEnd_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

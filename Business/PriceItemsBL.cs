@@ -11,6 +11,72 @@ namespace TBRBooker.Business
     public class PriceItemsBL
     {
         private static Dictionary<ProductIds, PriceItem> _productLookup;
+        private static bool _attemptedCsvLoad;
+
+        private static void TryLoadFromCsv()
+        {
+            if (_attemptedCsvLoad)
+                return;
+            _attemptedCsvLoad = true;
+
+            try
+            {
+                // prices.csv expected at: <WorkingDir>\\config\\prices.csv
+                var path = Base.Settings.Inst().WorkingDir + "\\config\\prices.csv";
+                if (!System.IO.File.Exists(path))
+                    return; // no CSV present; fall back to hardcoded defaults
+
+                var lines = System.IO.File.ReadAllLines(path);
+                if (lines.Length == 0)
+                    return;
+
+                bool isFirst = true;
+                foreach (var raw in lines)
+                {
+                    var line = raw?.Trim();
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+                    if (line.StartsWith("#"))
+                        continue; // comment line
+
+                    // Skip header row if present
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                        var lower = line.ToLowerInvariant();
+                        if (lower.Contains("productid") && lower.Contains("price"))
+                            continue;
+                    }
+
+                    // Naive CSV split; supports simple cases without embedded commas/quotes
+                    var parts = line.Split(',');
+                    if (parts.Length < 3)
+                        continue; // ignore malformed rows
+
+                    var idStr = parts[0].Trim();
+                    var priceStr = parts[1].Trim();
+                    var qtyStr = parts[2].Trim();
+                    string desc = parts.Length >= 4 ? parts[3].Trim() : null;
+
+                    if (!Enum.TryParse<ProductIds>(idStr, true, out var pid))
+                        continue;
+
+                    if (!decimal.TryParse(priceStr, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var price))
+                        continue;
+
+                    if (!int.TryParse(qtyStr, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var qty))
+                        continue;
+
+                    // replace default with CSV values
+                    _productLookup[pid] = new PriceItem(pid, price, qty, string.IsNullOrWhiteSpace(desc) ? null : desc);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Do not fail app; log and keep using defaults
+                ErrorLogger.LogError("Load prices.csv", ex);
+            }
+        }
 
         public static PriceItem Get(ProductIds productId)
         {
@@ -66,6 +132,9 @@ namespace TBRBooker.Business
             {
                 _productLookup.Add(product.Id, new PriceItem(product.Id, product.Price, product.Quantity));
             }
+
+            // Attempt to override with CSV if available
+            TryLoadFromCsv();
 
             return (PriceItem)_productLookup[productId].Clone();
         }

@@ -51,7 +51,7 @@ namespace TBRBooker.Business
         {
             var reportData = GetReportData();
             DateTime start = new DateTime(selectedDay.Year, 7, 1);
-            DateTime end = new DateTime(selectedDay.Year + 1, 7, 1).AddHours(-1);
+            DateTime end = selectedDay; // changed from full year... getting all future bookings doesn't say much? It's not a reflection of what WILL be booked. new DateTime(selectedDay.Year + 1, 7, 1).AddHours(-1);
             if (selectedDay.Month <= 6)
             {
                 start = new DateTime(selectedDay.Year - 1, 7, 1);

@@ -1,0 +1,66 @@
+# Product pricing override file for TBR Booker
+#
+# Place this file at: <WorkingDir>\\config\\prices.csv
+# Columns:
+#   ProductId,Price,Quantity,Description(optional)
+# - ProductId must match a value from Data/Enums/ProductIds.cs (case-insensitive)
+# - Price uses dot as decimal separator
+# - Quantity is default line quantity when added
+# - Lines starting with # are comments; an optional header row is allowed
+#
+ProductId,Price,Quantity,Description
+
+# Gold Coast
+ReptilePartyGoldCoast,300,1,Reptile Party (Gold Coast)
+ReptilePartyPlusGoldCoast,350,1,Reptile Party Plus (Gold Coast)
+PremiumReptilePartyGoldCoast,450,1,Premium Reptile Party (Gold Coast)
+ReptileShowGoldCoast,300,1,Reptile Show (Gold Coast)
+ReptileDisplayGoldCoast,640,1,Reptile Display (Gold Coast)
+
+# Logan
+ReptilePartyLogan,300,1,Reptile Party (Logan)
+ReptilePartyPlusLogan,350,1,Reptile Party Plus (Logan)
+PremiumReptilePartyLogan,450,1,Premium Reptile Party (Logan)
+ReptileShowLogan,300,1,Reptile Show (Logan)
+ReptileDisplayLogan,640,1,Reptile Display (Logan)
+
+# Brisbane
+ReptilePartyBrisbane,300,1,Reptile Party (Brisbane)
+ReptilePartyPlusBrisbane,350,1,Reptile Party Plus (Brisbane)
+PremiumReptilePartyBrisbane,450,1,Premium Reptile Party (Brisbane)
+ReptileShowBrisbane,300,1,Reptile Show (Brisbane)
+ReptileDisplayBrisbane,640,1,Reptile Display (Brisbane)
+
+# Add-ons and other items
+AdditionalHours,100,0,Additional Hours
+AddCrocodile,50,1,Add Crocodile
+AdditionalParticipants,6,0,Additional Participants (Party)
+AdditionalParticipantsPlus,10,0,Additional Participants (Party Plus)
+AdditionalParticipantsPremium,12,0,Additional Participants (Premium)
+PartyBags,5,0,Party Bags
+BugCatcherUpgrade,60,1,Bug Catcher (Upgrade)
+BugCatcherSingle,10,0,Bug Catcher (Single)
+Pinata,60,0,Piñata
+ShortDemonstrations,100,1,Short Demonstrations
+InteractiveEncounter,100,1,Interactive Encounter
+Parking,37,1,Parking
+Discount,-50,1,Discount (negative value)
+Other,0,1,Other (custom)
+NotSet,0,0,Not Set
+FetesAndFairs,370,1,Fetes and Fairs
+NocturnalNatives,300,1,Nocturnal Natives
+NightAtTheGardens,158,1,Night at the Gardens
+LittleNatureLovers,125,1,Little Nature Lovers
+ScalyReptiles,290,1,Scaly Reptiles
+GeneratorHire,100,1,Generator Hire
+
+# Optional items not currently priced by default (uncomment and set if needed)
+# RoamingReptilesGoldCoast,0,1,Roaming Reptiles (Gold Coast)
+# PythonAppearanceGoldCoast,0,1,Python Appearance (Gold Coast)
+# RoamingReptilesLogan,0,1,Roaming Reptiles (Logan)
+# PythonAppearanceLogan,0,1,Python Appearance (Logan)
+# RoamingReptilesBrisbane,0,1,Roaming Reptiles (Brisbane)
+# PythonAppearanceBrisbane,0,1,Python Appearance (Brisbane)
+# BotanicGardens,0,1,Botanic Gardens
+# BuggyLollyJarUpgrade,0,1,Buggy Lolly Jar (Upgrade)
+# BuggyLollyJarSingle,0,1,Buggy Lolly Jar (Single)

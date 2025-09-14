@@ -54,9 +54,10 @@
             // 
             // closeBtn
             // 
-            this.closeBtn.Location = new System.Drawing.Point(216, 371);
+            this.closeBtn.Location = new System.Drawing.Point(288, 457);
+            this.closeBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.closeBtn.Name = "closeBtn";
-            this.closeBtn.Size = new System.Drawing.Size(75, 23);
+            this.closeBtn.Size = new System.Drawing.Size(100, 28);
             this.closeBtn.TabIndex = 1;
             this.closeBtn.Text = "Close";
             this.closeBtn.UseVisualStyleBackColor = true;
@@ -64,9 +65,10 @@
             // 
             // saveBtn
             // 
-            this.saveBtn.Location = new System.Drawing.Point(297, 371);
+            this.saveBtn.Location = new System.Drawing.Point(396, 457);
+            this.saveBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.saveBtn.Name = "saveBtn";
-            this.saveBtn.Size = new System.Drawing.Size(75, 23);
+            this.saveBtn.Size = new System.Drawing.Size(100, 28);
             this.saveBtn.TabIndex = 2;
             this.saveBtn.Text = "Save";
             this.saveBtn.UseVisualStyleBackColor = true;
@@ -75,33 +77,37 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 21);
+            this.label2.Location = new System.Drawing.Point(23, 26);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 13);
+            this.label2.Size = new System.Drawing.Size(81, 16);
             this.label2.TabIndex = 11;
             this.label2.Text = "Event Name";
             // 
             // nameFld
             // 
-            this.nameFld.Location = new System.Drawing.Point(20, 38);
+            this.nameFld.Location = new System.Drawing.Point(27, 47);
+            this.nameFld.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.nameFld.Name = "nameFld";
-            this.nameFld.Size = new System.Drawing.Size(134, 20);
+            this.nameFld.Size = new System.Drawing.Size(177, 22);
             this.nameFld.TabIndex = 0;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 120);
+            this.label3.Location = new System.Drawing.Point(23, 148);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(112, 13);
+            this.label3.Size = new System.Drawing.Size(142, 16);
             this.label3.TabIndex = 13;
             this.label3.Text = "More Details (optional)";
             // 
             // descFld
             // 
-            this.descFld.Location = new System.Drawing.Point(20, 137);
+            this.descFld.Location = new System.Drawing.Point(27, 169);
+            this.descFld.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.descFld.Name = "descFld";
-            this.descFld.Size = new System.Drawing.Size(308, 20);
+            this.descFld.Size = new System.Drawing.Size(409, 22);
             this.descFld.TabIndex = 2;
             // 
             // contactGrp
@@ -125,60 +131,68 @@
             this.contactGrp.Controls.Add(this.nameFld);
             this.contactGrp.Controls.Add(this.label2);
             this.contactGrp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.contactGrp.Location = new System.Drawing.Point(10, 10);
+            this.contactGrp.Location = new System.Drawing.Point(13, 12);
+            this.contactGrp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.contactGrp.Name = "contactGrp";
-            this.contactGrp.Size = new System.Drawing.Size(362, 355);
+            this.contactGrp.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.contactGrp.Size = new System.Drawing.Size(483, 437);
             this.contactGrp.TabIndex = 0;
             this.contactGrp.TabStop = false;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(234, 239);
+            this.label4.Location = new System.Drawing.Point(312, 294);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.Size = new System.Drawing.Size(104, 16);
             this.label4.TabIndex = 17;
             this.label4.Text = "Number of Days";
             // 
             // numDaysFld
             // 
-            this.numDaysFld.Location = new System.Drawing.Point(237, 258);
+            this.numDaysFld.Location = new System.Drawing.Point(316, 318);
+            this.numDaysFld.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.numDaysFld.Name = "numDaysFld";
-            this.numDaysFld.Size = new System.Drawing.Size(77, 20);
+            this.numDaysFld.Size = new System.Drawing.Size(101, 22);
             this.numDaysFld.TabIndex = 16;
             this.numDaysFld.Text = "1";
             // 
             // locationFld
             // 
-            this.locationFld.Location = new System.Drawing.Point(20, 86);
+            this.locationFld.Location = new System.Drawing.Point(27, 106);
+            this.locationFld.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.locationFld.Name = "locationFld";
-            this.locationFld.Size = new System.Drawing.Size(308, 20);
+            this.locationFld.Size = new System.Drawing.Size(409, 22);
             this.locationFld.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 70);
+            this.label1.Location = new System.Drawing.Point(27, 86);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 13);
+            this.label1.Size = new System.Drawing.Size(117, 16);
             this.label1.TabIndex = 12;
             this.label1.Text = "Location (optional)";
             // 
             // dateFld
             // 
             this.dateFld.AutoSize = true;
-            this.dateFld.Location = new System.Drawing.Point(20, 173);
+            this.dateFld.Location = new System.Drawing.Point(27, 213);
+            this.dateFld.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.dateFld.Name = "dateFld";
-            this.dateFld.Size = new System.Drawing.Size(30, 13);
+            this.dateFld.Size = new System.Drawing.Size(36, 16);
             this.dateFld.TabIndex = 14;
             this.dateFld.Text = "Date";
             // 
             // allDayChk
             // 
             this.allDayChk.AutoSize = true;
-            this.allDayChk.Location = new System.Drawing.Point(20, 204);
+            this.allDayChk.Location = new System.Drawing.Point(27, 251);
+            this.allDayChk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.allDayChk.Name = "allDayChk";
-            this.allDayChk.Size = new System.Drawing.Size(59, 17);
+            this.allDayChk.Size = new System.Drawing.Size(76, 21);
             this.allDayChk.TabIndex = 3;
             this.allDayChk.Text = "All Day";
             this.allDayChk.UseVisualStyleBackColor = true;
@@ -186,74 +200,81 @@
             // 
             // endPick
             // 
-            this.endPick.Location = new System.Drawing.Point(124, 254);
+            this.endPick.Location = new System.Drawing.Point(165, 313);
+            this.endPick.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.endPick.Name = "endPick";
-            this.endPick.Size = new System.Drawing.Size(84, 27);
+            this.endPick.Size = new System.Drawing.Size(112, 33);
             this.endPick.TabIndex = 5;
             // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(123, 238);
+            this.label29.Location = new System.Drawing.Point(164, 293);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(52, 13);
+            this.label29.Size = new System.Drawing.Size(65, 16);
             this.label29.TabIndex = 10;
             this.label29.Text = "End Time";
             // 
             // durationDescFld
             // 
             this.durationDescFld.AutoSize = true;
-            this.durationDescFld.Location = new System.Drawing.Point(103, 311);
+            this.durationDescFld.Location = new System.Drawing.Point(137, 383);
+            this.durationDescFld.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.durationDescFld.Name = "durationDescFld";
-            this.durationDescFld.Size = new System.Drawing.Size(96, 13);
+            this.durationDescFld.Size = new System.Drawing.Size(117, 16);
             this.durationDescFld.TabIndex = 7;
             this.durationDescFld.Text = "(0 hours 0 minutes)";
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(17, 289);
+            this.label24.Location = new System.Drawing.Point(23, 356);
+            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(47, 13);
+            this.label24.Size = new System.Drawing.Size(57, 16);
             this.label24.TabIndex = 9;
             this.label24.Text = "Duration";
             // 
             // durationFld
             // 
-            this.durationFld.Location = new System.Drawing.Point(20, 308);
+            this.durationFld.Location = new System.Drawing.Point(27, 379);
+            this.durationFld.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.durationFld.Name = "durationFld";
-            this.durationFld.Size = new System.Drawing.Size(77, 20);
+            this.durationFld.Size = new System.Drawing.Size(101, 22);
             this.durationFld.TabIndex = 6;
             // 
             // startPick
             // 
-            this.startPick.Location = new System.Drawing.Point(16, 254);
+            this.startPick.Location = new System.Drawing.Point(21, 313);
+            this.startPick.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.startPick.Name = "startPick";
-            this.startPick.Size = new System.Drawing.Size(84, 27);
+            this.startPick.Size = new System.Drawing.Size(112, 33);
             this.startPick.TabIndex = 15;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(17, 240);
+            this.label15.Location = new System.Drawing.Point(23, 295);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(55, 13);
+            this.label15.Size = new System.Drawing.Size(68, 16);
             this.label15.TabIndex = 15;
             this.label15.Text = "Start Time";
             // 
             // GoogleEventFrm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(168)))), ((int)(((byte)(239)))));
-            this.ClientSize = new System.Drawing.Size(384, 406);
+            this.ClientSize = new System.Drawing.Size(512, 500);
             this.Controls.Add(this.contactGrp);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.closeBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "GoogleEventFrm";
             this.Text = "Add Blockout Event";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Load += new System.EventHandler(this.GoogleEventFrm_Load);
             this.contactGrp.ResumeLayout(false);
             this.contactGrp.PerformLayout();
