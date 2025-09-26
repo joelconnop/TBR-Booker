@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Model.Entities;
@@ -35,6 +36,7 @@ namespace TBRBooker.FrontEnd
         private bool _addressWait;
         private string _addressLastSearchTerm;
         private string _addressSessionToken;
+        private CancellationTokenSource _addressSearchCts;
 
         private bool? _highlightMode;
         private List<string> _highlightedControls;
@@ -2595,19 +2597,19 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void addressFld_TextChanged(object sender, EventArgs e)
+        private async void addressFld_TextChanged(object sender, EventArgs e)
         {
             if (_isLoading)
                 return;
 
             try
             {
-                // search up to the caret, and don't search less than 4 characters,
-                // and don't re-search the same thing as last search
-                var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
+                var searchTerm = addressFld.Text.Trim();
                 if (searchTerm.Length < 4)
                 {
+                    CancelAddressSearch();
                     _addressSessionToken = null;
+                    addressLst.Items.Clear();
                     return;
                 }
 
@@ -2616,8 +2618,6 @@ namespace TBRBooker.FrontEnd
                     return;
                 }
 
-                // we want the search to happen a delay after the last key press
-                // so, if the timer is already running, stop it
                 if (_addressWait)
                 {
                     addressTmr.Stop();
@@ -2625,9 +2625,13 @@ namespace TBRBooker.FrontEnd
                 else
                 {
                     _addressWait = true;
-                    SearchAddresses(searchTerm);
+                    await SearchAddressesAsync(searchTerm);
                 }
                 addressTmr.Start();
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore cancellation; a newer request has taken over
             }
             catch (Exception ex)
             {
@@ -2635,19 +2639,18 @@ namespace TBRBooker.FrontEnd
             }
         }
 
-        private void addressTmr_Tick(object sender, EventArgs e)
+        private async void addressTmr_Tick(object sender, EventArgs e)
         {
             try
             {
-                // there was a small delay, and we are now happy to search again.
                 _addressWait = false;
                 addressTmr.Stop();
-                // search up to the caret, and don't search less than 4 characters,
-                // and don't re-search the same thing as last search
-                var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
+                var searchTerm = addressFld.Text.Trim();
                 if (searchTerm.Length < 4)
                 {
+                    CancelAddressSearch();
                     _addressSessionToken = null;
+                    addressLst.Items.Clear();
                     return;
                 }
 
@@ -2655,7 +2658,11 @@ namespace TBRBooker.FrontEnd
                 {
                     return;
                 }
-                SearchAddresses(searchTerm);
+                await SearchAddressesAsync(searchTerm);
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore cancellation; a newer request has taken over
             }
             catch (Exception ex)
             {
@@ -2664,10 +2671,10 @@ namespace TBRBooker.FrontEnd
         }
 
 
-        private void SearchAddresses(string searchTerm)
+        private async Task SearchAddressesAsync(string searchTerm)
         {
             addressLst.Items.Clear();
-            if (addressSearchPnl.Visible == false)
+            if (!addressSearchPnl.Visible)
             {
                 addressSearchPnl.Height = 145;
                 addressSearchPnl.Visible = true;
@@ -2679,17 +2686,57 @@ namespace TBRBooker.FrontEnd
                 _addressSessionToken = Guid.NewGuid().ToString();
             }
 
+            var cts = new CancellationTokenSource();
+            CancelAddressSearch();
+            _addressSearchCts = cts;
+            var token = cts.Token;
+
             _addressLastSearchTerm = searchTerm;
-            var matches = TheGoogle.PlacesSearch(searchTerm, _addressSessionToken);
-            foreach (var match in matches)
+
+            try
             {
-                var itm = new ListViewItem(match);
-                addressLst.Items.Add(itm);
+                var matches = await TheGoogle.PlacesSearchAsync(searchTerm, _addressSessionToken, token);
+                if (token.IsCancellationRequested)
+                    return;
+
+                addressLst.BeginUpdate();
+                try
+                {
+                    foreach (var match in matches)
+                    {
+                        var itm = new ListViewItem(match);
+                        addressLst.Items.Add(itm);
+                    }
+                }
+                finally
+                {
+                    addressLst.EndUpdate();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore cancellation; a newer request has taken over
+            }
+            finally
+            {
+                if (_addressSearchCts == cts)
+                {
+                    _addressSearchCts = null;
+                }
+                cts.Dispose();
             }
         }
 
+        private void CancelAddressSearch()
+        {
+            if (_addressSearchCts != null)
+            {
+                _addressSearchCts.Cancel();
+            }
+        }
         private void addressCloseBtn_Click(object sender, EventArgs e)
         {
+            CancelAddressSearch();
             addressSearchPnl.Visible = false;
             _addressSessionToken = null;
         }
@@ -2700,6 +2747,7 @@ namespace TBRBooker.FrontEnd
             _addressLastSearchTerm = addressLst.SelectedItems[0].Text;
 
             addressFld.Text = _addressLastSearchTerm;
+            CancelAddressSearch();
             addressSearchPnl.Visible = false;
             _addressSessionToken = null;
 

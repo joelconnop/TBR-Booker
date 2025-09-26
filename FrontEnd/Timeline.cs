@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Model.Entities;
@@ -41,6 +42,7 @@ namespace TBRBooker.FrontEnd
         private int _contextX;
         private int _travelTime;
         private bool _disableTravel;
+        private CancellationTokenSource _travelInfoCts;
         
         public DateTime BookingDate { get; set; }
         public int Time { get; set; }
@@ -112,9 +114,7 @@ namespace TBRBooker.FrontEnd
             if (!travelTmr.Enabled && !travelAndRedrawTmr.Enabled)
             {
                 travelTmr.Start();
-                // this executes and redraws without any delay
-                SetTravelTimes();
-                DoRedraw();
+                QueueTravelTimesUpdate(true);
             }
             else
             {
@@ -124,83 +124,174 @@ namespace TBRBooker.FrontEnd
                 // before doing the next (and hopefully final) google api call
                 if (!travelAndRedrawTmr.Enabled)
                     travelAndRedrawTmr.Start();
+                QueueTravelTimesUpdate(false);
                 // else case: getting too spammy, ignore (but the change will probably display right
                 // when the 3 second timer expires and it redraws
             }
         }
 
-        private void SetTravelTimes()
+        private void QueueTravelTimesUpdate(bool redrawImmediately)
         {
             if (_disableTravel)
                 return;
 
-            try
+            _travelInfoCts?.Cancel();
+            _travelInfoCts?.Dispose();
+            _travelInfoCts = new CancellationTokenSource();
+            var currentCts = _travelInfoCts;
+            var token = currentCts.Token;
+
+            var requestData = BuildTravelRequestData();
+            if (!requestData.Addresses.Any())
             {
-                var addresses = new List<string>();
-                var finalArrivalTime = DTUtils.DateTimeFromInt(BookingDate, Time);
-                bool thisBookingAdded = false;
-                var sortedOthers = Others.Where(x => Booking.IsOpenStatus(x.Status))
-                    .OrderBy(x => x.BookingTime).ToList();
-                int thisAddressIdx = 0;
-
-                foreach (var other in sortedOthers)
+                if (redrawImmediately)
                 {
-                    if (!thisBookingAdded && !string.IsNullOrEmpty(Address)
-                        && Time < other.BookingTime && Time > 0)
+                    DoRedraw();
+                }
+                currentCts.Cancel();
+                currentCts.Dispose();
+                _travelInfoCts = null;
+                return;
+            }
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var addressesForRequest = new List<string>(requestData.Addresses);
+                    var route = await TheGoogle.TravelInfoAsync(addressesForRequest, requestData.ArrivalTime, cancellationToken: token).ConfigureAwait(false);
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    if (IsHandleCreated)
                     {
-                        addresses.Add(Address);
-                        thisBookingAdded = true;
-                    }
-                    else if (!thisBookingAdded)
-                        thisAddressIdx++;
-                    if (string.IsNullOrEmpty(other.Address))
-                        addresses.Add($"UNKNOWN ADDRESS for {other.BookingNickname}, Qld");
-                    else
-                        addresses.Add(other.Address);
-                }
-                if (!thisBookingAdded)
-                {
-                    if (!string.IsNullOrEmpty(Address) && Time > 0)
-                        addresses.Add(Address);
-                    else
-                        thisAddressIdx = -1;
-                }
-                else if (sortedOthers.Any())
-                {
-                    var final = sortedOthers[sortedOthers.Count - 1];
-                    finalArrivalTime = DTUtils.DateTimeFromInt(final.BookingDate, final.BookingTime);
-                }
-
-                if (addresses.Any())
-                {
-                    var route = TheGoogle.TravelInfo(addresses, finalArrivalTime);
-
-                    // if they don't match then an address probably couldn't be recognised but don't throw exception
-                    if (route.Durations.Length == addresses.Count)
-                    {
-                        for (int i = 0; i < addresses.Count; i++)
+                        BeginInvoke(new Action(() =>
                         {
-                            // its a bit cheeky setting state on objects that might not get saved,
-                            // but it will work if this is the only significant usage of these fields
-                            Booking b = i == thisAddressIdx ? _owner.GetBooking() 
-                                : sortedOthers[thisAddressIdx >= 0 && thisAddressIdx < i ? i-1 : i];
-                            b.TravelTime = route.Durations[i];
-                            b.TravelDistance = route.Distances[i];
-                            if (i == thisAddressIdx)
+                            if (token.IsCancellationRequested)
+                                return;
+
+                            try
                             {
-                                _travelTime = route.Durations[i];
+                                ApplyTravelResults(route, addressesForRequest, requestData.ThisBookingIndex, requestData.SortedOthers, redrawImmediately);
                             }
-                        }
+                            catch (Exception ex)
+                            {
+                                _disableTravel = true;
+                                ErrorHandler.HandleError(_owner, "Crunch Travel Times", ex, true);
+                            }
+                        }));
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // ignore cancellations
+                }
+                catch (Exception ex)
+                {
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    if (IsHandleCreated)
+                    {
+                        BeginInvoke(new Action(() =>
+                        {
+                            _disableTravel = true;
+                            ErrorHandler.HandleError(_owner, "Crunch Travel Times", ex, true);
+                        }));
+                    }
+                }
+                finally
+                {
+                    if (ReferenceEquals(_travelInfoCts, currentCts))
+                    {
+                        _travelInfoCts = null;
+                    }
+                    currentCts.Dispose();
+                }
+            }, token);
+        }
+
+        private (List<string> Addresses, DateTime ArrivalTime, int ThisBookingIndex, List<Booking> SortedOthers) BuildTravelRequestData()
+        {
+            var addresses = new List<string>();
+            var finalArrivalTime = DTUtils.DateTimeFromInt(BookingDate, Time);
+            bool thisBookingAdded = false;
+            var sortedOthers = Others.Where(x => Booking.IsOpenStatus(x.Status))
+                .OrderBy(x => x.BookingTime).ToList();
+            int thisAddressIdx = 0;
+
+            foreach (var other in sortedOthers)
+            {
+                if (!thisBookingAdded && !string.IsNullOrEmpty(Address)
+                    && Time < other.BookingTime && Time > 0)
+                {
+                    addresses.Add(Address);
+                    thisBookingAdded = true;
+                }
+                else if (!thisBookingAdded)
+                {
+                    thisAddressIdx++;
+                }
+
+                if (string.IsNullOrEmpty(other.Address))
+                    addresses.Add($"UNKNOWN ADDRESS for {other.BookingNickname}, Qld");
+                else
+                    addresses.Add(other.Address);
+            }
+
+            if (!thisBookingAdded)
+            {
+                if (!string.IsNullOrEmpty(Address) && Time > 0)
+                    addresses.Add(Address);
+                else
+                    thisAddressIdx = -1;
+            }
+            else if (sortedOthers.Any())
+            {
+                var final = sortedOthers[sortedOthers.Count - 1];
+                finalArrivalTime = DTUtils.DateTimeFromInt(final.BookingDate, final.BookingTime);
+            }
+
+            return (addresses, finalArrivalTime, thisAddressIdx, sortedOthers);
+        }
+
+        private void ApplyTravelResults((int[] Durations, int[] Distances) route, List<string> addresses,
+            int thisAddressIdx, List<Booking> sortedOthers, bool redrawImmediately)
+        {
+            if (route.Durations.Length == addresses.Count)
+            {
+                for (int i = 0; i < addresses.Count; i++)
+                {
+                    Booking target;
+                    if (i == thisAddressIdx)
+                    {
+                        target = _owner.GetBooking();
+                    }
+                    else
+                    {
+                        // its a bit cheeky setting state on objects that might not get saved,
+                        // but it will work if this is the only significant usage of these fields
+                        var adjustedIndex = thisAddressIdx >= 0 && thisAddressIdx < i ? i - 1 : i;
+                        target = adjustedIndex >= 0 && adjustedIndex < sortedOthers.Count
+                            ? sortedOthers[adjustedIndex]
+                            : _owner.GetBooking();
+                    }
+
+                    target.TravelTime = route.Durations[i];
+                    target.TravelDistance = route.Distances[i];
+                    if (i == thisAddressIdx)
+                    {
+                        _travelTime = route.Durations[i];
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _disableTravel = true;
-                ErrorHandler.HandleError(_owner, "Crunch Travel Times", ex, true);
-            }
 
+            if (redrawImmediately)
+            {
+                DoRedraw();
+            }
         }
+
 
         private void DoRedraw()
         {

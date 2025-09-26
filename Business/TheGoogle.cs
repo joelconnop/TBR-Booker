@@ -1,4 +1,4 @@
-﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
@@ -13,15 +13,19 @@ using GoogleMapsApi.Entities.PlaceAutocomplete.Request;
 using GoogleMapsApi.StaticMaps;
 using GoogleMapsApi.StaticMaps.Entities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using TBRBooker.Base;
 using TBRBooker.Model.DTO;
 
@@ -40,6 +44,36 @@ namespace TBRBooker.Business
         static int SearchRadius = 150000;   // 150km from Nerang
 
         private static UserCredential _creds;
+
+        private static readonly HttpClient GoogleHttpClient = CreateGoogleHttpClient();
+
+        private static HttpClient CreateGoogleHttpClient()
+        {
+            var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TBRBooker", "1.0"));
+            client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            return client;
+        }
+
+        private static async Task<string> GetGoogleJsonAsync(string url, CancellationToken cancellationToken)
+        {
+            try
+            {
+                using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+                {
+                    var response = await GoogleHttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
+            }
+            catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException($"Google request timed out: {url}", ex);
+            }
+        }
 
         private static UserCredential GetCreds()
         {
@@ -238,11 +272,21 @@ namespace TBRBooker.Business
                 gei.Location);
         }
 
+        public static Task<string[]> PlacesSearchAsync(string searchTerm, string sessionToken = null, CancellationToken cancellationToken = default)
+        {
+            return PlacesSearchAsyncInternal(searchTerm, sessionToken, cancellationToken);
+        }
+
         public static string[] PlacesSearch(string searchTerm, string sessionToken = null)
+        {
+            return PlacesSearchAsyncInternal(searchTerm, sessionToken, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        private static async Task<string[]> PlacesSearchAsyncInternal(string searchTerm, string sessionToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
                 || string.IsNullOrEmpty(searchTerm))
-                return new string[0];
+                return Array.Empty<string>();
 
             var queryParams = new List<string>
             {
@@ -260,27 +304,23 @@ namespace TBRBooker.Business
 
             var url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?" + string.Join("&", queryParams);
 
-            using (var client = new WebClient())
+            var responseJson = await GetGoogleJsonAsync(url, cancellationToken).ConfigureAwait(false);
+            var response = JsonConvert.DeserializeObject<GoogleMapsApi.Entities.PlaceAutocomplete.Response.PlaceAutocompleteResponse>(responseJson);
+            if (response == null)
             {
-                client.Encoding = Encoding.UTF8;
-                var responseJson = client.DownloadString(url);
-                var response = JsonConvert.DeserializeObject<GoogleMapsApi.Entities.PlaceAutocomplete.Response.PlaceAutocompleteResponse>(responseJson);
-                if (response == null)
-                {
-                    throw new Exception($"Places Search failed for '{searchTerm}'. Response was empty.");
-                }
+                throw new Exception($"Places Search failed for '{searchTerm}'. Response was empty.");
+            }
 
-                switch (response.Status)
-                {
-                    case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.OK:
-                        return response.Results.Select(x =>
-                            x.Description.Replace(" QLD, Australia", "").Trim().Trim(','))
-                            .ToArray();
-                    case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.ZERO_RESULTS:
-                        return new[] { "(no results)" };
-                    default:
-                        throw new Exception($"Places Search failed for '{searchTerm}'. Status = {response.Status}.");
-                }
+            switch (response.Status)
+            {
+                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.OK:
+                    return response.Results.Select(x =>
+                        x.Description.Replace(" QLD, Australia", "").Trim().Trim(','))
+                        .ToArray();
+                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.ZERO_RESULTS:
+                    return new[] { "(no results)" };
+                default:
+                    throw new Exception($"Places Search failed for '{searchTerm}'. Status = {response.Status}.");
             }
         }
 
@@ -350,13 +390,27 @@ namespace TBRBooker.Business
         /// arrivalTimes is addresses - 1 if including startlocation in addresses</param>
         /// <param name="startLocation">leave blank if prefer to have it in the array</param>
         /// <returns></returns>
+        public static Task<(int[] Durations, int[] Distances)> TravelInfoAsync(
+            List<string> addresses, DateTime roughDateAndTime,
+             string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211", bool finishAtStart = false, CancellationToken cancellationToken = default)
+        {
+            return TravelInfoAsyncInternal(addresses, roughDateAndTime, startLocation, finishAtStart, cancellationToken);
+        }
+
         public static (int[] Durations, int[] Distances) TravelInfo(
             List<string> addresses, DateTime roughDateAndTime,
              string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211", bool finishAtStart = false)
         {
-            if (addresses.Count == 0)
+            return TravelInfoAsyncInternal(addresses, roughDateAndTime, startLocation, finishAtStart, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        private static async Task<(int[] Durations, int[] Distances)> TravelInfoAsyncInternal(
+            List<string> addresses, DateTime roughDateAndTime,
+             string startLocation, bool finishAtStart, CancellationToken cancellationToken)
+        {
+            if (addresses == null || addresses.Count == 0)
             {
-                return (new int[0], new int[0]);
+                return (Array.Empty<int>(), Array.Empty<int>());
             }
 
             if (finishAtStart && !string.IsNullOrEmpty(startLocation))
@@ -367,56 +421,96 @@ namespace TBRBooker.Business
             var numPoints = addresses.Count;
             if (string.IsNullOrEmpty(startLocation))
                 numPoints--;
+
             var route = (new int[numPoints], new int[numPoints]);
-            if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey) 
-                || addresses.All(x => string.IsNullOrEmpty(x))                )
+
+            if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
+                || addresses.All(x => string.IsNullOrEmpty(x)))
             {
                 return route;
             }
 
-            var routesParams = RoutesParams(startLocation, addresses);
-            var req = new DirectionsRequest()
+            var addressesForRequest = new List<string>(addresses);
+            var routesParams = RoutesParams(startLocation, addressesForRequest);
+
+            var queryParams = new List<string>
             {
-                ApiKey = Base.Settings.Inst().GoogleAPIKey,
-                Origin = routesParams.Origin,
-                Destination = routesParams.Destination,
-                ArrivalTime = roughDateAndTime,
-                Waypoints = routesParams.Waypoints.ToArray(),
-                TravelMode = TravelMode.Driving,
-                Alternatives = false,
+                $"origin={Uri.EscapeDataString(routesParams.Origin)}",
+                $"destination={Uri.EscapeDataString(routesParams.Destination)}",
+                "mode=driving",
+                $"key={Uri.EscapeDataString(Base.Settings.Inst().GoogleAPIKey)}"
             };
-            var response = GoogleMaps.Directions.Query(req);
-            if (!string.IsNullOrEmpty(response.ErrorMessage))
-                throw new Exception(response.ErrorMessage);
-            switch (response.Status)
+
+            if (roughDateAndTime != default)
             {
-                case DirectionsStatusCodes.ZERO_RESULTS:
-                case DirectionsStatusCodes.NOT_FOUND:
-                    return (new int[0], new int[0]);
-                case DirectionsStatusCodes.OK:
-                    break; //proceed
-                default:
-                    throw new Exception($"Failed to get travel info for {addresses[0]}. Result: {response.Status}");
+                var arrivalSeconds = new DateTimeOffset(roughDateAndTime).ToUnixTimeSeconds();
+                queryParams.Add($"arrival_time={arrivalSeconds}");
             }
 
-            var groute = response.Routes.Single();
-            int legsCount = groute.Legs.Count();
-            if (legsCount != numPoints)
-                throw new Exception($"Expected {numPoints} legs, but there were {legsCount}.");
-            int i = 0;
-            foreach (var leg in groute.Legs)
+            if (routesParams.Waypoints.Count > 0)
             {
-                route.Item1[i] = (int)Math.Round(leg.Duration.Value.TotalMinutes);
-                route.Item2[i] = leg.Distance.Value;
-                i++;
+                var waypoints = string.Join("|", routesParams.Waypoints.Select(Uri.EscapeDataString));
+                queryParams.Add($"waypoints={waypoints}");
             }
+
+            var url = "https://maps.googleapis.com/maps/api/directions/json?" + string.Join("&", queryParams);
+
+            var responseJson = await GetGoogleJsonAsync(url, cancellationToken).ConfigureAwait(false);
+            var response = JObject.Parse(responseJson);
+            var status = response["status"]?.Value<string>();
+
+            switch (status)
+            {
+                case "ZERO_RESULTS":
+                case "NOT_FOUND":
+                    return (Array.Empty<int>(), Array.Empty<int>());
+                case "OK":
+                    break;
+                default:
+                    throw new Exception($"Failed to get travel info for {addressesForRequest.FirstOrDefault()}. Result: {status}");
+            }
+
+            var legs = response["routes"]?.FirstOrDefault()?["legs"] as JArray;
+            if (legs == null)
+            {
+                throw new Exception($"Failed to get travel info for {addressesForRequest.FirstOrDefault()}. Result missing legs.");
+            }
+
+            if (legs.Count != numPoints)
+                throw new Exception($"Expected {numPoints} legs, but there were {legs.Count}.");
+
+            for (int i = 0; i < legs.Count; i++)
+            {
+                var leg = legs[i];
+                var durationSeconds = leg["duration"]?["value"]?.Value<double>() ?? 0;
+                var distanceMeters = leg["distance"]?["value"]?.Value<int>() ?? 0;
+                route.Item1[i] = (int)Math.Round(durationSeconds / 60d);
+                route.Item2[i] = distanceMeters;
+            }
+
+            addresses.Clear();
+            addresses.AddRange(addressesForRequest);
 
             return route;
+        }
+        public static Task<List<string>> GetDirectionsAsync(string destination,
+            DateTime arrivalTime,
+            string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211", CancellationToken cancellationToken = default)
+        {
+            return GetDirectionsAsyncInternal(destination, arrivalTime, startLocation, cancellationToken);
         }
 
         public static List<string> GetDirections(string destination,
             DateTime arrivalTime,
             string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+        {
+            return GetDirectionsAsyncInternal(destination, arrivalTime, startLocation, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        private static async Task<List<string>> GetDirectionsAsyncInternal(string destination,
+            DateTime arrivalTime,
+            string startLocation,
+            CancellationToken cancellationToken)
         {
             var dirs = new List<string>();
             destination = destination.Trim();
@@ -426,27 +520,48 @@ namespace TBRBooker.Business
                 || string.IsNullOrEmpty(startLocation) || string.IsNullOrEmpty(destination))
                 return dirs;
 
-            var req = new DirectionsRequest()
+            var queryParams = new List<string>
             {
-                ApiKey = Base.Settings.Inst().GoogleAPIKey,
-                Origin = startLocation,
-                Destination = destination,
-                ArrivalTime = arrivalTime,
-                TravelMode = TravelMode.Driving,
-                Alternatives = false
+                $"origin={Uri.EscapeDataString(startLocation)}",
+                $"destination={Uri.EscapeDataString(destination)}",
+                "mode=driving",
+                $"key={Uri.EscapeDataString(Base.Settings.Inst().GoogleAPIKey)}"
             };
-            var response = GoogleMaps.Directions.Query(req);
-            if (!string.IsNullOrEmpty(response.ErrorMessage))
-                throw new Exception(response.ErrorMessage);
-            if (response.Status != DirectionsStatusCodes.OK)
+
+            if (arrivalTime != default)
             {
-                throw new Exception(response.StatusStr);
+                var arrivalSeconds = new DateTimeOffset(arrivalTime).ToUnixTimeSeconds();
+                queryParams.Add($"arrival_time={arrivalSeconds}");
             }
 
-            var leg = response.Routes.Single().Legs.Single();
-            foreach (var step in leg.Steps)
+            var url = "https://maps.googleapis.com/maps/api/directions/json?" + string.Join("&", queryParams);
+
+            var responseJson = await GetGoogleJsonAsync(url, cancellationToken).ConfigureAwait(false);
+            var response = JObject.Parse(responseJson);
+            var status = response["status"]?.Value<string>();
+
+            if (status != "OK")
             {
-                dirs.Add(step.HtmlInstructions);
+                if (status == "ZERO_RESULTS" || status == "NOT_FOUND")
+                    return dirs;
+
+                var errorMessage = response["error_message"]?.Value<string>();
+                throw new Exception($"Failed to get directions for {destination}. Status: {status}. {errorMessage}");
+            }
+
+            var leg = response["routes"]?.FirstOrDefault()? ["legs"]?.FirstOrDefault() as JObject;
+            if (leg == null)
+                return dirs;
+
+            var steps = leg["steps"] as JArray;
+            if (steps == null)
+                return dirs;
+
+            foreach (var step in steps)
+            {
+                var instruction = step["html_instructions"]?.Value<string>();
+                if (!string.IsNullOrEmpty(instruction))
+                    dirs.Add(instruction);
             }
 
             return dirs;
@@ -454,6 +569,3 @@ namespace TBRBooker.Business
 
     }
 }
-
-
-
