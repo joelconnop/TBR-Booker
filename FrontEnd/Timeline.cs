@@ -135,6 +135,11 @@ namespace TBRBooker.FrontEnd
             if (_disableTravel)
                 return;
 
+            if (redrawImmediately)
+            {
+                DoRedraw();
+            }
+
             _travelInfoCts?.Cancel();
             _travelInfoCts?.Dispose();
             _travelInfoCts = new CancellationTokenSource();
@@ -172,7 +177,7 @@ namespace TBRBooker.FrontEnd
 
                             try
                             {
-                                ApplyTravelResults(route, addressesForRequest, requestData.ThisBookingIndex, requestData.SortedOthers, redrawImmediately);
+                                ApplyTravelResults(route, addressesForRequest, requestData.ThisBookingIndex, requestData.SortedOthers);
                             }
                             catch (Exception ex)
                             {
@@ -256,7 +261,7 @@ namespace TBRBooker.FrontEnd
         }
 
         private void ApplyTravelResults((int[] Durations, int[] Distances) route, List<string> addresses,
-            int thisAddressIdx, List<Booking> sortedOthers, bool redrawImmediately)
+            int thisAddressIdx, List<Booking> sortedOthers)
         {
             if (route.Durations.Length == addresses.Count)
             {
@@ -286,10 +291,7 @@ namespace TBRBooker.FrontEnd
                 }
             }
 
-            if (redrawImmediately)
-            {
-                DoRedraw();
-            }
+            DoRedraw();
         }
 
 

@@ -16,8 +16,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -33,7 +35,7 @@ namespace TBRBooker.Business
 {
     public class TheGoogle
     {
-
+        public static bool GoogleMapsOn = true;
         private static List<GoogleCalendarItemDTO> Calendar { get; set; }
         private static (DateTime Start, DateTime End) CalendarRange { get; set; }
 
@@ -44,6 +46,52 @@ namespace TBRBooker.Business
         static int SearchRadius = 150000;   // 150km from Nerang
 
         private static UserCredential _creds;
+
+        private class TravelInfoCacheEntry
+        {
+            public TravelInfoCacheEntry(int[] durations, int[] distances)
+            {
+                Durations = durations;
+                Distances = distances;
+                CachedAt = DateTime.UtcNow;
+            }
+
+            public int[] Durations { get; }
+            public int[] Distances { get; }
+            public DateTime CachedAt { get; }
+        }
+
+        private static readonly ConcurrentDictionary<string, TravelInfoCacheEntry> TravelInfoCache = new ConcurrentDictionary<string, TravelInfoCacheEntry>();
+        private const int TravelInfoCacheLimit = 2000; // ~100MB assuming ~50KB per route entry
+
+        private static string NormalizeForCache(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim().ToUpperInvariant();
+        }
+
+        private static string BuildTravelInfoCacheKey(string origin, string destination, IEnumerable<string> waypoints, DateTime arrivalTime, bool finishAtStart)
+        {
+            var builder = new StringBuilder();
+            builder.Append(NormalizeForCache(origin)).Append("|");
+            builder.Append(NormalizeForCache(destination)).Append("|");
+
+            if (waypoints != null)
+            {
+                foreach (var wp in waypoints)
+                {
+                    builder.Append(NormalizeForCache(wp)).Append("|");
+                }
+            }
+
+            builder.Append("FA=").Append(finishAtStart ? "1" : "0").Append("|");
+            builder.Append("AT=").Append(arrivalTime == default ? "NA" : arrivalTime.ToUniversalTime().ToString("yyyyMMddHHmm"));
+
+            using (var sha = SHA256.Create())
+            {
+                var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
 
         private static readonly HttpClient GoogleHttpClient = CreateGoogleHttpClient();
 
@@ -422,16 +470,24 @@ namespace TBRBooker.Business
             if (string.IsNullOrEmpty(startLocation))
                 numPoints--;
 
-            var route = (new int[numPoints], new int[numPoints]);
+            var emptyRoute = (new int[numPoints], new int[numPoints]);
 
             if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
                 || addresses.All(x => string.IsNullOrEmpty(x)))
             {
-                return route;
+                return emptyRoute;
             }
 
             var addressesForRequest = new List<string>(addresses);
             var routesParams = RoutesParams(startLocation, addressesForRequest);
+
+            var cacheKey = BuildTravelInfoCacheKey(routesParams.Origin, routesParams.Destination, routesParams.Waypoints, roughDateAndTime, finishAtStart);
+            if (TravelInfoCache.TryGetValue(cacheKey, out var cachedEntry))
+            {
+                addresses.Clear();
+                addresses.AddRange(addressesForRequest);
+                return ((int[])cachedEntry.Durations.Clone(), (int[])cachedEntry.Distances.Clone());
+            }
 
             var queryParams = new List<string>
             {
@@ -463,6 +519,12 @@ namespace TBRBooker.Business
             {
                 case "ZERO_RESULTS":
                 case "NOT_FOUND":
+                    addresses.Clear();
+                    addresses.AddRange(addressesForRequest);
+                    if (TravelInfoCache.Count < TravelInfoCacheLimit && !TravelInfoCache.ContainsKey(cacheKey))
+                    {
+                        TravelInfoCache[cacheKey] = new TravelInfoCacheEntry(Array.Empty<int>(), Array.Empty<int>());
+                    }
                     return (Array.Empty<int>(), Array.Empty<int>());
                 case "OK":
                     break;
@@ -479,19 +541,27 @@ namespace TBRBooker.Business
             if (legs.Count != numPoints)
                 throw new Exception($"Expected {numPoints} legs, but there were {legs.Count}.");
 
+            var routeDurations = new int[numPoints];
+            var routeDistances = new int[numPoints];
+
             for (int i = 0; i < legs.Count; i++)
             {
                 var leg = legs[i];
                 var durationSeconds = leg["duration"]?["value"]?.Value<double>() ?? 0;
                 var distanceMeters = leg["distance"]?["value"]?.Value<int>() ?? 0;
-                route.Item1[i] = (int)Math.Round(durationSeconds / 60d);
-                route.Item2[i] = distanceMeters;
+                routeDurations[i] = (int)Math.Round(durationSeconds / 60d);
+                routeDistances[i] = distanceMeters;
             }
 
             addresses.Clear();
             addresses.AddRange(addressesForRequest);
 
-            return route;
+            if (TravelInfoCache.Count < TravelInfoCacheLimit && !TravelInfoCache.ContainsKey(cacheKey))
+            {
+                TravelInfoCache[cacheKey] = new TravelInfoCacheEntry((int[])routeDurations.Clone(), (int[])routeDistances.Clone());
+            }
+
+            return (routeDurations, routeDistances);
         }
         public static Task<List<string>> GetDirectionsAsync(string destination,
             DateTime arrivalTime,

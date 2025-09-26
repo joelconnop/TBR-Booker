@@ -92,7 +92,7 @@ namespace TBRBooker.Business
             var (start, end) = PreviousFinancialYear(selectedDay);
             var withinRange = reportData.Where(f => f.BookingDate >= start && f.BookingDate < end && f.IsBooked());
             var workDaySummaries = new List<(string Day, string Bookings, int SubtotalKm)>();
-            var homeAddress = "666 Beechmont Road, Lower Beechmont, Qld 4211";
+            const string homeAddress = "666 Beechmont Road, Lower Beechmont, Qld 4211";
 
             foreach (var dailyBookings in withinRange.GroupBy(f => DTUtils.StartOfDay(f.BookingDate)).OrderBy(f => f.Key))
             {

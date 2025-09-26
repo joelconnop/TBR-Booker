@@ -663,5 +663,23 @@ namespace TBRBooker.FrontEnd
                 MessageBox.Show("A save operation is already running.");
             }
         }
+
+        private void googleOnMenuItem_Click(object sender, EventArgs e)
+        {
+            TheGoogle.GoogleMapsOn = true;
+            googleOnMenuItem.Enabled = false;
+            googleOnMenuItem.Checked = true;
+            googleOffMenuItem.Enabled = true;
+            googleOffMenuItem.Checked = false;
+        }
+
+        private void googleOffMenuItem_Click(object sender, EventArgs e)
+        {
+            TheGoogle.GoogleMapsOn = false;
+            googleOnMenuItem.Enabled = true;
+            googleOnMenuItem.Checked = false;
+            googleOffMenuItem.Enabled = false;
+            googleOffMenuItem.Checked = true;
+        }
     }
 }
