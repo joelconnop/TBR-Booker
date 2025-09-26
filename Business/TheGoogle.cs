@@ -12,6 +12,7 @@ using GoogleMapsApi.Entities.Geocoding.Response;
 using GoogleMapsApi.Entities.PlaceAutocomplete.Request;
 using GoogleMapsApi.StaticMaps;
 using GoogleMapsApi.StaticMaps.Entities;
+using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
@@ -237,33 +238,50 @@ namespace TBRBooker.Business
                 gei.Location);
         }
 
-        public static string[] PlacesSearch(string searchTerm)
+        public static string[] PlacesSearch(string searchTerm, string sessionToken = null)
         {
             if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
                 || string.IsNullOrEmpty(searchTerm))
                 return new string[0];
-            var req = new PlaceAutocompleteRequest()
-            {
-                ApiKey = Base.Settings.Inst().GoogleAPIKey,
-                Input = searchTerm,
-                Location = new Location(-27.982645, 153.340282),    // M1, Nerang
-                Radius = SearchRadius, // look for places within 250km of Nerang
-                StrinctBounds = true
-                // Type = "address"  // we want "address" AND "establishment"
-            };
-            var response = GoogleMaps.PlaceAutocomplete.Query(req);
-            switch (response.Status)
-            {
-                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.OK:
-                    return response.Results.Select(x => 
-                    x.Description.Replace(" QLD, Australia", "").Trim().Trim(','))
-                    .ToArray();
-                case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.ZERO_RESULTS:
-                    return new[] { "(no results)" };
-                default:
-                    throw new Exception($"Places Search failed for '{searchTerm}'. Status = {response.Status}.");
 
-            }            
+            var queryParams = new List<string>
+            {
+                $"key={Uri.EscapeDataString(Base.Settings.Inst().GoogleAPIKey)}",
+                $"input={Uri.EscapeDataString(searchTerm)}",
+                $"location={Uri.EscapeDataString("-27.982645,153.340282")}",
+                $"radius={SearchRadius}",
+                "strictbounds"
+            };
+
+            if (!string.IsNullOrEmpty(sessionToken))
+            {
+                queryParams.Add($"sessiontoken={Uri.EscapeDataString(sessionToken)}");
+            }
+
+            var url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?" + string.Join("&", queryParams);
+
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                var responseJson = client.DownloadString(url);
+                var response = JsonConvert.DeserializeObject<GoogleMapsApi.Entities.PlaceAutocomplete.Response.PlaceAutocompleteResponse>(responseJson);
+                if (response == null)
+                {
+                    throw new Exception($"Places Search failed for '{searchTerm}'. Response was empty.");
+                }
+
+                switch (response.Status)
+                {
+                    case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.OK:
+                        return response.Results.Select(x =>
+                            x.Description.Replace(" QLD, Australia", "").Trim().Trim(','))
+                            .ToArray();
+                    case GoogleMapsApi.Entities.PlaceAutocomplete.Response.Status.ZERO_RESULTS:
+                        return new[] { "(no results)" };
+                    default:
+                        throw new Exception($"Places Search failed for '{searchTerm}'. Status = {response.Status}.");
+                }
+            }
         }
 
         private static (string Origin, string Destination, List<string> Waypoints)
@@ -436,3 +454,6 @@ namespace TBRBooker.Business
 
     }
 }
+
+
+

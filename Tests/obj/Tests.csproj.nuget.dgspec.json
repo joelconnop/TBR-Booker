@@ -1,0 +1,131 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Programming\\TBR-Booker\\Tests\\Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\Programming\\TBR-Booker\\Base\\Base.csproj": {
+      "restore": {
+        "projectUniqueName": "C:\\Programming\\TBR-Booker\\Base\\Base.csproj",
+        "projectName": "Base",
+        "projectPath": "C:\\Programming\\TBR-Booker\\Base\\Base.csproj",
+        "frameworks": {
+          "net47": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net47": {}
+      }
+    },
+    "C:\\Programming\\TBR-Booker\\Business\\Business.csproj": {
+      "restore": {
+        "projectUniqueName": "C:\\Programming\\TBR-Booker\\Business\\Business.csproj",
+        "projectName": "Business",
+        "projectPath": "C:\\Programming\\TBR-Booker\\Business\\Business.csproj",
+        "frameworks": {
+          "net47": {
+            "projectReferences": {
+              "C:\\Programming\\TBR-Booker\\Base\\Base.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Base\\Base.csproj"
+              },
+              "C:\\Programming\\TBR-Booker\\Data\\Model.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Data\\Model.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net47": {}
+      }
+    },
+    "C:\\Programming\\TBR-Booker\\Data\\Model.csproj": {
+      "restore": {
+        "projectUniqueName": "C:\\Programming\\TBR-Booker\\Data\\Model.csproj",
+        "projectName": "Model",
+        "projectPath": "C:\\Programming\\TBR-Booker\\Data\\Model.csproj",
+        "frameworks": {
+          "net47": {
+            "projectReferences": {
+              "C:\\Programming\\TBR-Booker\\Base\\Base.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Base\\Base.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net47": {}
+      }
+    },
+    "C:\\Programming\\TBR-Booker\\Tests\\Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Programming\\TBR-Booker\\Tests\\Tests.csproj",
+        "projectName": "Tests",
+        "projectPath": "C:\\Programming\\TBR-Booker\\Tests\\Tests.csproj",
+        "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
+        "outputPath": "C:\\Programming\\TBR-Booker\\Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\joelc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net47"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net47": {
+            "targetAlias": "net47",
+            "projectReferences": {
+              "C:\\Programming\\TBR-Booker\\Base\\Base.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Base\\Base.csproj"
+              },
+              "C:\\Programming\\TBR-Booker\\Business\\Business.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Business\\Business.csproj"
+              },
+              "C:\\Programming\\TBR-Booker\\Data\\Model.csproj": {
+                "projectPath": "C:\\Programming\\TBR-Booker\\Data\\Model.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net47": {
+          "targetAlias": "net47",
+          "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[3.10.4, )"
+            },
+            "MSTest.TestFramework": {
+              "target": "Package",
+              "version": "[3.10.4, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.14.1, )"
+            },
+            "Shouldly": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

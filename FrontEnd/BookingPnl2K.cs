@@ -34,6 +34,7 @@ namespace TBRBooker.FrontEnd
         private List<ValidatingTextbox> _validators;
         private bool _addressWait;
         private string _addressLastSearchTerm;
+        private string _addressSessionToken;
 
         private bool? _highlightMode;
         private List<string> _highlightedControls;
@@ -67,6 +68,7 @@ namespace TBRBooker.FrontEnd
             _isLoading = true;
             _highlightMode = null;
             _addressLastSearchTerm = "";
+            _addressSessionToken = null;
 
             if (booking.IsNewBooking)
             {
@@ -2540,7 +2542,13 @@ namespace TBRBooker.FrontEnd
                 // search up to the caret, and don't search less than 4 characters,
                 // and don't re-search the same thing as last search
                 var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
-                if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+                if (searchTerm.Length < 4)
+                {
+                    _addressSessionToken = null;
+                    return;
+                }
+
+                if (searchTerm.Equals(_addressLastSearchTerm))
                 {
                     return;
                 }
@@ -2574,7 +2582,13 @@ namespace TBRBooker.FrontEnd
                 // search up to the caret, and don't search less than 4 characters,
                 // and don't re-search the same thing as last search
                 var searchTerm = addressFld.Text.Trim();    //.Substring(0, addressFld.SelectionStart);
-                if (searchTerm.Length < 4 || searchTerm.Equals(_addressLastSearchTerm))
+                if (searchTerm.Length < 4)
+                {
+                    _addressSessionToken = null;
+                    return;
+                }
+
+                if (searchTerm.Equals(_addressLastSearchTerm))
                 {
                     return;
                 }
@@ -2594,10 +2608,16 @@ namespace TBRBooker.FrontEnd
             {
                 addressSearchPnl.Height = 145;
                 addressSearchPnl.Visible = true;
+                _addressSessionToken = null;
+            }
+
+            if (string.IsNullOrEmpty(_addressSessionToken))
+            {
+                _addressSessionToken = Guid.NewGuid().ToString();
             }
 
             _addressLastSearchTerm = searchTerm;
-            var matches = TheGoogle.PlacesSearch(searchTerm);
+            var matches = TheGoogle.PlacesSearch(searchTerm, _addressSessionToken);
             foreach (var match in matches)
             {
                 var itm = new ListViewItem(match);
@@ -2608,6 +2628,7 @@ namespace TBRBooker.FrontEnd
         private void addressCloseBtn_Click(object sender, EventArgs e)
         {
             addressSearchPnl.Visible = false;
+            _addressSessionToken = null;
         }
 
         private void addressLst_ItemActivate(object sender, EventArgs e)
@@ -2617,6 +2638,7 @@ namespace TBRBooker.FrontEnd
 
             addressFld.Text = _addressLastSearchTerm;
             addressSearchPnl.Visible = false;
+            _addressSessionToken = null;
 
             // update the timeline
             if (!_addressLastSearchTerm.Equals(Timeline.Address))
@@ -2628,3 +2650,7 @@ namespace TBRBooker.FrontEnd
         }
     }
 }
+
+
+
+

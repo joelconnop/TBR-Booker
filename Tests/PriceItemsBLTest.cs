@@ -47,8 +47,7 @@ namespace Tests
         {
             var result = PriceItemsBL.GetBaseItem(LocationRegions.BeyondBrisbane,
                 ServiceTypes.Other, PartyPackages.NotSet);
-
-            result.ProductId.ShouldBeNull();
+            result.ShouldBeNull();
         }
 
     }
