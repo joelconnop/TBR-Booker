@@ -401,11 +401,9 @@ namespace TBRBooker.Business
             return (startLocation, destination, waypoints);
         }
 
-        public static string DayPlannerMap(List<string> addresses,
-            string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
+        public static string DayPlannerMap(List<string> addresses, string startLocation = "666 Beechmont Road, Lower Beechmont, Qld 4211")
         {
             var routesParams = RoutesParams(startLocation, addresses);
-            
             string url = "https://www.google.com/maps/dir/?api=1";
             if (!string.IsNullOrEmpty(startLocation))
             {
@@ -480,6 +478,12 @@ namespace TBRBooker.Business
 
             var addressesForRequest = new List<string>(addresses);
             var routesParams = RoutesParams(startLocation, addressesForRequest);
+            if (!GoogleMapsOn)
+            {
+                addresses.Clear();
+                addresses.AddRange(addressesForRequest);
+                return emptyRoute;
+            }
 
             var cacheKey = BuildTravelInfoCacheKey(routesParams.Origin, routesParams.Destination, routesParams.Waypoints, roughDateAndTime, finishAtStart);
             if (TravelInfoCache.TryGetValue(cacheKey, out var cachedEntry))

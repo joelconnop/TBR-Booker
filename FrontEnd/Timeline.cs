@@ -283,7 +283,7 @@ namespace TBRBooker.FrontEnd
                     }
 
                     target.TravelTime = route.Durations[i];
-                    target.TravelDistance = route.Distances[i];
+                    target.TravelDistance = route.Distances[i] / 1000;
                     if (i == thisAddressIdx)
                     {
                         _travelTime = route.Durations[i];

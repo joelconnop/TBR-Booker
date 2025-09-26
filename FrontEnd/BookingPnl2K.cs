@@ -2555,6 +2555,14 @@ namespace TBRBooker.FrontEnd
                     return;
                 }
 
+                if (!TheGoogle.GoogleMapsOn)
+                {
+                    addressTmr.Stop();
+                    _addressWait = false;
+                    await SearchAddressesAsync(searchTerm);
+                    return;
+                }
+
                 if (_addressWait)
                 {
                     addressTmr.Stop();
@@ -2595,6 +2603,12 @@ namespace TBRBooker.FrontEnd
                 {
                     return;
                 }
+
+                if (!TheGoogle.GoogleMapsOn)
+                {
+                    _addressWait = false;
+                    return;
+                }
                 await SearchAddressesAsync(searchTerm);
             }
             catch (OperationCanceledException)
@@ -2610,6 +2624,17 @@ namespace TBRBooker.FrontEnd
 
         private async Task SearchAddressesAsync(string searchTerm)
         {
+            if (!TheGoogle.GoogleMapsOn)
+            {
+                CancelAddressSearch();
+                addressLst.Items.Clear();
+                _addressLastSearchTerm = searchTerm;
+                addressSearchPnl.Visible = true;
+                addressSearchPnl.Height = 145;
+                addressLst.Items.Add(new ListViewItem("(Google Maps disabled)"));
+                return;
+            }
+
             addressLst.Items.Clear();
             if (!addressSearchPnl.Visible)
             {
@@ -2663,7 +2688,6 @@ namespace TBRBooker.FrontEnd
                 cts.Dispose();
             }
         }
-
         private void CancelAddressSearch()
         {
             if (_addressSearchCts != null)
