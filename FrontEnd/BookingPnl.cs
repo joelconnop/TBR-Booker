@@ -835,36 +835,56 @@ namespace TBRBooker.FrontEnd
         
         private void CopyBookingDetails(Booking other)
         {
-            contactNicknameFld.Text = other.BookingName;
+            if (other == null)
+                return;
+
+            if (other.Customer != null)
+            {
+                contactFirstNameFld.Text = other.Customer.FirstName;
+                contactLastNameFld.Text = other.Customer.LastName;
+                contactPrimaryNumFld.Text = other.Customer.PrimaryNumber;
+                contactSecondaryNumFld.Text = other.Customer.SecondaryNumber;
+                contactEmailFld.Text = other.Customer.EmailAddress;
+                contactNicknameFld.Text = other.BookingName;
+                notesPastFld.Text = other.Customer.PastNotes;
+                ComboBoxItem.ManuallySelectItem<LeadSources>(contactLeadBox, other.Customer.LeadSource);
+            }
+
+            _corporateAccount = other.Account;
+            if (_corporateAccount != null)
+            {
+                contactCompanyFld.Text = _corporateAccount.BusinessName;
+                contactCompanyFld.Enabled = false;
+            }
+            else
+            {
+                contactCompanyFld.Enabled = true;
+                contactCompanyFld.Text = other.Customer?.CompanyName ?? string.Empty;
+            }
+
             SetTime(other.BookingTime, other.Duration);
             Timeline.Time = other.BookingTime;
             Timeline.Duration = other.Duration;
 
             priceItemsLst.BeginUpdate();
 
-            ComboBoxItem.ManuallySelectItem<LocationRegions>
-                (addressRegionBox, other.LocationRegion);
+            ComboBoxItem.ManuallySelectItem<LocationRegions>(addressRegionBox, other.LocationRegion);
             addressFld.Text = other.Address;
-            // addressVenuFld.Text = other.VenueName;
             Timeline.Address = CombineAddress();
             Timeline.SetTravelTimesAndRedraw();
 
-            ComboBoxItem.ManuallySelectItem<ServiceTypes>
-                (serviceBox, other.Service.ServiceType);
+            ComboBoxItem.ManuallySelectItem<ServiceTypes>(serviceBox, other.Service.ServiceType);
             LoadService(other.Service, crocNoPic.Visible);
 
-            // remove any items automatically added by the above
-            // (we want to preserve any special prices for this customer)
-            // unfortunately we can't distinguish between old customers on old pricing,
-            // and customers who had a special discount applied. This is why it is best
-            // to put discounts in as a discount item which can be reviewed
             priceItemsLst.Items.Clear();
-
-            other.Service.PriceItems.Where(y => crocPic.Visible || y.ProductId != ProductIds.AddCrocodile).ToList()
-                .ForEach(x => AddPriceItem((PriceItem)x.Clone()));
-
+            foreach (var priceItem in other.Service.PriceItems.Where(y => crocPic.Visible || y.ProductId != ProductIds.AddCrocodile))
+            {
+                AddPriceItem((PriceItem)priceItem.Clone());
+            }
             priceItemsLst.EndUpdate();
 
+            pricingPayOnDayChk.Checked = other.IsPayOnDay;
+            notesBookingFld.Text = other.BookingNotes;
         }
 
 
@@ -1107,6 +1127,13 @@ namespace TBRBooker.FrontEnd
                 _booking.AccountId = _corporateAccount?.Id ?? "";
                 _booking.Account = _corporateAccount;
 
+                if (_corporateAccount != null)
+                {
+                    if (!_corporateAccount.BookingIds.Contains(_booking.Id))
+                        _corporateAccount.BookingIds.Add(_booking.Id);
+                    _corporateAccount.DefaultBookingId = _booking.Id;
+                }
+
                 if (string.IsNullOrEmpty(contactNicknameFld.Text.Trim()))
                 {
                     AutoSetNickname();
@@ -1251,6 +1278,9 @@ namespace TBRBooker.FrontEnd
                 savedFld.Visible = true;
                 savedTmr.Enabled = true;
                 savedTmr.Start();
+
+                completeBtn.Enabled = new[] { BookingStates.Booked, BookingStates.PaymentDue }
+                    .Contains(_newStatus);
 
                 return true;
             }
@@ -2741,6 +2771,17 @@ namespace TBRBooker.FrontEnd
             catch (OperationCanceledException)
             {
                 // ignore cancellation; a newer request has taken over
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    addressLst.BeginUpdate();
+                    addressLst.Items.Clear();
+                    addressLst.Items.Add(new ListViewItem("(address lookup failed)"));
+                    addressLst.EndUpdate();
+                }
+                ErrorLogger.LogError("Address autocomplete", ex);
             }
             finally
             {

@@ -32,6 +32,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.mainMnu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googleMapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googleOnMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googleOffMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allGeneralSummariesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,6 +54,7 @@
             this.googleCalendarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createRecurringEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.calendarLbl = new System.Windows.Forms.Label();
             this.SavingPic = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.searchFld = new System.Windows.Forms.TextBox();
@@ -75,9 +79,6 @@
             this.searcCloseBtn = new System.Windows.Forms.Button();
             this.searchLst = new System.Windows.Forms.ListView();
             this.dateTmr = new System.Windows.Forms.Timer(this.components);
-            this.googleMapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.googleOnMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.googleOffMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMnu.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SavingPic)).BeginInit();
@@ -93,7 +94,7 @@
             this.testingToolStripMenuItem});
             this.mainMnu.Location = new System.Drawing.Point(0, 0);
             this.mainMnu.Name = "mainMnu";
-            this.mainMnu.Size = new System.Drawing.Size(2856, 35);
+            this.mainMnu.Size = new System.Drawing.Size(2856, 33);
             this.mainMnu.TabIndex = 0;
             this.mainMnu.Text = "Main Menu Strip";
             // 
@@ -107,6 +108,32 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // googleMapsToolStripMenuItem
+            // 
+            this.googleMapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.googleOnMenuItem,
+            this.googleOffMenuItem});
+            this.googleMapsToolStripMenuItem.Name = "googleMapsToolStripMenuItem";
+            this.googleMapsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.googleMapsToolStripMenuItem.Text = "Google Integration";
+            // 
+            // googleOnMenuItem
+            // 
+            this.googleOnMenuItem.Checked = true;
+            this.googleOnMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.googleOnMenuItem.Enabled = false;
+            this.googleOnMenuItem.Name = "googleOnMenuItem";
+            this.googleOnMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.googleOnMenuItem.Text = "On";
+            this.googleOnMenuItem.Click += new System.EventHandler(this.googleOnMenuItem_Click);
+            // 
+            // googleOffMenuItem
+            // 
+            this.googleOffMenuItem.Name = "googleOffMenuItem";
+            this.googleOffMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.googleOffMenuItem.Text = "Off";
+            this.googleOffMenuItem.Click += new System.EventHandler(this.googleOffMenuItem_Click);
             // 
             // reportsToolStripMenuItem
             // 
@@ -255,6 +282,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Controls.Add(this.calendarLbl);
             this.panel1.Controls.Add(this.SavingPic);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.searchFld);
@@ -271,12 +299,24 @@
             this.panel1.Size = new System.Drawing.Size(2856, 154);
             this.panel1.TabIndex = 1;
             // 
+            // calendarLbl
+            // 
+            this.calendarLbl.AutoSize = true;
+            this.calendarLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.calendarLbl.Location = new System.Drawing.Point(2273, 42);
+            this.calendarLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.calendarLbl.Name = "calendarLbl";
+            this.calendarLbl.Size = new System.Drawing.Size(183, 25);
+            this.calendarLbl.TabIndex = 18;
+            this.calendarLbl.Text = "Loading Bookings...";
+            this.calendarLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // SavingPic
             // 
             this.SavingPic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.SavingPic.Cursor = System.Windows.Forms.Cursors.Default;
             this.SavingPic.InitialImage = null;
-            this.SavingPic.Location = new System.Drawing.Point(698, 14);
+            this.SavingPic.Location = new System.Drawing.Point(702, 15);
             this.SavingPic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.SavingPic.Name = "SavingPic";
             this.SavingPic.Size = new System.Drawing.Size(125, 133);
@@ -546,32 +586,6 @@
             this.dateTmr.Interval = 3000;
             this.dateTmr.Tick += new System.EventHandler(this.dateTmr_Tick);
             // 
-            // googleMapsToolStripMenuItem
-            // 
-            this.googleMapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.googleOnMenuItem,
-            this.googleOffMenuItem});
-            this.googleMapsToolStripMenuItem.Name = "googleMapsToolStripMenuItem";
-            this.googleMapsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.googleMapsToolStripMenuItem.Text = "Google Maps";
-            // 
-            // googleOnMenuItem
-            // 
-            this.googleOnMenuItem.Checked = true;
-            this.googleOnMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.googleOnMenuItem.Enabled = false;
-            this.googleOnMenuItem.Name = "googleOnMenuItem";
-            this.googleOnMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.googleOnMenuItem.Text = "On";
-            this.googleOnMenuItem.Click += new System.EventHandler(this.googleOnMenuItem_Click);
-            // 
-            // googleOffMenuItem
-            // 
-            this.googleOffMenuItem.Name = "googleOffMenuItem";
-            this.googleOffMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.googleOffMenuItem.Text = "Off";
-            this.googleOffMenuItem.Click += new System.EventHandler(this.googleOffMenuItem_Click);
-            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -658,6 +672,7 @@
         private System.Windows.Forms.ToolStripMenuItem googleMapsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem googleOnMenuItem;
         private System.Windows.Forms.ToolStripMenuItem googleOffMenuItem;
+        private System.Windows.Forms.Label calendarLbl;
     }
 }
 

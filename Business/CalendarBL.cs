@@ -20,7 +20,8 @@ namespace TBRBooker.Business
             DateTime start;
             if (isForceReadAll)
             {
-                start = new DateTime(2018, 7, 1);   // date from which google calendar feature went live
+                // start = new DateTime(2018, 7, 1);   // date from which google calendar feature went live
+                start = DateTime.Now.AddYears(-1); // loading several years of calendar is asking for trouble.
             }
             else
             {

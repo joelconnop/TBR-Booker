@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,9 +73,6 @@ namespace TBRBooker.Business
             //    booking.AccountId = booking.Account.Id;
             //}
 
-            // update google calendar (sets the id result so need to do dynamodb save after)
-            booking.GoogleCalendarId = CalendarBL.AddOrUpdateBookingOnGoogle(booking);
-
             try
             {
                 if (string.IsNullOrEmpty(booking.BookingNickname))
@@ -126,6 +123,9 @@ namespace TBRBooker.Business
                 directory.Remove(existing);
             directory.Add(new ExistingCustomerDTO(
                 booking.Customer.Id, booking.Customer.DirectoryName()));
+
+            var googleSnapshot = CreateGoogleSnapshot(booking);
+            Task.Run(() => SyncBookingToGoogleAsync(booking, googleSnapshot));
         }
 
         public static List<Booking> GetClashBookings(List<Booking> bookings, int startTime, int endTime)
@@ -164,6 +164,62 @@ namespace TBRBooker.Business
 
             LastBookingNum = nextNum;
             return nextNum.ToString();
+        }
+
+        private static Booking CreateGoogleSnapshot(Booking booking)
+        {
+            var snapshot = new Booking
+            {
+                Id = booking.Id,
+                BookingDate = booking.BookingDate,
+                BookingTime = booking.BookingTime,
+                Duration = booking.Duration,
+                Address = booking.Address,
+                BookingNickname = booking.BookingNickname,
+                Status = booking.Status,
+                GoogleCalendarId = booking.GoogleCalendarId,
+                Service = booking.Service == null ? null : (Service)booking.Service.Clone()
+            };
+
+            if (booking.Customer != null)
+            {
+                snapshot.Customer = new Customer
+                {
+                    FirstName = booking.Customer.FirstName,
+                    LastName = booking.Customer.LastName,
+                    PrimaryNumber = booking.Customer.PrimaryNumber,
+                    SecondaryNumber = booking.Customer.SecondaryNumber,
+                    EmailAddress = booking.Customer.EmailAddress,
+                    CompanyName = booking.Customer.CompanyName,
+                    LeadSource = booking.Customer.LeadSource
+                };
+            }
+
+            return snapshot;
+        }
+
+        private static void SyncBookingToGoogleAsync(Booking persistedBooking, Booking googleSnapshot)
+        {
+            try
+            {
+                var newId = CalendarBL.AddOrUpdateBookingOnGoogle(googleSnapshot);
+                if (newId != persistedBooking.GoogleCalendarId)
+                {
+                    persistedBooking.GoogleCalendarId = newId;
+                    try
+                    {
+                        DBBox.AddOrUpdate(persistedBooking);
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorLogger.LogError($"Failed to persist Google calendar id for booking {persistedBooking.Id}", ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError($"Adding or Updating Booking {persistedBooking.Id} on Google Calendar", ex);
+            }
         }
 
         public static BookingCalendarItemDTO UpdateCalendarItemAndUnderlyingBooking(BookingCalendarItemDTO item)
@@ -247,3 +303,4 @@ namespace TBRBooker.Business
         }
     }
 }
+

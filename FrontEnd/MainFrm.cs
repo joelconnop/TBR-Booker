@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TBRBooker.Business;
@@ -28,7 +29,38 @@ namespace TBRBooker.FrontEnd
         private int _screenId;
         private bool _isAllHistoryAvailable;
         private bool _isFirstLoad;
+        private CancellationTokenSource _calendarRefreshCts;
+        private readonly object _calendarLoadingSync = new object();
         public SaveWorker SaveWorker;
+
+        private (DateTime Start, DateTime End) CalculateEventWindow(DateTime calendarStartSnapshot, bool isForceReadAll, bool isFirstLoadSnapshot)
+        {
+            if (isForceReadAll || isFirstLoadSnapshot)
+            {
+                return (calendarStartSnapshot.AddMonths(-1), calendarStartSnapshot.AddMonths(3));
+            }
+
+            return (calendarStartSnapshot.AddDays(-7), calendarStartSnapshot.AddDays(35));
+        }
+
+        private static string FormatRange(DateTime start, DateTime end)
+        {
+            return $"{start:dd MMM yyyy} - {end:dd MMM yyyy}";
+        }
+
+        private void UpdateCalendarStatus(string message)
+        {
+            if (calendarLbl == null)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => UpdateCalendarStatus(message)));
+                return;
+            }
+
+            calendarLbl.Text = message ?? string.Empty;
+        }
 
         public MainFrm()
         {
@@ -124,33 +156,170 @@ namespace TBRBooker.FrontEnd
 
         public void UpdateCalendar()
         {
-            try
+            StartCalendarRefresh(false);
+        }
+
+        private void StartCalendarRefresh(bool isForceReadAll)
+        {
+            CancellationTokenSource cts;
+            lock (_calendarLoadingSync)
             {
-                AddDayPanels(false);
+                _calendarRefreshCts?.Cancel();
+                _calendarRefreshCts = new CancellationTokenSource();
+                cts = _calendarRefreshCts;
+            }
 
-                //display date range
-                string dateRangeStr = _calendarStartDate.ToString("MMM yy");
-                var lastDay = _calendarStartDate.AddDays(28);
-                if (lastDay.Month != _calendarStartDate.Month)
-                    dateRangeStr += $" - {lastDay.ToString("MMM yy")}";
-                monthsLbl.Text = dateRangeStr;
+            var token = cts.Token;
+            var calendarStartSnapshot = _calendarStartDate;
+            var isFirstLoadSnapshot = _isFirstLoad;
+            var window = CalculateEventWindow(calendarStartSnapshot, isForceReadAll, isFirstLoadSnapshot);
+            UpdateCalendarStatus($"Loading bookings {FormatRange(window.Start, window.End)}...");
 
-                //dashboards
-                dashboardPnl.Controls.Clear();
-                int yOffset = 10;
-                foreach (var category in DashboardBL.GetDashboard())
+            ShowCalendarLoading(true);
+
+            Task.Run(() =>
+            {
+                try
                 {
-                    var categoryPnl = new DashboardCategoryPnl(this, category);
-                    categoryPnl.Location = new Point(3, yOffset);
-                    categoryPnl.RefreshList();
-                    dashboardPnl.Controls.Add(categoryPnl);
-                    yOffset += 10 + categoryPnl.Height;
+                    var baseItems = BuildBaseCalendarItems(isForceReadAll, token, window.Start, window.End) ?? new List<CalendarItemDTO>();
+                    var baseSnapshot = new List<CalendarItemDTO>(baseItems);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        UpdateCalendarStatus(string.Empty);
+                        return;
+                    }
+
+                    BeginInvoke(new Action(() =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            UpdateCalendarStatus(string.Empty);
+                            return;
+                        }
+
+                        try
+                        {
+                            RenderDayPanels(baseSnapshot, isForceReadAll);
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+                        }
+                        finally
+                        {
+                            ShowCalendarLoading(false);
+                        }
+                    }));
+
+                    if (token.IsCancellationRequested)
+                    {
+                        UpdateCalendarStatus(string.Empty);
+                        return;
+                    }
+
+                    if (!TheGoogle.GoogleMapsOn)
+                    {
+                        UpdateCalendarStatus("Google Maps/Calendar are turned off");
+                        return;
+                    }
+
+                    UpdateCalendarStatus($"Loading Google events {FormatRange(window.Start, window.End)}...");
+
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            var googleItems = CalendarBL.GetGoogleEventsForMainCalendar(
+                                isForceReadAll, window.Start, window.End);
+
+                            if (token.IsCancellationRequested)
+                                return;
+
+                            if (googleItems == null || googleItems.Count == 0)
+                            {
+                                UpdateCalendarStatus(string.Empty);
+                                return;
+                            }
+
+                            var combined = new List<CalendarItemDTO>(baseSnapshot);
+                            combined.AddRange(googleItems);
+
+                            BeginInvoke(new Action(() =>
+                            {
+                                if (token.IsCancellationRequested)
+                                    return;
+
+                                try
+                                {
+                                    RenderDayPanels(combined, isForceReadAll);
+                                    UpdateCalendarStatus(string.Empty);
+                                }
+                                catch (Exception ex)
+                                {
+                                    ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+                                }
+                            }));
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            UpdateCalendarStatus(string.Empty);
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorLogger.LogError("load blockouts", ex);
+                            UpdateCalendarStatus($"Google events failed to load {FormatRange(window.Start, window.End)}");
+                        }
+                    }, token);
                 }
-            }
-            catch (Exception ex)
+                catch (OperationCanceledException)
+                {
+                    BeginInvoke(new Action(() => ShowCalendarLoading(false)));
+                    UpdateCalendarStatus(string.Empty);
+                }
+                catch (Exception ex)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        ShowCalendarLoading(false);
+                        ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+                        UpdateCalendarStatus("Calendar failed to load.");
+                    }));
+                }
+            }, token);
+        }
+
+        private List<CalendarItemDTO> BuildBaseCalendarItems(
+            bool isForceReadAll,
+            CancellationToken token,
+            DateTime eventsStart,
+            DateTime eventsEnd)
+        {
+            var calItems = new List<CalendarItemDTO>(DBBox.GetCalendarItems(isForceReadAll, false));
+            token.ThrowIfCancellationRequested();
+
+            var repeatStart = DTUtils.StartOfDay(eventsStart);
+            var repeatEnd = DTUtils.StartOfDay(eventsEnd);
+
+            var repeatMarkers = RepeatScheduleBL.GetMarkersInRange(
+                repeatStart, repeatEnd, isForceReadAll);
+            calItems.AddRange(repeatMarkers);
+
+            token.ThrowIfCancellationRequested();
+
+            return calItems;
+        }
+
+        private void ShowCalendarLoading(bool isLoading)
+        {
+            if (InvokeRequired)
             {
-                ErrorHandler.HandleError(this, "Failed to update the calendar", ex);
+                BeginInvoke(new Action(() => ShowCalendarLoading(isLoading)));
+                return;
             }
+
+            UseWaitCursor = isLoading;
+            Cursor = isLoading ? Cursors.AppStarting : Cursors.Default;
         }
 
         /// <summary>
@@ -175,53 +344,12 @@ namespace TBRBooker.FrontEnd
             return targetInclude.AddDays(-1 * numDaysToSubtract);
         }
 
-        private void AddDayPanels(bool isForceReadAll)
+        private void RenderDayPanels(List<CalendarItemDTO> calItems, bool isForceReadAll)
         {
+            daysPanel.SuspendLayout();
             daysPanel.Controls.Clear();
             _days = new DayPanel[4,7];
 
-            var calItems = new List<CalendarItemDTO>();
-            calItems.AddRange(DBBox.GetCalendarItems(isForceReadAll, false));
-
-            // read list from google calendar takes a good moment, so read 12 months upfront
-            // then, going forward a week or a month does not require any reading.
-            // Going forward 18 months or backewards 3 months does.
-            // generate repeat markers first load: from a month ago and for the next year
-            DateTime eventsStart;
-            DateTime eventsEnd;
-            DateTime repeatStart;
-            DateTime repeatEnd;
-            if (_isFirstLoad)
-            {
-                eventsStart = _calendarStartDate.AddMonths(-3);
-                eventsEnd = _calendarStartDate.AddMonths(12);
-                repeatStart = new DateTime(Math.Max(DTUtils.StartOfDay().Ticks,
-                    DTUtils.StartOfDay(_calendarStartDate).Ticks)).AddDays(-30);
-                repeatEnd = repeatStart.AddMonths(12);
-            }
-            else
-            {
-                eventsStart = repeatStart = _calendarStartDate;
-                eventsEnd = repeatEnd = _calendarStartDate.AddDays(30);
-            }
-
-            // add the repeat markers for desired date range
-            var repeatMarkers = RepeatScheduleBL.GetMarkersInRange(
-                repeatStart, repeatEnd, isForceReadAll);
-            calItems.AddRange(repeatMarkers);
-
-            // add the google events for desired date range
-            try
-            {
-                calItems.AddRange(CalendarBL.GetGoogleEventsForMainCalendar(
-    isForceReadAll, eventsStart, eventsEnd));
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleError(this, "load blockouts", ex, true);
-            }
-
-                        
             var day = _calendarStartDate;
             for (int i = 0; i <= 3; i++)
             {
@@ -238,6 +366,26 @@ namespace TBRBooker.FrontEnd
             }
 
             _isFirstLoad = false;
+            daysPanel.ResumeLayout();
+
+            //display date range
+            string dateRangeStr = _calendarStartDate.ToString("MMM yy");
+            var lastDay = _calendarStartDate.AddDays(28);
+            if (lastDay.Month != _calendarStartDate.Month)
+                dateRangeStr += $" - {lastDay.ToString("MMM yy")}";
+            monthsLbl.Text = dateRangeStr;
+
+            //dashboards
+            dashboardPnl.Controls.Clear();
+            int yOffset = 10;
+            foreach (var category in DashboardBL.GetDashboard())
+            {
+                var categoryPnl = new DashboardCategoryPnl(this, category);
+                categoryPnl.Location = new Point(3, yOffset);
+                categoryPnl.RefreshList();
+                dashboardPnl.Controls.Add(categoryPnl);
+                yOffset += 10 + categoryPnl.Height;
+            }
         }
 
         private void databaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -337,8 +485,8 @@ namespace TBRBooker.FrontEnd
                 try
                 {
                     _isFirstLoad = true;
-                    AddDayPanels(true);
                     _isAllHistoryAvailable = true;
+                    StartCalendarRefresh(true);
                 }
                 catch (Exception ex)
                 {

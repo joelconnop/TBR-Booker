@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TBRBooker.Base;
+using TBRBooker.Business;
 using TBRBooker.Model.DTO;
 using TBRBooker.Model.Entities;
 using TBRBooker.Model.Enums;
@@ -322,13 +323,21 @@ namespace TBRBooker.Business
             {
                 var dirHtml = $"<label>From {(string.IsNullOrEmpty(fromAddress) ? "Home" : fromAddress)}:</label><ol>";
                 List<string> steps;
-                if (string.IsNullOrEmpty(fromAddress))
-                    steps = TheGoogle.GetDirections(booking.Address,
-                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime));
-                else
-                    steps = TheGoogle.GetDirections(booking.Address,
-                        DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime),
-                        fromAddress);
+                try
+                {
+                    if (string.IsNullOrEmpty(fromAddress))
+                        steps = TheGoogle.GetDirections(booking.Address,
+                            DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime));
+                    else
+                        steps = TheGoogle.GetDirections(booking.Address,
+                            DTUtils.DateTimeFromInt(booking.BookingDate, booking.BookingTime),
+                            fromAddress);
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Booking report directions", ex);
+                    steps = new List<string> { "Directions unavailable." };
+                }
                 steps.ForEach(x => dirHtml += $"<li>{x}</li>");
                 dirHtml += "</ol>";
                 form = form.Replace("[directions]", dirHtml);

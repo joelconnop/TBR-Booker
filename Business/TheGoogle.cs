@@ -38,6 +38,8 @@ namespace TBRBooker.Business
         public static bool GoogleMapsOn = true;
         private static List<GoogleCalendarItemDTO> Calendar { get; set; }
         private static (DateTime Start, DateTime End) CalendarRange { get; set; }
+        private static readonly object CalendarLock = new object();
+        public static bool TestSlowGoogle = false; // for local diagnostics only
 
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/calendar-dotnet-quickstart.json
@@ -110,6 +112,12 @@ namespace TBRBooker.Business
         {
             try
             {
+                if (TestSlowGoogle)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(15), cancellationToken).ConfigureAwait(false);
+                    throw new TimeoutException("Google request timed out (test mode).");
+                }
+
                 using (var request = new HttpRequestMessage(HttpMethod.Get, url))
                 {
                     var response = await GoogleHttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
@@ -209,78 +217,85 @@ namespace TBRBooker.Business
             };
         }
 
-        public static List<GoogleCalendarItemDTO> 
+        public static List<GoogleCalendarItemDTO>
             GetGoogleCalendar(DateTime startDate, DateTime endDate,
             bool isForceReadAll)
         {
-            // can we use the cached calendar ?
-            if (Calendar != null && !isForceReadAll &&
-                startDate >= CalendarRange.Start && endDate <= CalendarRange.End)
-                return Calendar.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
+            lock (CalendarLock)
+            {
+                // can we use the cached calendar ?
+                if (Calendar != null && !isForceReadAll &&
+                    startDate >= CalendarRange.Start && endDate <= CalendarRange.End)
+                    return Calendar.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
 
 
-            // Create Google Calendar API service.
-            var service = CreateCalendarService();
+                // Create Google Calendar API service.
+                var service = CreateCalendarService();
 
-            // get request
-            var request = GetGoogleEventRequest(service);
+                // get request
+                var request = GetGoogleEventRequest(service);
 
-            if (Calendar == null || isForceReadAll ||
+
+                if (Calendar == null || isForceReadAll ||
                 (startDate < CalendarRange.Start && endDate > CalendarRange.End))
-            {
-                // create a new Calendar if it has been requested, or if the new range more than
-                // completely encompasses the old one
-                Calendar = new List<GoogleCalendarItemDTO>();
-                CalendarRange = (startDate, endDate);
-                request.TimeMin = startDate;
-                request.TimeMax = endDate;
-            }
-            else if (startDate >= CalendarRange.Start && endDate <= CalendarRange.End)
-                throw new Exception("Unexpected attempt to read Google events inside of cached results: "
-                    + $"{CalendarRange.Start} - {CalendarRange.End} encompasses {startDate} - {endDate}.");
-
-            // for all other cases, only search the time period not searched previously
-            else if (startDate >= CalendarRange.Start)
-            {
-                request.TimeMin = CalendarRange.End.AddHours(0.1);
-                request.TimeMax = endDate;
-                CalendarRange = (CalendarRange.Start, endDate);
-            }
-            else if (endDate <= CalendarRange.End)
-            {
-                request.TimeMin = startDate;
-                request.TimeMax = CalendarRange.Start.AddHours(-0.1);
-                CalendarRange = (startDate, CalendarRange.End);
-            }
-            else
-            {
-                throw new Exception("Unexpected Google Events date ranges: "
-                   + $"{CalendarRange.Start} - {CalendarRange.End}, {startDate} - {endDate}.");
-            }
-
-            // List events.
-            Events events = request.Execute();
-            if (events.Items != null && events.Items.Count > 0)
-            {
-                foreach (var eventItem in events.Items)
                 {
-                    if (string.IsNullOrEmpty(eventItem.Description)
-                        || !eventItem.Description.StartsWith(GoogleCalendarItemDTO.Blockout))
-                        // ignore these for now (possible alternative to scanning dynamodb)
-                        continue;
-                    else if (eventItem.Start.DateTime.HasValue)
-                        // add the calendar item if it isn't already on our calendar
-                        // (dupes should be avoided by the date range smarts)
-                        if (Calendar.Any(x => x.Id.Equals(eventItem.Id)))
-                            Console.WriteLine("Event was already on calendar: " + eventItem);
-                        else
-                            Calendar.Add(MakeTBREvent(eventItem));
-                    else
-                        Console.WriteLine("Event did not have a start date: " + eventItem);
+                    // create a new Calendar if it has been requested, or if the new range more than
+                    // completely encompasses the old one
+                    Calendar = new List<GoogleCalendarItemDTO>();
+                    CalendarRange = (startDate, endDate);
+                    request.TimeMin = startDate;
+                    request.TimeMax = endDate;
                 }
-            }
+                else if (startDate >= CalendarRange.Start && endDate <= CalendarRange.End)
+                    throw new Exception("Unexpected attempt to read Google events inside of cached results: "
+                        + $"{CalendarRange.Start} - {CalendarRange.End} encompasses {startDate} - {endDate}.");
 
-            return Calendar.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
+                // for all other cases, only search the time period not searched previously
+                else if (startDate >= CalendarRange.Start)
+                {
+                    request.TimeMin = CalendarRange.End.AddHours(0.1);
+                    request.TimeMax = endDate;
+                    CalendarRange = (CalendarRange.Start, endDate);
+                }
+                else if (endDate <= CalendarRange.End)
+                {
+                    request.TimeMin = startDate;
+                    request.TimeMax = CalendarRange.Start.AddHours(-0.1);
+                    CalendarRange = (startDate, CalendarRange.End);
+                }
+                else
+                {
+                    throw new Exception("Unexpected Google Events date ranges: "
+                       + $"{CalendarRange.Start} - {CalendarRange.End}, {startDate} - {endDate}.");
+                }
+
+                // List events.
+                Events events = request.Execute();
+                if (events.Items != null && events.Items.Count > 0)
+                {
+                    foreach (var eventItem in events.Items)
+                    {
+                        if (Calendar == null)
+                            Calendar = new List<GoogleCalendarItemDTO>();
+
+                        if (string.IsNullOrEmpty(eventItem.Description)
+                            || !eventItem.Description.StartsWith(GoogleCalendarItemDTO.Blockout))
+                            // ignore these for now (possible alternative to scanning dynamodb)
+                            continue;
+                        else if (eventItem.Start.DateTime.HasValue)
+                            // add the calendar item if it isn't already on our calendar
+                            // (dupes should be avoided by the date range smarts)
+                            if (Calendar.Any(x => x.Id.Equals(eventItem.Id)))
+                                Console.WriteLine("Event was already on calendar: " + eventItem);
+                            else
+                                Calendar.Add(MakeTBREvent(eventItem));
+                        else
+                            Console.WriteLine("Event did not have a start date: " + eventItem);
+                    }
+                }
+
+                return Calendar.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
+            }
         }
 
         private static EventsResource.ListRequest GetGoogleEventRequest(CalendarService service)
@@ -590,6 +605,12 @@ namespace TBRBooker.Business
             destination = destination.Trim();
             startLocation = startLocation.Trim();
 
+            if (!GoogleMapsOn)
+            {
+                dirs.Add("Google Maps is currently disabled.");
+                return dirs;
+            }
+
             if (string.IsNullOrEmpty(Base.Settings.Inst().GoogleAPIKey)
                 || string.IsNullOrEmpty(startLocation) || string.IsNullOrEmpty(destination))
                 return dirs;
@@ -610,32 +631,49 @@ namespace TBRBooker.Business
 
             var url = "https://maps.googleapis.com/maps/api/directions/json?" + string.Join("&", queryParams);
 
-            var responseJson = await GetGoogleJsonAsync(url, cancellationToken).ConfigureAwait(false);
-            var response = JObject.Parse(responseJson);
-            var status = response["status"]?.Value<string>();
-
-            if (status != "OK")
+            try
             {
-                if (status == "ZERO_RESULTS" || status == "NOT_FOUND")
+                var responseJson = await GetGoogleJsonAsync(url, cancellationToken).ConfigureAwait(false);
+                var response = JObject.Parse(responseJson);
+                var status = response["status"]?.Value<string>();
+
+                if (status != "OK")
+                {
+                    if (status == "ZERO_RESULTS" || status == "NOT_FOUND")
+                        return dirs;
+
+                    var errorMessage = response["error_message"]?.Value<string>();
+                    ErrorLogger.LogError("Get directions", new Exception($"Failed to get directions for {destination}. Status: {status}. {errorMessage}"));
+                    dirs.Add("Directions unavailable.");
+                    return dirs;
+                }
+
+                var leg = response["routes"]?.FirstOrDefault()?["legs"]?.FirstOrDefault() as JObject;
+                if (leg == null)
+                {
+                    dirs.Add("Directions unavailable.");
+                    return dirs;
+                }
+
+                var steps = leg["steps"] as JArray;
+                if (steps == null)
                     return dirs;
 
-                var errorMessage = response["error_message"]?.Value<string>();
-                throw new Exception($"Failed to get directions for {destination}. Status: {status}. {errorMessage}");
+                foreach (var step in steps)
+                {
+                    var instruction = step["html_instructions"]?.Value<string>();
+                    if (!string.IsNullOrEmpty(instruction))
+                        dirs.Add(instruction);
+                }
             }
-
-            var leg = response["routes"]?.FirstOrDefault()? ["legs"]?.FirstOrDefault() as JObject;
-            if (leg == null)
-                return dirs;
-
-            var steps = leg["steps"] as JArray;
-            if (steps == null)
-                return dirs;
-
-            foreach (var step in steps)
+            catch (OperationCanceledException)
             {
-                var instruction = step["html_instructions"]?.Value<string>();
-                if (!string.IsNullOrEmpty(instruction))
-                    dirs.Add(instruction);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError("Get directions", ex);
+                dirs.Add("Directions unavailable.");
             }
 
             return dirs;
